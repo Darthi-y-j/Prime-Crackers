@@ -1,0 +1,28 @@
+-- =============================================================================
+-- Prime Crackers — send auth emails from company mail (not Supabase default)
+-- =============================================================================
+-- Emails (signup confirm, password reset) are sent by Supabase Auth.
+-- To use primecrackers@gmail.com as the sender, configure Custom SMTP once:
+--
+-- 1. Gmail: Google Account → Security → 2-Step Verification ON
+--    → App passwords → create "Supabase Prime Crackers" → copy 16-char password
+--
+-- 2. Supabase Dashboard → Project Settings → Authentication → SMTP Settings
+--    Enable custom SMTP:
+--      Host:     smtp.gmail.com
+--      Port:     587
+--      Username: primecrackers@gmail.com
+--      Password: <Gmail app password>
+--      Sender email:   primecrackers@gmail.com
+--      Sender name:    Prime Crackers
+--
+-- 3. Authentication → Email Templates → Confirm signup
+--    Subject: Confirm your Prime Crackers account
+--    Body: paste supabase/email-templates/confirm-signup.html
+--
+-- 4. Authentication → URL configuration
+--    Site URL: https://www.primecrackers.in  (or http://localhost:5173 for dev)
+--    Redirect URLs: add /auth/confirm for your domain and localhost
+--
+-- 5. Send a test signup from /register and verify the From address.
+-- =============================================================================
