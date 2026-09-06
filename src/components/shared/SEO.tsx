@@ -7,6 +7,7 @@ import {
   DEFAULT_OG_IMAGE,
   FAVICON_192_PATH,
   FAVICON_32_PATH,
+  FAVICON_ICO_PATH,
   FAVICON_PATH,
   SITE_NAME,
   SITE_URL,
@@ -49,6 +50,7 @@ export function SEO({
   const canonical = resolveCanonical(url, pathname)
   const ogImage = resolveOgImage(image)
   const robots = noIndex ? 'noindex, nofollow' : 'index, follow'
+  const googleVerification = import.meta.env.VITE_GOOGLE_SITE_VERIFICATION as string | undefined
 
   return (
     <Helmet prioritizeSeoTags>
@@ -56,8 +58,12 @@ export function SEO({
       <meta name="description" content={description} />
       <meta name="robots" content={robots} />
       <meta name="application-name" content={SITE_NAME} />
-      <meta name="theme-color" content="#0c0806" />
+      <meta name="theme-color" content="#004D55" />
+      {googleVerification ? (
+        <meta name="google-site-verification" content={googleVerification} />
+      ) : null}
       <link rel="canonical" href={canonical} />
+      <link rel="icon" href={FAVICON_ICO_PATH} sizes="any" />
       <link rel="icon" href={FAVICON_32_PATH} type="image/png" sizes="32x32" />
       <link rel="icon" href={FAVICON_192_PATH} type="image/png" sizes="192x192" />
       <link rel="shortcut icon" href={FAVICON_PATH} type="image/png" />

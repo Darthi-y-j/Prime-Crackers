@@ -7,5 +7,8 @@ Disallow: /account
 Disallow: /account/
 Disallow: /login
 Disallow: /register
+Disallow: /auth/
+Disallow: /cart
+Disallow: /wishlist
 
 Sitemap: https://www.primecrackers.in/sitemap.xml
