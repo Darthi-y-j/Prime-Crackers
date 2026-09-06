@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Shield, Star, Package, Truck } from 'lucide-react'
 import { WaveDividerWhite } from '@/components/customer/WaveDivider'
 import { AnimateIn } from '@/components/customer/AnimateIn'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND, HERO_TRUST } from '@/lib/primeBrand'
 import { usePrimeShop } from '@/contexts/PrimeShopContext'
 
@@ -49,13 +50,7 @@ export function PrimeHero() {
 
   return (
     <section className="relative min-h-[440px] overflow-hidden sm:min-h-[500px] lg:min-h-[580px]">
-      <img
-        src={PRIME_BRAND.heroImage}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover object-center"
-        fetchPriority="high"
-        aria-hidden="true"
-      />
+      <OptimizedBackground src={PRIME_BRAND.heroImage} priority className="z-0" />
 
       <div
         className="absolute inset-0 bg-gradient-to-r from-[#003840]/72 via-[#004D55]/25 to-transparent"

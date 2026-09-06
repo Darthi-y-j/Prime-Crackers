@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import { CheckCircle2, XCircle, ShieldAlert } from 'lucide-react'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { cn } from '@/lib/utils'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 import { SectionHeader } from './SectionHeader'
@@ -49,11 +50,7 @@ function SafetyCard({
           : 'border-[#004D55]/15 hover:border-[#004D55]/30',
       )}
     >
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url('${PRIME_BRAND.safetyDosDontsBg}')` }}
-        aria-hidden="true"
-      />
+      <OptimizedBackground src={PRIME_BRAND.safetyDosDontsBg} />
       <div
         className={cn(
           'absolute inset-0',

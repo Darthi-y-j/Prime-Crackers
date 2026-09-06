@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Lock } from 'lucide-react'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { SITE_LOGO_PATH } from '@/lib/siteConfig'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 
 export function AdminLoginPage() {
@@ -44,11 +45,7 @@ export function AdminLoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url('${PRIME_BRAND.loginBg}')` }}
-        aria-hidden="true"
-      />
+      <OptimizedBackground src={PRIME_BRAND.loginBg} priority />
       <div
         className="absolute inset-0 bg-gradient-to-b from-white/50 via-white/30 to-[#004D55]/35"
         aria-hidden="true"

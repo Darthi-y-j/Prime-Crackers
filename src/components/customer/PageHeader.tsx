@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 import { cn } from '@/lib/utils'
 
@@ -32,10 +33,11 @@ export function PageHeaderBackground({
 }: PageHeaderBackgroundProps) {
   return (
     <>
-      <div
-        className={cn('absolute inset-0 bg-cover bg-center bg-no-repeat', className)}
-        style={{ backgroundImage: `url('${imageSrc}')`, opacity: imageOpacity }}
-        aria-hidden="true"
+      <OptimizedBackground
+        src={imageSrc}
+        priority
+        style={{ opacity: imageOpacity }}
+        className={className}
       />
       <div className={cn('absolute inset-0', overlayClassName)} aria-hidden="true" />
       {withVignette && (
