@@ -22,7 +22,7 @@ export function buildOrganizationSchema(settings: WebsiteSettings) {
   const logo = absoluteImageUrl(settings.logo_url) ?? DEFAULT_OG_IMAGE
 
   return {
-    '@type': 'Organization',
+    '@type': ['Organization', 'Store'],
     '@id': ORGANIZATION_ID,
     name: SITE_NAME,
     legalName: SITE_NAME,
@@ -34,10 +34,10 @@ export function buildOrganizationSchema(settings: WebsiteSettings) {
     telephone: settings.phone || undefined,
     address: {
       '@type': 'PostalAddress',
-      streetAddress:
-        'S.No:1640/2A, D.No:3/1626-A, Sivakasi-Sengamalapatti Main Road, Keelathiruthangal Village',
+      streetAddress: 'Chillayanayakanpatti Road, Alamarathupatti',
       addressLocality: 'Sivakasi',
       addressRegion: 'Tamil Nadu',
+      postalCode: '626123',
       addressCountry: 'IN',
     },
     sameAs: [...BRAND_SOCIAL_PROFILES],

@@ -1,27 +1,28 @@
 /**
- * Generates public/sitemap.xml from Supabase (when configured) or the local aura catalog fallback.
+ * Generates public/sitemap.xml from Supabase (when configured) or the local catalog fallback.
  * Run automatically before production builds via npm run build.
  */
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { SITE_URL, SITEMAP_STATIC_ROUTES } from './seo-config.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
-const SITE_URL = 'https://www.auracrackers.com'
 
-const STATIC_ROUTES = [
-  { path: '/', changefreq: 'weekly', priority: '1.0' },
-  { path: '/products', changefreq: 'daily', priority: '0.9' },
-  { path: '/categories', changefreq: 'weekly', priority: '0.9' },
-  { path: '/about', changefreq: 'monthly', priority: '0.7' },
-  { path: '/contact', changefreq: 'monthly', priority: '0.7' },
-  { path: '/faq', changefreq: 'monthly', priority: '0.7' },
-  { path: '/safety', changefreq: 'monthly', priority: '0.7' },
-  { path: '/privacy', changefreq: 'yearly', priority: '0.5' },
-  { path: '/terms', changefreq: 'yearly', priority: '0.5' },
-  { path: '/gift-box', changefreq: 'monthly', priority: '0.7' },
-]
+function loadEnvFile() {
+  const envPath = path.join(ROOT, '.env')
+  if (!fs.existsSync(envPath)) return {}
+  const env = {}
+  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eq = trimmed.indexOf('=')
+    if (eq === -1) continue
+    env[trimmed.slice(0, eq).trim()] = trimmed.slice(eq + 1).trim()
+  }
+  return env
+}
 
 function escapeXml(value) {
   return value
@@ -34,15 +35,17 @@ function escapeXml(value) {
 
 function readCatalogProductSlugs() {
   const catalogPath = path.join(ROOT, 'src/data/auraCatalog.ts')
+  if (!fs.existsSync(catalogPath)) return []
+
   const source = fs.readFileSync(catalogPath, 'utf8')
   const productsSection = source.split('export const AURA_CATALOG_PRODUCTS')[1] ?? ''
   const slugs = [...productsSection.matchAll(/"slug": "([^"]+)"/g)].map((match) => match[1])
   return [...new Set(slugs)]
 }
 
-async function fetchSupabaseProductSlugs() {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL
-  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY
+async function fetchSupabaseProductSlugs(env) {
+  const supabaseUrl = env.VITE_SUPABASE_URL
+  const supabaseKey = env.VITE_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey || supabaseKey === 'your-anon-key-here') {
     return null
@@ -111,16 +114,17 @@ ${body}
 }
 
 async function main() {
-  const supabaseSlugs = await fetchSupabaseProductSlugs()
+  const env = { ...loadEnvFile(), ...process.env }
+  const supabaseSlugs = await fetchSupabaseProductSlugs(env)
   const productSlugs = supabaseSlugs ?? readCatalogProductSlugs()
-  const source = supabaseSlugs ? 'Supabase' : 'aura catalog fallback'
+  const source = supabaseSlugs ? 'Supabase' : 'catalog fallback'
 
-  const xml = buildSitemap(STATIC_ROUTES, productSlugs)
+  const xml = buildSitemap(SITEMAP_STATIC_ROUTES, productSlugs)
   const outputPath = path.join(ROOT, 'public/sitemap.xml')
   fs.writeFileSync(outputPath, xml, 'utf8')
 
   console.log(
-    `Generated sitemap with ${STATIC_ROUTES.length} static routes and ${productSlugs.length} product URLs (${source}).`,
+    `Generated sitemap with ${SITEMAP_STATIC_ROUTES.length} static routes and ${productSlugs.length} product URLs (${source}).`,
   )
   console.log(`Written to ${outputPath}`)
 }

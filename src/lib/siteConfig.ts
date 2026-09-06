@@ -1,5 +1,5 @@
 /** Canonical production site URL — used for SEO meta tags and sitemap generation. */
-export const SITE_URL = 'https://primecrackers.in'
+export const SITE_URL = 'https://www.primecrackers.in'
 
 export const SITE_NAME = 'Prime Crackers'
 
@@ -22,7 +22,7 @@ export const HOME_PAGE_DESCRIPTION =
   'Prime Crackers — We Bring Festivals. Buy Diwali crackers from Sivakasi at up to 90% off. Wholesale & retail fireworks with all-India delivery.'
 
 /** Bump when favicon assets change — busts aggressive browser favicon cache. */
-export const FAVICON_VERSION = '2'
+export const FAVICON_VERSION = '3'
 
 /** Brand logo for navbar (circular PNG in /public). */
 export const SITE_LOGO_FILE = '/prime-logo.png'
@@ -37,7 +37,8 @@ export const FAVICON_PATH = `/favicon.png?v=${FAVICON_VERSION}`
 export const FAVICON_32_PATH = `/favicon-32x32.png?v=${FAVICON_VERSION}`
 export const FAVICON_192_PATH = `/favicon-192x192.png?v=${FAVICON_VERSION}`
 export const APPLE_TOUCH_ICON_PATH = `/apple-touch-icon.png?v=${FAVICON_VERSION}`
-export const OG_IMAGE_PATH = '/prime-logo.png'
+export const OG_IMAGE_PATH = '/og-image.png'
+export const FAVICON_ICO_PATH = `/favicon.ico?v=${FAVICON_VERSION}`
 export const FAVICON_URL = `${SITE_URL}${FAVICON_PATH.split('?')[0]}`
 export const DEFAULT_OG_IMAGE = `${SITE_URL}${OG_IMAGE_PATH}`
 
@@ -47,7 +48,11 @@ export const BRAND_SOCIAL_PROFILES = [] as const
 /** Static public routes included in the sitemap (no auth/admin/user-only pages). */
 export const SITEMAP_STATIC_ROUTES = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
-  { path: '/about', changefreq: 'monthly', priority: '0.7' },
-  { path: '/contact', changefreq: 'monthly', priority: '0.7' },
-  { path: '/cart', changefreq: 'weekly', priority: '0.6' },
+  { path: '/about', changefreq: 'monthly', priority: '0.8' },
+  { path: '/contact', changefreq: 'monthly', priority: '0.8' },
+  { path: '/faq', changefreq: 'monthly', priority: '0.7' },
+  { path: '/delivery', changefreq: 'monthly', priority: '0.7' },
+  { path: '/safety', changefreq: 'monthly', priority: '0.7' },
+  { path: '/privacy', changefreq: 'yearly', priority: '0.5' },
+  { path: '/terms', changefreq: 'yearly', priority: '0.5' },
 ] as const
