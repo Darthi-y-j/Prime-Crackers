@@ -15,6 +15,22 @@ export const PRIME_BRAND = {
   heroVideo: '/prime-hero.mp4',
   heroPoster: '/hero-fireworks-bg.png',
   heroImage: '/hero-fireworks-bg.png',
+  /** Fireworks celebration scene — contact page CTA */
+  contactCtaBg: '/contact-cta-bg.png',
+  /** Teal storefront image used behind inner-page heroes (About, Cart, FAQ, etc.) */
+  pageHeaderBg: '/page-header-bg.png',
+  /** Panoramic fireworks skyline */
+  aboutHeaderBg: '/about-header-bg.png',
+  /** Festive Diwali illustration — page heroes & Visit us */
+  festiveHeaderBg: '/festive-header-bg.png?v=2',
+  /** Warm Diwali scene — login pages */
+  loginBg: '/login-bg.png',
+  /** Festive scene inside login card */
+  loginCardBg: '/login-card-bg.png',
+  /** Account dashboard background */
+  accountBg: '/account-bg.png',
+  /** Festive scene — safety Do's & Don'ts cards */
+  safetyDosDontsBg: '/safety-dos-donts-bg.png',
 } as const
 
 export const TRUST_BADGES = [
