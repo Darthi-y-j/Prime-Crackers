@@ -1,0 +1,25 @@
+{
+  "name": "Prime Crackers",
+  "short_name": "Prime Crackers",
+  "description": "Prime Crackers — We Bring Festivals. Wholesale & retail crackers from Sivakasi.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFF8E1",
+  "theme_color": "#004D55",
+  "lang": "en-IN",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png?v=2",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

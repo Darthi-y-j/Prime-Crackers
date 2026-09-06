@@ -1,0 +1,149 @@
+import type { LucideIcon } from 'lucide-react'
+import { CheckCircle2, XCircle, ShieldAlert } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { SectionHeader } from './SectionHeader'
+import { AnimateIn } from './AnimateIn'
+
+const dos = [
+  'Buy fireworks only from licensed, trusted sellers.',
+  'Store crackers in a cool, dry place, away from children.',
+  'Light fireworks only in open outdoor spaces.',
+  'Keep a bucket of water or sand ready nearby.',
+  'Supervise children at all times during celebrations.',
+  'Read and follow instructions on every product pack.',
+  'Light one firework at a time and step back immediately.',
+  'Wear cotton clothing and closed footwear while lighting.',
+]
+
+const donts = [
+  "Don't light fireworks indoors or near buildings and vehicles.",
+  "Don't hold lit sparklers close to your body or clothing.",
+  "Don't try to relight a firework that failed to go off.",
+  "Don't wear loose or synthetic clothes while handling crackers.",
+  "Don't let children handle or light fireworks unsupervised.",
+  "Don't store crackers near stoves, gas cylinders, or heat sources.",
+  "Don't use alcohol while lighting or handling fireworks.",
+  "Don't throw crackers at people, animals, or into crowds.",
+]
+
+function SafetyCard({
+  variant,
+  title,
+  items,
+  icon: Icon,
+}: {
+  variant: 'do' | 'dont'
+  title: string
+  items: string[]
+  icon: LucideIcon
+}) {
+  const isDo = variant === 'do'
+
+  return (
+    <div
+      className={cn(
+        'h-full overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-md',
+        isDo
+          ? 'border-[#FFC107]/35 hover:border-[#FFC107]/55'
+          : 'border-[#004D55]/15 hover:border-[#004D55]/30',
+      )}
+    >
+      <div
+        className={cn('h-1.5', isDo ? 'bg-[#FFC107]' : 'bg-[#004D55]')}
+        aria-hidden="true"
+      />
+
+      <div className="p-5 sm:p-6">
+        <div className="flex items-center gap-3 border-b border-[#004D55]/10 pb-4">
+          <div
+            className={cn(
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
+              isDo ? 'bg-[#FFC107]/20' : 'bg-[#004D55]/10',
+            )}
+          >
+            <Icon
+              className={cn('h-5 w-5', isDo ? 'text-[#E6AC00]' : 'text-[#004D55]')}
+              strokeWidth={2.5}
+            />
+          </div>
+          <h3 className="font-display text-xl font-extrabold uppercase tracking-wide text-[#004D55] sm:text-2xl">
+            {title}
+          </h3>
+        </div>
+
+        <ul className="mt-5 space-y-2.5">
+          {items.map((item) => (
+            <li
+              key={item}
+              className={cn(
+                'flex gap-3 rounded-xl border px-3.5 py-3 text-sm transition',
+                isDo
+                  ? 'border-[#FFC107]/30 bg-[#FFF8E1]/50 hover:border-[#FFC107]/45'
+                  : 'border-[#004D55]/12 bg-[#FFF8E1]/25 hover:border-[#004D55]/22',
+              )}
+            >
+              {isDo ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#FFC107]" strokeWidth={2.5} />
+              ) : (
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#004D55]" strokeWidth={2.5} />
+              )}
+              <span className="leading-relaxed text-[#004D55]/85">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+export function DosAndDontsSection({
+  compact = false,
+  showHeader = true,
+}: {
+  compact?: boolean
+  showHeader?: boolean
+}) {
+  return (
+    <section
+      id="safety"
+      className={
+        compact
+          ? ''
+          : 'relative overflow-hidden bg-white pb-10 pt-2 sm:pb-14 sm:pt-4'
+      }
+    >
+      <div className={compact ? '' : 'relative mx-auto max-w-7xl px-3 sm:px-6 lg:px-8'}>
+        {showHeader && (
+          <SectionHeader
+            icon={ShieldAlert}
+            label="Safety"
+            title="Fireworks Dos and Don'ts"
+            description="Celebrate responsibly — follow these guidelines for a safe and joyful experience"
+            align="center"
+          />
+        )}
+
+        <div
+          className={cn(
+            'grid gap-4 sm:grid-cols-2 sm:gap-5 lg:gap-6',
+            showHeader ? 'mt-8 sm:mt-10' : '',
+          )}
+        >
+          <AnimateIn animation="fade-up" delay={80}>
+            <SafetyCard variant="do" title="Do's" items={dos} icon={CheckCircle2} />
+          </AnimateIn>
+
+          <AnimateIn animation="fade-up" delay={160}>
+            <SafetyCard variant="dont" title="Don'ts" items={donts} icon={XCircle} />
+          </AnimateIn>
+        </div>
+
+        <AnimateIn animation="fade-up" delay={240}>
+          <p className="mt-6 text-center text-xs leading-relaxed text-[#004D55]/65 sm:mt-8 sm:text-sm">
+            In case of injury, seek medical help immediately. For product guidance, contact our team on WhatsApp.
+          </p>
+        </AnimateIn>
+      </div>
+    </section>
+  )
+}
