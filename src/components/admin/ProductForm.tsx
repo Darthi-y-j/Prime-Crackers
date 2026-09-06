@@ -263,8 +263,10 @@ export function ProductForm({ product, categories, existingProducts }: ProductFo
       video_url: form.video_url.trim() || null,
       youtube_url: form.youtube_url.trim() || null,
       is_available: form.is_available,
+      is_featured: product?.is_featured ?? false,
       is_recommended: form.is_recommended,
       is_best_seller: form.is_best_seller,
+      tag: product?.tag ?? null,
       sort_order: sortOrder,
       specifications: Object.keys(specs).length > 0 ? specs : null,
     }
