@@ -1,7 +1,7 @@
-import { isSupabaseConfigured } from '@/lib/supabase'
+import { isSupabaseConfigured, normalizeSupabaseUrl } from '@/lib/supabase'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = normalizeSupabaseUrl(import.meta.env.VITE_SUPABASE_URL)
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim()
 
 const REST_TIMEOUT_MS = 12_000
 

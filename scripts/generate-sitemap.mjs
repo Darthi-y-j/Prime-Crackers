@@ -43,8 +43,13 @@ function readCatalogProductSlugs() {
   return [...new Set(slugs)]
 }
 
+function normalizeSupabaseUrl(url) {
+  if (!url) return ''
+  return url.trim().replace(/\/+$/, '').replace(/\/rest\/v1$/i, '')
+}
+
 async function fetchSupabaseProductSlugs(env) {
-  const supabaseUrl = env.VITE_SUPABASE_URL
+  const supabaseUrl = normalizeSupabaseUrl(env.VITE_SUPABASE_URL)
   const supabaseKey = env.VITE_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey || supabaseKey === 'your-anon-key-here') {
