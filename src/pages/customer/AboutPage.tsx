@@ -14,6 +14,7 @@ import { getBusinessPolicies, getWhatsAppNumbers } from '@/lib/businessInfo'
 import { buildWhatsAppContactUrl } from '@/lib/whatsapp'
 import { PRIME_BRAND, SERVICE_HIGHLIGHTS, WHY_CHOOSE } from '@/lib/primeBrand'
 import { FESTIVE_HEADER_BG, PageHeaderBackground } from '@/components/customer/PageHeader'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { SITE_LOGO_PATH } from '@/lib/siteConfig'
 import { cn } from '@/lib/utils'
 
@@ -141,11 +142,7 @@ export function AboutPage() {
           <div className="grid w-full lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:min-h-[min(52vh,520px)]">
             {/* Our Story — wider column */}
             <div className="relative flex min-w-0 flex-col justify-center overflow-hidden">
-              <img
-                src={OUR_STORY_BG}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover object-center"
-              />
+              <OptimizedBackground src={OUR_STORY_BG} />
               <div
                 className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/88 to-white/55 lg:to-white/35"
                 aria-hidden="true"
@@ -182,14 +179,8 @@ export function AboutPage() {
             </div>
 
             {/* Visit us */}
-            <div
-              className="relative min-h-[300px] min-w-0 overflow-hidden bg-[#003840] lg:min-h-0"
-              style={{
-                backgroundImage: `url('${FESTIVE_HEADER_BG}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
+            <div className="relative min-h-[300px] min-w-0 overflow-hidden bg-[#003840] lg:min-h-0">
+              <OptimizedBackground src={FESTIVE_HEADER_BG} />
               <div className="relative flex h-full min-h-[300px] flex-col items-center justify-center px-6 py-10 text-center lg:min-h-full lg:px-10">
                 <p className="inline-flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFC107] sm:text-xs">
                   <MapPin className="h-4 w-4" />
@@ -285,11 +276,7 @@ export function AboutPage() {
 
         {/* CTA — edge-to-edge celebration band */}
         <section className="relative w-full overflow-hidden" data-reveal="fade-up">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${FESTIVE_HEADER_BG}')` }}
-            aria-hidden="true"
-          />
+          <OptimizedBackground src={FESTIVE_HEADER_BG} />
           <div
             className="absolute inset-0 bg-gradient-to-r from-[#004D55]/96 via-[#003840]/92 to-[#004D55]/88"
             aria-hidden="true"

@@ -30,6 +30,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { formatDisplayPhone } from '@/lib/businessInfo'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
@@ -113,11 +114,7 @@ export function AccountDashboard() {
       <div className={cn(accountContentClass, 'space-y-6')}>
         {itemCount > 0 && (
           <div className="relative overflow-hidden rounded-2xl border border-[#FFC107]/35 p-5 shadow-lg sm:p-6 lg:flex lg:items-center lg:justify-between lg:gap-6">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${PRIME_BRAND.aboutHeaderBg}')` }}
-              aria-hidden="true"
-            />
+            <OptimizedBackground src={PRIME_BRAND.aboutHeaderBg} />
             <div
               className="absolute inset-0 bg-gradient-to-r from-[#004D55]/92 via-[#003840]/88 to-[#004D55]/85"
               aria-hidden="true"

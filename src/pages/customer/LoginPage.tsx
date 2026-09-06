@@ -4,6 +4,7 @@ import { LogIn, Mail } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { useAuth } from '@/contexts/AuthContext'
 import { COMPANY_EMAIL_SENDER_NAME, getAuthEmailSenderHint } from '@/lib/companyEmail'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 
 function isEmailNotConfirmedError(message: string): boolean {
@@ -100,11 +101,7 @@ export function LoginPage() {
       <SEO title="Login" description="Sign in to your Prime Crackers account to send enquiries." noIndex />
 
       <div className="relative flex min-h-[calc(100vh-10rem)] items-center justify-center overflow-hidden px-4 py-10 sm:px-6 sm:py-14">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('${PRIME_BRAND.loginBg}')` }}
-          aria-hidden="true"
-        />
+        <OptimizedBackground src={PRIME_BRAND.loginBg} priority />
         <div
           className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/25 to-[#004D55]/15"
           aria-hidden="true"
@@ -120,11 +117,7 @@ export function LoginPage() {
             onSubmit={handleSubmit}
             className="relative mt-6 overflow-hidden rounded-2xl border border-[#004D55]/10 shadow-[0_12px_40px_rgba(0,77,85,0.12)]"
           >
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url('${PRIME_BRAND.loginCardBg}')` }}
-              aria-hidden="true"
-            />
+            <OptimizedBackground src={PRIME_BRAND.loginCardBg} priority />
             <div
               className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.88)_35%,rgba(255,255,255,0.55)_100%)]"
               aria-hidden="true"

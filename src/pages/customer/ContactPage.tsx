@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { FestivePageBackground } from '@/components/customer/FestivePageBackground'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { useSettings } from '@/contexts/SettingsContext'
 import { formatDisplayPhone, getBusinessPolicies, getWhatsAppNumbers } from '@/lib/businessInfo'
 import { buildWhatsAppContactUrl, buildTelUrl, buildMailtoUrl } from '@/lib/whatsapp'
@@ -325,11 +326,7 @@ export function ContactPage() {
 
         {/* Bottom CTA */}
         <section className="relative w-full overflow-hidden" data-reveal="fade-up">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${PRIME_BRAND.contactCtaBg}')` }}
-            aria-hidden="true"
-          />
+          <OptimizedBackground src={PRIME_BRAND.contactCtaBg} />
           <div
             className="absolute inset-0 bg-gradient-to-r from-[#004D55]/85 via-[#003840]/78 to-[#004D55]/82"
             aria-hidden="true"

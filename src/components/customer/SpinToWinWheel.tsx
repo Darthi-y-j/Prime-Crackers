@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Gift, LogIn, Sparkles, Trophy } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 import { SITE_LOGO_PATH } from '@/lib/siteConfig'
 import { cn } from '@/lib/utils'
@@ -48,11 +49,7 @@ function SpinCardShell({
         className,
       )}
     >
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url('${PRIME_BRAND.loginCardBg}')` }}
-        aria-hidden="true"
-      />
+      <OptimizedBackground src={PRIME_BRAND.loginCardBg} />
       <div
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.88)_35%,rgba(255,255,255,0.55)_100%)]"
         aria-hidden="true"

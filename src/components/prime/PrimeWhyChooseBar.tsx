@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Shield, Tag, Gift, Users, ArrowRight } from 'lucide-react'
+import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { WHY_CHOOSE } from '@/lib/primeBrand'
 
 const WHY_CHOOSE_BG = '/why-choose-bg.png'
@@ -28,11 +29,7 @@ function WhyChooseItem({
 export function PrimeWhyChooseBar() {
   return (
     <section className="relative overflow-x-hidden py-4 sm:py-6">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url('${WHY_CHOOSE_BG}')` }}
-        aria-hidden="true"
-      />
+      <OptimizedBackground src={WHY_CHOOSE_BG} />
       <div
         className="absolute inset-0 bg-gradient-to-r from-[#004D55]/55 via-[#004D55]/40 to-[#004D55]/30"
         aria-hidden="true"
