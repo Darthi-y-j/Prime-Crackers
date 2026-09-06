@@ -1,6 +1,13 @@
 import { useSettings } from '@/contexts/SettingsContext'
+import { cn } from '@/lib/utils'
 
-export function FloatingActionButtons({ embedded = false }: { embedded?: boolean }) {
+export function FloatingActionButtons({
+  embedded = false,
+  className,
+}: {
+  embedded?: boolean
+  className?: string
+}) {
   const { settings } = useSettings()
 
   const instagramUrl = settings.social_links.instagram
@@ -63,7 +70,12 @@ export function FloatingActionButtons({ embedded = false }: { embedded?: boolean
   if (embedded) return buttons
 
   return (
-    <div className="fixed bottom-6 right-4 z-30 flex flex-col gap-3 sm:bottom-8 sm:right-6">
+    <div
+      className={cn(
+        'fixed bottom-6 right-4 z-30 flex flex-col gap-3 sm:bottom-8 sm:right-6',
+        className,
+      )}
+    >
       {buttons}
     </div>
   )

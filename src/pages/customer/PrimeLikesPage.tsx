@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { EmptyState } from '@/components/customer/EmptyState'
+import { PageHeader } from '@/components/customer/PageHeader'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { useCart } from '@/contexts/CartContext'
 import { useToast } from '@/contexts/ToastContext'
@@ -42,11 +43,11 @@ export function PrimeLikesPage() {
   return (
     <>
       <SEO title="Liked Products" description="Your saved favourite crackers." noIndex />
-      <section className="mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-10">
+      <PageHeader contentClassName="mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <Heart className="h-6 w-6 fill-[#E65100] text-[#E65100]" />
-            <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-[#004D55]">
+            <Heart className="h-6 w-6 fill-[#FFC107] text-[#FFC107]" />
+            <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:text-3xl">
               Liked Products
             </h1>
           </div>
@@ -63,14 +64,15 @@ export function PrimeLikesPage() {
               <button
                 type="button"
                 onClick={clearWishlist}
-                className="rounded-full border border-[#004D55]/20 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20"
               >
                 Clear all
               </button>
             </div>
           )}
         </div>
-
+      </PageHeader>
+      <section className="mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-10">
         {items.length === 0 ? (
           <EmptyState
             title="No liked products yet"

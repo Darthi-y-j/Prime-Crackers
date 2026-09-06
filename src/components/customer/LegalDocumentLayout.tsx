@@ -15,7 +15,8 @@ import { buildWhatsAppContactUrl } from '@/lib/whatsapp'
 import { getWhatsAppNumbers } from '@/lib/businessInfo'
 import { cn } from '@/lib/utils'
 
-const STOREFRONT_BG = '/prime-storefront-bg.png'
+import { PageHeaderBackground } from '@/components/customer/PageHeader'
+import { FestivePageBackground } from '@/components/customer/FestivePageBackground'
 
 export interface LegalSection {
   title: string
@@ -142,15 +143,9 @@ export function LegalDocumentLayout({
     <>
       <SEO title={title} description={seoDescription} url={url} />
 
-      <div className="bg-gradient-to-b from-[#FFF8E1]/30 to-white">
+      <FestivePageBackground>
         <header className="relative overflow-hidden border-b-2 border-[#004D55]">
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-25"
-            style={{ backgroundImage: `url('${STOREFRONT_BG}')` }}
-            aria-hidden="true"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#004D55]/95 via-[#003840]/92 to-[#004D55]/88" aria-hidden="true" />
-
+          <PageHeaderBackground />
           <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
             <nav className="flex items-center gap-2 text-xs text-white/70">
               <Link to="/" className="transition hover:text-[#FFC107]">Home</Link>
@@ -314,7 +309,7 @@ export function LegalDocumentLayout({
             </AnimateIn>
           </div>
         </section>
-      </div>
+      </FestivePageBackground>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
-import { AccountPageHeader } from '@/components/customer/account/AccountUI'
+import { AccountPageHeader, accountContentClass } from '@/components/customer/account/AccountUI'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { useCart } from '@/contexts/CartContext'
 import { useToast } from '@/contexts/ToastContext'
@@ -30,7 +30,7 @@ export function AccountWishlistPage() {
 
       <AccountPageHeader backTo="/account" subtitle="Wishlist" />
 
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className={accountContentClass}>
         {items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-navy-900/15 bg-white p-8 text-center">
             <Heart className="mx-auto h-10 w-10 text-red-300" />

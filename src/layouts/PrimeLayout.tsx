@@ -11,6 +11,7 @@ import { ImportantNoticeModal } from '@/components/customer/ImportantNoticeModal
 import { getCategories } from '@/services/categories'
 import { getProducts } from '@/services/products'
 import { ScrollRevealInit } from '@/components/shared/ScrollRevealInit'
+import { FloatingActionButtons } from '@/components/customer/FloatingActionButtons'
 import { cn } from '@/lib/utils'
 
 export function PrimeLayout() {
@@ -45,8 +46,9 @@ export function PrimeLayout() {
         <main className={cn('flex-1', showCartBar && 'pb-20')}>
           <Outlet />
         </main>
-        {!isHome && <PrimeFooter />}
+        <PrimeFooter />
         {showCartBar && <PrimeCartBar />}
+        <FloatingActionButtons className={showCartBar ? 'bottom-24 sm:bottom-28' : undefined} />
         <ToastContainer />
       </div>
     </PrimeShopProvider>

@@ -23,12 +23,15 @@ import {
   ProfileAvatar,
   QuickActionCard,
   StatCard,
+  accountContentClass,
 } from '@/components/customer/account/AccountUI'
 import { useAccountProfile } from '@/contexts/AccountProfileContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { formatDisplayPhone } from '@/lib/businessInfo'
+import { PRIME_BRAND } from '@/lib/primeBrand'
+import { cn } from '@/lib/utils'
 import { useState } from 'react'
 
 export function AccountDashboard() {
@@ -46,62 +49,90 @@ export function AccountDashboard() {
     )
   }
 
+  const stats = [
+    { value: enquiryStats.total, label: 'Enquiries', accent: '#004D55' },
+    { value: enquiryStats.new, label: 'New', accent: '#E65100' },
+    { value: enquiryStats.completed, label: 'Completed', accent: '#006670' },
+    { value: wishlistCount, label: 'Wishlist', accent: '#FFC107' },
+  ]
+
   return (
     <>
       <SEO title="My Profile" description="Manage your Prime Crackers account and enquiries." noIndex />
 
       <AccountPageHeader showEdit>
-        <div className="mt-6 flex flex-col items-center text-center sm:flex-row sm:items-center sm:gap-6 sm:text-left">
-          <ProfileAvatar name={displayName} />
-          <div className="min-w-0 flex-1">
-            <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:text-3xl">
-              {displayName}
-            </h1>
-            <div className="mt-3 flex flex-col gap-1.5 sm:gap-2">
-              {email && (
-                <p className="flex items-center justify-center gap-2 text-sm text-white/85 sm:justify-start">
-                  <Mail className="h-4 w-4 shrink-0 text-[#FFC107]" />
-                  <span className="truncate">{email}</span>
-                </p>
-              )}
-              {phone && (
-                <p className="flex items-center justify-center gap-2 text-sm text-white/85 sm:justify-start">
-                  <Phone className="h-4 w-4 shrink-0 text-[#FFC107]" />
-                  {formatDisplayPhone(phone)}
+        <div className="mt-6 flex flex-col items-center gap-5 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+          <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center">
+            <ProfileAvatar name={displayName} />
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:text-3xl lg:text-4xl">
+                {displayName}
+              </h1>
+              <div className="mt-3 flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4 lg:justify-start">
+                {email && (
+                  <p className="flex items-center justify-center gap-2 text-sm text-white/85 lg:justify-start">
+                    <Mail className="h-4 w-4 shrink-0 text-[#FFC107]" />
+                    <span className="truncate">{email}</span>
+                  </p>
+                )}
+                {phone && (
+                  <p className="flex items-center justify-center gap-2 text-sm text-white/85 lg:justify-start">
+                    <Phone className="h-4 w-4 shrink-0 text-[#FFC107]" />
+                    {formatDisplayPhone(phone)}
+                  </p>
+                )}
+              </div>
+              {memberSince && (
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
+                  <Sparkles className="h-3 w-3" />
+                  Member since {memberSince}
                 </p>
               )}
             </div>
-            {memberSince && (
-              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
-                <Sparkles className="h-3 w-3" />
-                Member since {memberSince}
-              </p>
-            )}
           </div>
         </div>
       </AccountPageHeader>
 
-      <div className="mx-auto max-w-4xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard value={enquiryStats.total} label="Enquiries" accent="#004D55" />
-          <StatCard value={enquiryStats.new} label="New" accent="#E65100" />
-          <StatCard value={enquiryStats.completed} label="Completed" accent="#006670" />
-          <StatCard value={wishlistCount} label="Wishlist" accent="#FFC107" />
-        </div>
+      {/* Stats — edge to edge */}
+      <section className="grid w-full grid-cols-2 border-y border-[#004D55]/10 sm:grid-cols-4">
+        {stats.map((stat, index) => (
+          <div
+            key={stat.label}
+            className={cn(
+              'px-3 py-4 sm:px-4 sm:py-5',
+              index % 2 === 0 && 'border-r border-[#004D55]/10 sm:border-r',
+              index < 2 && 'border-b border-[#004D55]/10 sm:border-b-0',
+              index < 3 && 'sm:border-r sm:border-[#004D55]/10',
+            )}
+          >
+            <StatCard value={stat.value} label={stat.label} accent={stat.accent} tinted />
+          </div>
+        ))}
+      </section>
 
+      <div className={cn(accountContentClass, 'space-y-6')}>
         {itemCount > 0 && (
-          <div className="relative overflow-hidden rounded-2xl border border-[#FFC107]/35 bg-gradient-to-r from-[#004D55] to-[#006670] p-5 text-white shadow-lg">
-            <div className="flex items-start justify-between gap-4">
+          <div className="relative overflow-hidden rounded-2xl border border-[#FFC107]/35 p-5 shadow-lg sm:p-6 lg:flex lg:items-center lg:justify-between lg:gap-6">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url('${PRIME_BRAND.aboutHeaderBg}')` }}
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-[#004D55]/92 via-[#003840]/88 to-[#004D55]/85"
+              aria-hidden="true"
+            />
+            <div className="relative flex items-start justify-between gap-4 lg:flex-1 lg:items-center">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#FFC107]">Your cart</p>
-                <p className="mt-1 font-display text-xl font-extrabold">
+                <p className="mt-1 font-display text-xl font-extrabold text-white sm:text-2xl">
                   {itemCount} item{itemCount !== 1 ? 's' : ''} ready to enquire
                 </p>
                 <p className="mt-1 text-sm text-white/75">Send your list on WhatsApp in one tap.</p>
               </div>
-              <ShoppingCart className="h-10 w-10 shrink-0 text-[#FFC107]/80" />
+              <ShoppingCart className="h-10 w-10 shrink-0 text-[#FFC107]/80 lg:order-last" />
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="relative mt-4 flex flex-wrap gap-2 lg:mt-0 lg:shrink-0">
               <Link
                 to="/"
                 className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/20"
@@ -123,7 +154,7 @@ export function AccountDashboard() {
           <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#004D55]/55">
             Quick access
           </p>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <QuickActionCard
               to="/account/personal"
               label="Personal info"
@@ -149,14 +180,14 @@ export function AccountDashboard() {
               to="/account/wishlist"
               label="Wishlist"
               description="Saved favourites"
-              accent="#FFC107"
-              icon={<Heart className="h-5 w-5 text-[#E65100]" />}
+              accent="#C62828"
+              icon={<Heart className="h-5 w-5 text-[#C62828]" />}
             />
           </div>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <MenuSection title="Settings">
+          <MenuSection title="Settings" accent="#006670">
             <MenuLink
               to="/account/security"
               icon={<Shield className="h-5 w-5 text-[#006670]" />}
@@ -166,7 +197,7 @@ export function AccountDashboard() {
             />
           </MenuSection>
 
-          <MenuSection title="Support">
+          <MenuSection title="Support" accent="#E65100">
             <MenuLink
               to="/account/help"
               icon={<HelpCircle className="h-5 w-5 text-[#004D55]" />}
@@ -185,7 +216,7 @@ export function AccountDashboard() {
         <button
           type="button"
           onClick={() => setLogoutOpen(true)}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#004D55]/15 bg-white py-3.5 text-sm font-bold text-[#004D55] shadow-sm transition hover:border-[#004D55]/30 hover:bg-[#FFF8E1]/50"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#004D55] bg-[#004D55] py-3.5 text-sm font-bold text-white shadow-md transition hover:border-[#006670] hover:bg-[#006670] lg:max-w-xs"
         >
           <LogOut className="h-4 w-4" />
           Sign out

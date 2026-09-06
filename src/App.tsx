@@ -26,6 +26,12 @@ const PrimeProductDetailPage = lazy(() =>
   })),
 )
 const LoginPage = lazy(() => import('@/pages/customer/LoginPage').then((m) => ({ default: m.LoginPage })))
+const ForgotPasswordPage = lazy(() =>
+  import('@/pages/customer/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })),
+)
+const ResetPasswordPage = lazy(() =>
+  import('@/pages/customer/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })),
+)
 const RegisterPage = lazy(() =>
   import('@/pages/customer/RegisterPage').then((m) => ({ default: m.RegisterPage })),
 )
@@ -94,8 +100,8 @@ function App() {
                 <ScrollToTop />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    <Route path="/auth/confirm" element={<AuthConfirmPage />} />
                     <Route element={<PrimeLayout />}>
+                      <Route path="/auth/confirm" element={<AuthConfirmPage />} />
                       <Route path="/" element={<HomePage />} />
                       <Route path="/home" element={<HomePage />} />
                       <Route path="/about" element={<AboutPage />} />
@@ -104,6 +110,8 @@ function App() {
                       <Route path="/wishlist" element={<PrimeLikesPage />} />
                       <Route path="/products/:slug" element={<PrimeProductDetailPage />} />
                       <Route path="/login" element={<LoginPage />} />
+                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                      <Route path="/reset-password" element={<ResetPasswordPage />} />
                       <Route path="/register" element={<RegisterPage />} />
                       <Route path="/account/*" element={<AccountPage />} />
                       {/* Redirect old Aura-style routes to home */}

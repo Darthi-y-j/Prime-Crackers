@@ -1,10 +1,28 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Mail, UserPlus } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { useAuth } from '@/contexts/AuthContext'
 import { validatePhone } from '@/lib/utils'
 import { COMPANY_EMAIL, COMPANY_EMAIL_SENDER_NAME, getAuthEmailSenderHint } from '@/lib/companyEmail'
+import { AuthCard, AuthPageShell, authInputClass } from '@/components/customer/AuthShell'
+
+function Field({
+  label,
+  children,
+  className,
+}: {
+  label: string
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={className}>
+      <label className="mb-1 block text-sm font-medium text-[#004D55]">{label}</label>
+      {children}
+    </div>
+  )
+}
 
 export function RegisterPage() {
   const { signUpCustomer, resendConfirmationEmail, user, isAdmin, isCustomer, loading } = useAuth()
@@ -105,39 +123,46 @@ export function RegisterPage() {
     return (
       <>
         <SEO title="Register" description="Create your Prime Crackers account." noIndex />
-        <div className="mx-auto max-w-md px-4 py-12 text-center sm:py-16">
-          <div className="rounded-2xl border border-navy-900/10 bg-white p-8 shadow-sm">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50">
-              <Mail className="h-7 w-7 text-emerald-600" />
-            </div>
-            <h1 className="mt-5 font-display text-2xl font-bold text-navy-900">Check your email</h1>
-            <p className="mt-3 text-sm leading-relaxed text-navy-700/70">
-              We sent a confirmation link to{' '}
-              <span className="font-semibold text-navy-900">{registeredEmail}</span> from{' '}
-              <span className="font-semibold text-navy-900">{COMPANY_EMAIL_SENDER_NAME}</span> (
-              {COMPANY_EMAIL}). Open that email and click <strong>Confirm</strong> to activate your
-              account.
-            </p>
-            <p className="mt-2 text-xs text-navy-600/70">{getAuthEmailSenderHint()}</p>
-            {resendInfo && (
-              <p className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{resendInfo}</p>
-            )}
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={resending}
-              className="mt-5 inline-flex items-center gap-2 rounded-lg border border-navy-900/10 px-4 py-2.5 text-sm font-semibold text-navy-800 transition hover:bg-navy-900/[0.03] disabled:opacity-60"
-            >
-              {resending ? 'Sending…' : 'Resend confirmation email'}
-            </button>
-            <Link
-              to="/login"
-              className="mt-4 inline-flex w-full justify-center rounded-lg bg-gold-500 px-6 py-3 text-sm font-bold text-navy-950 hover:bg-gold-400"
-            >
-              Go to Login
-            </Link>
+        <AuthPageShell>
+          <div className="text-center">
+            <h1 className="font-display text-2xl font-extrabold text-[#004D55] drop-shadow-sm sm:text-3xl">
+              Check your email
+            </h1>
+            <p className="mt-2 text-sm text-[#004D55]/85 drop-shadow-sm">One more step to activate your account</p>
           </div>
-        </div>
+
+          <AuthCard>
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
+                <Mail className="h-6 w-6 text-emerald-600" />
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-[#004D55]/80">
+                We sent a confirmation link to{' '}
+                <span className="font-semibold text-[#004D55]">{registeredEmail}</span> from{' '}
+                <span className="font-semibold text-[#004D55]">{COMPANY_EMAIL_SENDER_NAME}</span> (
+                {COMPANY_EMAIL}). Open that email and click <strong>Confirm</strong> to activate your account.
+              </p>
+              <p className="mt-2 text-xs text-[#004D55]/60">{getAuthEmailSenderHint()}</p>
+              {resendInfo && (
+                <p className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{resendInfo}</p>
+              )}
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending}
+                className="mt-5 inline-flex items-center gap-2 rounded-lg border border-[#004D55]/15 bg-white px-4 py-2.5 text-sm font-semibold text-[#004D55] transition hover:bg-[#FFF8E1] disabled:opacity-60"
+              >
+                {resending ? 'Sending…' : 'Resend confirmation email'}
+              </button>
+              <Link
+                to="/login"
+                className="mt-4 inline-flex w-full justify-center rounded-xl bg-[#FFC107] px-6 py-3 text-sm font-bold text-[#004D55] shadow-md transition hover:bg-[#FFD54F]"
+              >
+                Go to Login
+              </Link>
+            </div>
+          </AuthCard>
+        </AuthPageShell>
       </>
     )
   }
@@ -146,98 +171,99 @@ export function RegisterPage() {
     <>
       <SEO title="Register" description="Create your Prime Crackers account to send enquiries." noIndex />
 
-      <div className="mx-auto max-w-md px-4 py-12 sm:px-6 sm:py-16">
+      <AuthPageShell wide>
         <div className="text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-900">
-            <UserPlus className="h-7 w-7 text-gold-400" />
-          </div>
-          <h1 className="mt-5 font-display text-3xl font-bold text-navy-900">Create Account</h1>
-          <p className="mt-2 text-sm text-navy-700/70">
+          <h1 className="font-display text-xl font-extrabold text-[#004D55] drop-shadow-sm sm:text-2xl">
+            Create Account
+          </h1>
+          <p className="mt-1.5 text-xs text-[#004D55]/85 drop-shadow-sm sm:text-sm">
             Register with your email — we&apos;ll send a confirmation link from {COMPANY_EMAIL}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 rounded-2xl border border-navy-900/10 bg-white p-6 shadow-sm sm:p-8">
-          {error && (
-            <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Full Name</label>
-              <input
-                type="text"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
+        <AuthCard compact>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#004D55]">
+              <UserPlus className="h-4 w-4 text-[#FFC107]" />
+              New customer
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Phone Number</label>
-              <input
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 98765 43210"
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
+            {error && (
+              <div className="mb-3 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">{error}</div>
+            )}
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-3">
+              <Field label="Full Name">
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className={authInputClass}
+                />
+              </Field>
+
+              <Field label="Phone Number">
+                <input
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className={authInputClass}
+                />
+              </Field>
+
+              <Field label="Email" className="sm:col-span-2">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={authInputClass}
+                />
+              </Field>
+
+              <Field label="Password">
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={authInputClass}
+                />
+              </Field>
+
+              <Field label="Confirm Password">
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={authInputClass}
+                />
+              </Field>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
-            </div>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-4 w-full rounded-xl bg-[#FFC107] py-2.5 text-sm font-bold text-[#004D55] shadow-md transition hover:bg-[#FFD54F] disabled:opacity-60"
+            >
+              {submitting ? 'Creating account...' : 'Create Account'}
+            </button>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Password</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Confirm Password</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-6 w-full rounded-lg bg-gold-500 py-3 text-sm font-bold text-navy-950 transition hover:bg-gold-400 disabled:opacity-60"
-          >
-            {submitting ? 'Creating account...' : 'Create Account'}
-          </button>
-
-          <p className="mt-5 text-center text-sm text-navy-700/70">
-            Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-gold-600 hover:text-gold-500">
-              Sign in
-            </Link>
-          </p>
-        </form>
-      </div>
+            <p className="mt-3 text-center text-sm text-[#004D55]/70">
+              Already have an account?{' '}
+              <Link to="/login" className="font-semibold text-[#E65100] hover:text-[#FF8C00]">
+                Sign in
+              </Link>
+            </p>
+          </form>
+        </AuthCard>
+      </AuthPageShell>
     </>
   )
 }

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, MapPin, MessageCircle, Truck } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
+import { PageHeader } from '@/components/customer/PageHeader'
+import { FestivePageBackground } from '@/components/customer/FestivePageBackground'
 import { useSettings } from '@/contexts/SettingsContext'
 import { getBusinessPolicies, getWhatsAppNumbers } from '@/lib/businessInfo'
 import { buildWhatsAppContactUrl } from '@/lib/whatsapp'
@@ -25,8 +27,8 @@ export function DeliveryPage() {
         url="/delivery"
       />
 
-      <div className="bg-gradient-to-b from-[#FFF8E1]/40 to-white">
-        <section className="border-b-2 border-[#004D55] bg-[#004D55] px-4 py-10 text-center sm:px-6">
+      <FestivePageBackground>
+        <PageHeader as="section" contentClassName="px-4 py-10 text-center sm:px-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFC107]">Delivery</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold uppercase tracking-wide text-white sm:text-4xl">
             All-India Delivery
@@ -35,7 +37,7 @@ export function DeliveryPage() {
             We deliver crackers across India. Share your location on WhatsApp and we&apos;ll confirm
             availability and charges.
           </p>
-        </section>
+        </PageHeader>
 
         <div className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -92,7 +94,7 @@ export function DeliveryPage() {
             </Link>
           </p>
         </div>
-      </div>
+      </FestivePageBackground>
     </>
   )
 }

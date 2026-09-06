@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { PageHeaderBackground } from '@/components/customer/PageHeader'
 import { WaveDividerWhite } from './WaveDivider'
-
-export const PRODUCTS_HERO_IMAGE = '/products-hero.webp'
-export const PRODUCTS_HERO_IMAGE_FALLBACK = '/products-hero.png'
 
 interface CatalogueHeroProps {
   children: ReactNode
@@ -27,19 +25,7 @@ export function CatalogueHero({ children, className, compactTop, tall, withWave 
         className,
       )}
     >
-      <picture className="absolute inset-0">
-        <source srcSet={PRODUCTS_HERO_IMAGE} type="image/webp" />
-        <img
-          src={PRODUCTS_HERO_IMAGE_FALLBACK}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          decoding="async"
-          fetchPriority="low"
-          className="h-full w-full object-cover object-top opacity-45"
-        />
-      </picture>
-      <div className="absolute inset-0 bg-navy-950/72" aria-hidden="true" />
+      <PageHeaderBackground />
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_-10%,rgba(245,158,11,0.15),transparent_55%)]"
         aria-hidden="true"

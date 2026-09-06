@@ -5,6 +5,7 @@ import {
   AccountPageHeader,
   accountInputClass,
   accountLabelClass,
+  accountContentClass,
 } from '@/components/customer/account/AccountUI'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
@@ -62,7 +63,7 @@ export function SecurityPage() {
 
       <AccountPageHeader backTo="/account" subtitle="Password & Security" />
 
-      <div className="mx-auto max-w-3xl space-y-5 px-4 py-8 sm:px-6 lg:px-8">
+      <div className={`${accountContentClass} space-y-5`}>
         <div className="rounded-2xl border border-navy-900/10 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3">
             <ShieldCheck className="h-5 w-5 text-emerald-600" />
