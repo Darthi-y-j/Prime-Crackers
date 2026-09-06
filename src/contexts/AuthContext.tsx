@@ -223,7 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) {
       const message = error.message.toLowerCase().includes('invalid login credentials')
-        ? 'Invalid email or password. Use the credentials from Supabase ? Authentication ? Users.'
+        ? 'Invalid email or password. Use the credentials from Supabase > Authentication > Users.'
         : error.message
       return { error: message }
     }
@@ -302,7 +302,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.user && data.user.identities?.length === 0) {
       return {
         error:
-          'An account with this email already exists. Sign in, or use ùResend confirmation emailù on the login page if you have not verified yet.',
+          'An account with this email already exists. Sign in, or use "Resend confirmation email" on the login page if you have not verified yet.',
       }
     }
 
