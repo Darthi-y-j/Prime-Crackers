@@ -105,7 +105,7 @@ export function getImageUrl(
 export function getSquareImageUrl(
   url: string | null | undefined,
   fallback = '/placeholder-category.svg',
-  size = IMAGE_WIDTH.card,
+  size: number = IMAGE_WIDTH.card,
 ): string {
   return getImageUrl(url, fallback, size, size, 'contain')
 }
