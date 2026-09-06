@@ -1,8 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Gift, LogIn, Sparkles, Trophy } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
+import { PRIME_BRAND } from '@/lib/primeBrand'
 import { SITE_LOGO_PATH } from '@/lib/siteConfig'
 import { cn } from '@/lib/utils'
 import {
@@ -31,13 +32,59 @@ const WHEEL_CENTER = WHEEL_SIZE / 2
 const WHEEL_RADIUS = WHEEL_CENTER - 4
 const LABEL_RADIUS = WHEEL_RADIUS * 0.62
 
+function SpinCardShell({
+  children,
+  className,
+  contentClassName,
+}: {
+  children: ReactNode
+  className?: string
+  contentClassName?: string
+}) {
+  return (
+    <div
+      className={cn(
+        'relative overflow-hidden rounded-3xl border border-[#004D55]/10 shadow-[0_12px_40px_rgba(0,77,85,0.12)]',
+        className,
+      )}
+    >
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url('${PRIME_BRAND.loginCardBg}')` }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.88)_35%,rgba(255,255,255,0.55)_100%)]"
+        aria-hidden="true"
+      />
+      <div className={cn('relative', contentClassName)}>{children}</div>
+    </div>
+  )
+}
+
 function WheelSegments() {
   return (
     <svg
       viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
-      className="h-full w-full"
+      className="h-full w-full drop-shadow-[0_4px_20px_rgba(255,193,7,0.35)]"
       aria-hidden="true"
     >
+      <defs>
+        {SPIN_REWARDS.map((segment) => (
+          <radialGradient
+            key={segment.id}
+            id={`spin-seg-${segment.id}`}
+            cx={WHEEL_CENTER}
+            cy={WHEEL_CENTER}
+            r={WHEEL_RADIUS}
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor={segment.highlightColor} />
+            <stop offset="45%" stopColor={segment.color} />
+            <stop offset="100%" stopColor={segment.color} />
+          </radialGradient>
+        ))}
+      </defs>
       {SPIN_REWARDS.map((segment) => {
         const { center } = getSegmentArcAngles(segment.segmentIndex)
         const labelPos = polarFromTop(WHEEL_CENTER, WHEEL_CENTER, LABEL_RADIUS, center)
@@ -46,9 +93,9 @@ function WheelSegments() {
           <g key={segment.id}>
             <path
               d={describeWheelSegmentPath(WHEEL_CENTER, WHEEL_CENTER, WHEEL_RADIUS, segment.segmentIndex)}
-              fill={segment.color}
-              stroke="rgba(255,255,255,0.35)"
-              strokeWidth={1.5}
+              fill={`url(#spin-seg-${segment.id})`}
+              stroke="rgba(255,255,255,0.45)"
+              strokeWidth={1.25}
             />
             <text
               x={labelPos.x}
@@ -59,7 +106,9 @@ function WheelSegments() {
               textAnchor="middle"
               dominantBaseline="middle"
               transform={`rotate(${center}, ${labelPos.x}, ${labelPos.y})`}
-              style={{ letterSpacing: '0.04em' }}
+              style={{ letterSpacing: '0.04em', paintOrder: 'stroke fill' }}
+              stroke="rgba(0,0,0,0.15)"
+              strokeWidth={0.4}
             >
               {segment.label}
             </text>
@@ -172,36 +221,22 @@ export function SpinToWinWheel({
 
   if (loading) {
     return (
-      <div
-        className={cn(
-          'rounded-3xl border border-gold-400/25 bg-gradient-to-br from-navy-950 via-[#1a1208] to-navy-950 p-6',
-          className,
-        )}
-      >
-        <div className="h-48 animate-pulse rounded-2xl bg-white/5" />
-      </div>
+      <SpinCardShell className={className} contentClassName="p-6">
+        <div className="h-48 animate-pulse rounded-2xl bg-[#004D55]/5" />
+      </SpinCardShell>
     )
   }
 
   if (!user || !isCustomer) {
     return (
-      <div
-        className={cn(
-          'relative overflow-hidden rounded-3xl border border-gold-400/30 bg-gradient-to-br from-navy-950 via-[#1a1208] to-navy-950 p-6 shadow-[0_20px_60px_rgba(245,158,11,0.12)]',
-          className,
-        )}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(245,158,11,0.18),transparent_65%)]"
-          aria-hidden="true"
-        />
-        <div className="relative text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-gold-400/35 bg-gold-500/10">
-            <Gift className="h-7 w-7 text-gold-400" />
+      <SpinCardShell className={className} contentClassName="p-6">
+        <div className="text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-[#FFC107]/40 bg-white/75">
+            <Gift className="h-7 w-7 text-[#E6AC00]" />
           </div>
-          <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.28em] text-gold-400">Premium</p>
-          <h3 className="mt-2 font-display text-2xl font-bold text-white">Spin to Win</h3>
-          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-cream-100/70">
+          <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.28em] text-[#E6AC00]">Premium</p>
+          <h3 className="mt-2 font-display text-2xl font-bold text-[#004D55]">Spin to Win</h3>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[#004D55]/75">
             Log in to spin the wheel and win a free gift with your order before you send your WhatsApp enquiry.
           </p>
           <Link
@@ -213,40 +248,30 @@ export function SpinToWinWheel({
             Login to Spin
           </Link>
         </div>
-      </div>
+      </SpinCardShell>
     )
   }
 
   return (
-    <div
-      className={cn(
-        'relative overflow-hidden rounded-3xl border border-gold-400/30 bg-gradient-to-br from-navy-950 via-[#1a1208] to-navy-950 p-5 shadow-[0_20px_60px_rgba(245,158,11,0.12)] sm:p-6',
-        className,
-      )}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(245,158,11,0.16),transparent_65%)]"
-        aria-hidden="true"
-      />
-
-      <div className="relative flex flex-col items-center gap-5 lg:flex-row lg:items-center lg:gap-8">
+    <SpinCardShell className={className} contentClassName="p-5 sm:p-6">
+      <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-center lg:gap-8">
         <div className="w-full shrink-0 text-center lg:max-w-[220px] lg:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold-400/35 bg-gold-500/10 px-3 py-1">
-            <Sparkles className="h-3.5 w-3.5 text-gold-400" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold-300">Premium</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/45 bg-white/75 px-3 py-1">
+            <Sparkles className="h-3.5 w-3.5 text-[#E6AC00]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#004D55]">Premium</span>
           </div>
-          <h3 className="mt-3 font-display text-2xl font-bold text-white sm:text-[1.75rem]">Spin to Win</h3>
-          <p className="mt-2 text-sm leading-relaxed text-cream-100/70">
+          <h3 className="mt-3 font-display text-2xl font-bold text-[#004D55] sm:text-[1.75rem]">Spin to Win</h3>
+          <p className="mt-2 text-sm leading-relaxed text-[#004D55]/75">
             One spin per enquiry. Win a free gift for this order — included with your WhatsApp message.
           </p>
           {reward && (
-            <div className="mt-4 rounded-2xl border border-gold-400/25 bg-white/5 px-4 py-3 text-left">
-              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gold-300">
+            <div className="mt-4 rounded-2xl border border-[#004D55]/12 bg-white/85 px-4 py-3 text-left shadow-sm">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#E6AC00]">
                 <Trophy className="h-3.5 w-3.5" />
                 Your gift
               </p>
-              <p className="mt-1 font-display text-lg font-bold text-white">{reward.label}</p>
-              <p className="mt-1 text-xs text-cream-100/65">{getSpinRewardMessage(reward)}</p>
+              <p className="mt-1 font-display text-lg font-bold text-[#004D55]">{reward.label}</p>
+              <p className="mt-1 text-xs text-[#004D55]/70">{getSpinRewardMessage(reward)}</p>
             </div>
           )}
         </div>
@@ -256,10 +281,10 @@ export function SpinToWinWheel({
             className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-1"
             aria-hidden="true"
           >
-            <div className="h-0 w-0 border-x-[12px] border-x-transparent border-b-[22px] border-b-gold-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)] sm:border-x-[14px] sm:border-b-[26px]" />
+            <div className="h-0 w-0 border-x-[12px] border-x-transparent border-b-[22px] border-b-[#004D55] drop-shadow-[0_2px_6px_rgba(0,77,85,0.45)] sm:border-x-[14px] sm:border-b-[26px]" />
           </div>
 
-          <div className="absolute inset-0 rounded-full border-[6px] border-gold-400/80 shadow-[0_0_0_4px_rgba(15,13,11,0.45),0_0_40px_rgba(245,158,11,0.25)]" />
+          <div className="absolute inset-0 rounded-full border-[6px] border-[#FFC107] shadow-[0_0_0_3px_rgba(255,255,255,0.9),0_0_28px_rgba(255,193,7,0.55),0_0_48px_rgba(0,188,212,0.2)]" />
 
           <div
             ref={wheelRef}
@@ -271,26 +296,36 @@ export function SpinToWinWheel({
             <WheelSegments />
           </div>
 
-          <div className="pointer-events-none absolute inset-[28%] flex items-center justify-center overflow-hidden rounded-full border border-gold-300/40 bg-gradient-to-br from-navy-950 to-[#2a1a08] shadow-inner">
-            <img
-              src={SITE_LOGO_PATH}
-              alt=""
-              className="h-[70%] w-[70%] scale-125 object-contain"
-            />
-          </div>
-
           <button
             type="button"
             onClick={handleSpin}
             disabled={spinning || Boolean(reward)}
+            aria-label={
+              spinning ? 'Spinning the wheel' : reward ? 'Spin complete' : 'Spin the wheel'
+            }
             className={cn(
-              'absolute z-30 flex h-20 w-20 items-center justify-center rounded-full border-2 border-gold-300/60 bg-gradient-to-br from-festive-500 via-gold-400 to-festive-500 text-center text-[11px] font-black uppercase leading-tight tracking-wide text-navy-950 shadow-[0_8px_24px_rgba(245,158,11,0.45)] transition hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 sm:h-24 sm:w-24 sm:text-xs',
+              'absolute inset-[28%] z-30 flex items-center justify-center overflow-hidden rounded-full border-2 border-[#FFC107]/75 bg-white shadow-[0_4px_18px_rgba(0,77,85,0.18),inset_0_0_0_4px_rgba(255,255,255,0.9)] transition hover:scale-[1.03] active:scale-95 disabled:cursor-not-allowed disabled:hover:scale-100',
+              spinning && 'pointer-events-none',
+              reward && 'opacity-95',
             )}
           >
-            {spinning ? 'Spinning…' : reward ? 'Done' : 'Spin'}
+            <img
+              src={SITE_LOGO_PATH}
+              alt="Prime Crackers"
+              className={cn(
+                'relative z-10 h-[82%] w-[82%] object-contain',
+                spinning && 'opacity-75',
+              )}
+            />
+            {spinning && (
+              <span
+                className="absolute inset-1 rounded-full border-2 border-transparent border-t-[#FFC107] border-r-[#00BCD4] animate-spin"
+                aria-hidden="true"
+              />
+            )}
           </button>
         </div>
       </div>
-    </div>
+    </SpinCardShell>
   )
 }
