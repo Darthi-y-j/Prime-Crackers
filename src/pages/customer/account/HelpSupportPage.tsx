@@ -11,7 +11,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
-import { AccountPageHeader, MenuLink, MenuSection, QuickActionCard } from '@/components/customer/account/AccountUI'
+import { AccountPageHeader, MenuLink, MenuSection, QuickActionCard, accountContentClass } from '@/components/customer/account/AccountUI'
 import { useSettings } from '@/contexts/SettingsContext'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { getWhatsAppNumbers, formatDisplayPhone } from '@/lib/businessInfo'
@@ -29,7 +29,7 @@ export function HelpSupportPage() {
 
       <AccountPageHeader backTo="/account" subtitle="Help & Support" />
 
-      <div className="mx-auto max-w-4xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+      <div className={`${accountContentClass} space-y-6`}>
         {/* WhatsApp CTA banner */}
         <a
           href={whatsappUrl}

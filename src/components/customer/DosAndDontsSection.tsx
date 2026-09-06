@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { CheckCircle2, XCircle, ShieldAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PRIME_BRAND } from '@/lib/primeBrand'
 import { SectionHeader } from './SectionHeader'
 import { AnimateIn } from './AnimateIn'
 
@@ -42,18 +43,33 @@ function SafetyCard({
   return (
     <div
       className={cn(
-        'h-full overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-md',
+        'relative h-full overflow-hidden rounded-2xl border shadow-sm transition hover:shadow-md',
         isDo
           ? 'border-[#FFC107]/35 hover:border-[#FFC107]/55'
           : 'border-[#004D55]/15 hover:border-[#004D55]/30',
       )}
     >
       <div
-        className={cn('h-1.5', isDo ? 'bg-[#FFC107]' : 'bg-[#004D55]')}
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url('${PRIME_BRAND.safetyDosDontsBg}')` }}
+        aria-hidden="true"
+      />
+      <div
+        className={cn(
+          'absolute inset-0',
+          isDo
+            ? 'bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.9)_40%,rgba(255,248,225,0.72)_100%)]'
+            : 'bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.92)_40%,rgba(255,255,255,0.75)_100%)]',
+        )}
         aria-hidden="true"
       />
 
-      <div className="p-5 sm:p-6">
+      <div
+        className={cn('relative h-1.5', isDo ? 'bg-[#FFC107]' : 'bg-[#004D55]')}
+        aria-hidden="true"
+      />
+
+      <div className="relative p-5 sm:p-6">
         <div className="flex items-center gap-3 border-b border-[#004D55]/10 pb-4">
           <div
             className={cn(

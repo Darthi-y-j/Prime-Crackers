@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const STOREFRONT_BG = '/prime-storefront-bg.png'
+import { PageHeaderBackground, HERO_HEADER_BG } from '@/components/customer/PageHeader'
 
-export function getInitials(name: string): string {
+function getInitials(name: string): string {
   return name
     .split(/\s+/)
     .slice(0, 2)
@@ -21,6 +21,9 @@ interface AccountPageHeaderProps {
   children?: React.ReactNode
 }
 
+export const accountPagePadding = 'px-5 sm:px-10 lg:px-14 xl:px-20'
+export const accountContentClass = `w-full ${accountPagePadding} py-8`
+
 export function AccountPageHeader({
   title = 'My Profile',
   subtitle,
@@ -31,17 +34,9 @@ export function AccountPageHeader({
 }: AccountPageHeaderProps) {
   return (
     <section className="relative overflow-hidden border-b-2 border-[#004D55]">
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-25"
-        style={{ backgroundImage: `url('${STOREFRONT_BG}')` }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-[#004D55]/95 via-[#003840]/92 to-[#004D55]/88"
-        aria-hidden="true"
-      />
+      <PageHeaderBackground imageSrc={HERO_HEADER_BG} />
 
-      <div className="relative mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className={`relative w-full py-8 sm:py-10 ${accountPagePadding}`}>
         <div className="flex items-center justify-between gap-4">
           {backTo ? (
             <Link
@@ -103,20 +98,32 @@ interface StatCardProps {
   label: string
   accent?: string
   className?: string
+  tinted?: boolean
 }
 
-export function StatCard({ value, label, accent = '#004D55', className }: StatCardProps) {
+export function StatCard({ value, label, accent = '#004D55', className, tinted = false }: StatCardProps) {
   return (
     <div
       className={cn(
-        'rounded-2xl border border-[#004D55]/10 bg-white px-3 py-4 text-center shadow-sm transition hover:border-[#FFC107]/40 hover:shadow-md',
+        'rounded-2xl border px-3 py-4 text-center shadow-sm transition hover:shadow-md',
+        !tinted && 'border-[#004D55]/10 bg-white hover:border-[#FFC107]/40',
         className,
       )}
+      style={
+        tinted
+          ? {
+              backgroundColor: `${accent}14`,
+              borderColor: `${accent}30`,
+            }
+          : undefined
+      }
     >
       <p className="font-display text-2xl font-extrabold sm:text-3xl" style={{ color: accent }}>
         {value}
       </p>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#004D55]/55">{label}</p>
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: `${accent}99` }}>
+        {label}
+      </p>
     </div>
   )
 }
@@ -127,6 +134,7 @@ interface QuickActionCardProps {
   label: string
   description?: string
   accent?: string
+  tinted?: boolean
 }
 
 export function QuickActionCard({
@@ -135,22 +143,34 @@ export function QuickActionCard({
   label,
   description,
   accent = '#004D55',
+  tinted = true,
 }: QuickActionCardProps) {
   return (
     <Link
       to={to}
-      className="group flex flex-col gap-3 rounded-2xl border border-[#004D55]/10 bg-white p-4 shadow-sm transition hover:border-[#FFC107]/50 hover:shadow-md"
+      className={cn(
+        'group flex flex-col gap-3 rounded-2xl border p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md',
+        !tinted && 'border-[#004D55]/10 bg-white hover:border-[#FFC107]/50',
+      )}
+      style={
+        tinted
+          ? {
+              backgroundColor: `${accent}10`,
+              borderColor: `${accent}28`,
+            }
+          : undefined
+      }
     >
       <span
-        className="flex h-11 w-11 items-center justify-center rounded-xl transition group-hover:scale-105"
-        style={{ backgroundColor: `${accent}12` }}
+        className="flex h-11 w-11 items-center justify-center rounded-xl shadow-inner transition group-hover:scale-105"
+        style={{ backgroundColor: `${accent}20` }}
       >
         {icon}
       </span>
       <span>
         <span className="block text-sm font-bold text-[#004D55]">{label}</span>
         {description && (
-          <span className="mt-0.5 block text-xs text-[#004D55]/55">{description}</span>
+          <span className="mt-0.5 block text-xs text-[#004D55]/60">{description}</span>
         )}
       </span>
     </Link>
@@ -169,7 +189,7 @@ export function MenuLink({ to, icon, label, description, accent = '#004D55' }: M
   return (
     <Link
       to={to}
-      className="group flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-[#FFF8E1]/60"
+      className="group flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/90"
     >
       <span
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
@@ -193,15 +213,28 @@ export function MenuLink({ to, icon, label, description, accent = '#004D55' }: M
 interface MenuSectionProps {
   title: string
   children: React.ReactNode
+  accent?: string
 }
 
-export function MenuSection({ title, children }: MenuSectionProps) {
+export function MenuSection({ title, children, accent = '#004D55' }: MenuSectionProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-sm">
-      <p className="border-b border-[#FFC107]/25 bg-[#FFF8E1]/40 px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#004D55]/70">
+    <div
+      className="overflow-hidden rounded-2xl border shadow-sm"
+      style={{ borderColor: `${accent}25`, backgroundColor: `${accent}06` }}
+    >
+      <p
+        className="border-b px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em]"
+        style={{
+          color: accent,
+          backgroundColor: `${accent}12`,
+          borderColor: `${accent}22`,
+        }}
+      >
         {title}
       </p>
-      <div className="divide-y divide-[#004D55]/[0.06] px-1 py-1">{children}</div>
+      <div className="divide-y bg-white/80 px-1 py-1" style={{ borderColor: `${accent}15` }}>
+        {children}
+      </div>
     </div>
   )
 }

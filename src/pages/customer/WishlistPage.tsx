@@ -5,14 +5,12 @@ import { AnimateIn } from '@/components/customer/AnimateIn'
 import { TitleHighlight } from '@/components/customer/TitleHighlight'
 import { WaveDivider } from '@/components/customer/WaveDivider'
 import { ProductImage } from '@/components/customer/ProductImage'
+import { PageHeaderBackground } from '@/components/customer/PageHeader'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { useCart } from '@/contexts/CartContext'
 import { useToast } from '@/contexts/ToastContext'
 import { formatPrice } from '@/lib/utils'
 import type { WishlistItem } from '@/types/database'
-
-const HERO_BG = '/contact-section-bg.webp'
-const HERO_BG_FALLBACK = '/contact-section-bg.png'
 
 function WishlistCard({
   item,
@@ -120,19 +118,8 @@ export function WishlistPage() {
       <SEO title="Liked Products" description="Your saved favourite fireworks and crackers." noIndex />
 
       <div className="bg-cream-50">
-        <header className="relative overflow-visible bg-navy-950 pb-0 pt-6 sm:pt-8">
-          <picture className="absolute inset-0">
-            <source srcSet={HERO_BG} type="image/webp" />
-            <img
-              src={HERO_BG_FALLBACK}
-              alt=""
-              aria-hidden="true"
-              loading="eager"
-              decoding="async"
-              className="h-full w-full object-cover object-center opacity-50"
-            />
-          </picture>
-          <div className="absolute inset-0 bg-navy-950/70" aria-hidden="true" />
+        <header className="relative overflow-visible border-b-2 border-[#004D55] pb-0 pt-6 sm:pt-8">
+          <PageHeaderBackground />
           <div
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_50%_-5%,rgba(244,63,94,0.14),transparent_55%)]"
             aria-hidden="true"

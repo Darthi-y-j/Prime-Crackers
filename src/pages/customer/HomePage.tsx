@@ -5,7 +5,6 @@ import { PrimeServiceBar } from '@/components/prime/PrimeServiceBar'
 import { PrimeCategoryGrid } from '@/components/prime/PrimeCategoryGrid'
 import { PrimeShopCatalog } from '@/components/prime/PrimeShopCatalog'
 import { PrimeWhyChooseBar } from '@/components/prime/PrimeWhyChooseBar'
-import { PrimeFooter } from '@/components/prime/PrimeFooter'
 import { useSettings } from '@/contexts/SettingsContext'
 import { HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from '@/lib/siteConfig'
 import { buildHomePageSchema } from '@/lib/structuredData'
@@ -22,7 +21,6 @@ export function HomePage() {
       <PrimeCategoryGrid />
       <PrimeWhyChooseBar />
       <PrimeShopCatalog />
-      <PrimeFooter />
     </>
   )
 }

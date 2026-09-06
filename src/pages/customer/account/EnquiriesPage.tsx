@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { SEO } from '@/components/shared/SEO'
 import { LoadingState } from '@/components/customer/LoadingState'
-import { AccountPageHeader, StatCard } from '@/components/customer/account/AccountUI'
+import { AccountPageHeader, StatCard, accountContentClass } from '@/components/customer/account/AccountUI'
 import {
   getEnquiryItemCount,
   getEnquiryStatusLabel,
@@ -42,7 +42,7 @@ export function EnquiriesPage() {
 
       <AccountPageHeader backTo="/account" subtitle="My Enquiries" />
 
-      <div className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+      <div className={`${accountContentClass} space-y-6`}>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard value={enquiryStats.total} label="Total" />
           <StatCard value={enquiryStats.new} label="New" />

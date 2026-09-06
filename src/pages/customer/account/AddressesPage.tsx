@@ -4,6 +4,7 @@ import { SEO } from '@/components/shared/SEO'
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
 import {
   AccountPageHeader,
+  accountContentClass,
   accountInputClass,
   accountLabelClass,
 } from '@/components/customer/account/AccountUI'
@@ -140,7 +141,7 @@ export function AddressesPage() {
 
       <AccountPageHeader backTo="/account" subtitle="My Addresses" />
 
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
+      <div className={`${accountContentClass} space-y-4`}>
         <p className="text-sm text-navy-700/65">
           Save delivery addresses for faster checkout — especially important for cracker deliveries across Tamil Nadu and India.
         </p>

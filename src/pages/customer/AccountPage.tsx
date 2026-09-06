@@ -8,24 +8,25 @@ import { EnquiriesPage } from '@/pages/customer/account/EnquiriesPage'
 import { AccountWishlistPage } from '@/pages/customer/account/AccountWishlistPage'
 import { SecurityPage } from '@/pages/customer/account/SecurityPage'
 import { HelpSupportPage } from '@/pages/customer/account/HelpSupportPage'
+import { FestivePageBackground } from '@/components/customer/FestivePageBackground'
 
 function AccountRoutes() {
   return (
-    <div className="bg-gradient-to-b from-[#FFF8E1]/40 to-white pb-28 sm:pb-10">
+    <FestivePageBackground className="pb-28 sm:pb-10">
       <Routes>
-        <Route index element={<AccountDashboard />} />
-        <Route path="personal" element={<PersonalInfoPage />} />
-        <Route path="addresses" element={<AddressesPage />} />
-        <Route path="enquiries" element={<EnquiriesPage />} />
-        <Route path="orders" element={<Navigate to="/account/enquiries" replace />} />
-        <Route path="wishlist" element={<AccountWishlistPage />} />
-        <Route path="coupons" element={<Navigate to="/account" replace />} />
-        <Route path="preferences" element={<Navigate to="/account/help" replace />} />
-        <Route path="notifications" element={<Navigate to="/account/help" replace />} />
-        <Route path="security" element={<SecurityPage />} />
-        <Route path="help" element={<HelpSupportPage />} />
-      </Routes>
-    </div>
+          <Route index element={<AccountDashboard />} />
+          <Route path="personal" element={<PersonalInfoPage />} />
+          <Route path="addresses" element={<AddressesPage />} />
+          <Route path="enquiries" element={<EnquiriesPage />} />
+          <Route path="orders" element={<Navigate to="/account/enquiries" replace />} />
+          <Route path="wishlist" element={<AccountWishlistPage />} />
+          <Route path="coupons" element={<Navigate to="/account" replace />} />
+          <Route path="preferences" element={<Navigate to="/account/help" replace />} />
+          <Route path="notifications" element={<Navigate to="/account/help" replace />} />
+          <Route path="security" element={<SecurityPage />} />
+          <Route path="help" element={<HelpSupportPage />} />
+        </Routes>
+    </FestivePageBackground>
   )
 }
 

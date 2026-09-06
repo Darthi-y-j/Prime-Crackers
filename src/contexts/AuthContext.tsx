@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
 import { supabase, getSupabaseErrorMessage, isSupabaseConfigured } from '@/lib/supabase'
-import { getAuthConfirmRedirectUrl } from '@/lib/authRedirects'
+import { getAuthConfirmRedirectUrl, getPasswordResetRedirectUrl } from '@/lib/authRedirects'
 import { COMPANY_EMAIL_SENDER_NAME } from '@/lib/companyEmail'
 import { cleanPhone } from '@/lib/utils'
 import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
@@ -20,6 +20,8 @@ interface AuthContextType {
     phone: string,
   ) => Promise<{ error: string | null; needsEmailConfirmation?: boolean }>
   resendConfirmationEmail: (email: string) => Promise<{ error: string | null }>
+  requestPasswordReset: (email: string) => Promise<{ error: string | null }>
+  updatePassword: (password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
 }
 
@@ -341,6 +343,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null }
   }
 
+  const requestPasswordReset = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: 'Supabase is not configured. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env' }
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: getPasswordResetRedirectUrl(),
+    })
+
+    if (error) return { error: error.message }
+    return { error: null }
+  }
+
+  const updatePassword = async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password })
+
+    if (error) return { error: error.message }
+
+    await supabase.auth.signOut()
+    setSession(null)
+    setUser(null)
+    lastCheckedTokenRef.current = null
+    isAdminRef.current = false
+    setIsAdmin(false)
+
+    return { error: null }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
     lastCheckedTokenRef.current = null
@@ -362,6 +392,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInCustomer,
         signUpCustomer,
         resendConfirmationEmail,
+        requestPasswordReset,
+        updatePassword,
         signOut,
       }}
     >

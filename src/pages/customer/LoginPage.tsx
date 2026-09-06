@@ -4,6 +4,7 @@ import { LogIn, Mail } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { useAuth } from '@/contexts/AuthContext'
 import { COMPANY_EMAIL_SENDER_NAME, getAuthEmailSenderHint } from '@/lib/companyEmail'
+import { PRIME_BRAND } from '@/lib/primeBrand'
 
 function isEmailNotConfirmedError(message: string): boolean {
   const lower = message.toLowerCase()
@@ -16,6 +17,7 @@ export function LoginPage() {
   const [searchParams] = useSearchParams()
   const from = (location.state as { from?: string } | null)?.from || '/account'
   const emailVerified = searchParams.get('verified') === '1'
+  const passwordReset = searchParams.get('reset') === '1'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,7 +25,9 @@ export function LoginPage() {
   const [info, setInfo] = useState(
     emailVerified
       ? 'Your email is confirmed. Sign in with the same email and password you used to register.'
-      : '',
+      : passwordReset
+        ? 'Your password was updated. Sign in with your new password.'
+        : '',
   )
   const [submitting, setSubmitting] = useState(false)
   const [resending, setResending] = useState(false)
@@ -31,8 +35,10 @@ export function LoginPage() {
   useEffect(() => {
     if (emailVerified) {
       setInfo('Your email is confirmed. Sign in with the same email and password you used to register.')
+    } else if (passwordReset) {
+      setInfo('Your password was updated. Sign in with your new password.')
     }
-  }, [emailVerified])
+  }, [emailVerified, passwordReset])
 
   const emailNotConfirmed = isEmailNotConfirmedError(error)
 
@@ -93,90 +99,127 @@ export function LoginPage() {
     <>
       <SEO title="Login" description="Sign in to your Prime Crackers account to send enquiries." noIndex />
 
-      <div className="mx-auto max-w-md px-4 py-12 sm:px-6 sm:py-16">
-        <div className="text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-900">
-            <LogIn className="h-7 w-7 text-gold-400" />
-          </div>
-          <h1 className="mt-5 font-display text-3xl font-bold text-navy-900">Welcome Back</h1>
-          <p className="mt-2 text-sm text-navy-700/70">Sign in to send and track your enquiries</p>
-        </div>
+      <div className="relative flex min-h-[calc(100vh-10rem)] items-center justify-center overflow-hidden px-4 py-10 sm:px-6 sm:py-14">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${PRIME_BRAND.loginBg}')` }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/25 to-[#004D55]/15"
+          aria-hidden="true"
+        />
 
-        <form onSubmit={handleSubmit} className="mt-8 rounded-2xl border border-navy-900/10 bg-white p-6 shadow-sm sm:p-8">
-          {info && (
-            <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{info}</div>
-          )}
-
-          {error && !emailNotConfirmed && (
-            <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-          )}
-
-          {emailNotConfirmed && (
-            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              <p className="font-semibold">Please confirm your email first</p>
-              <p className="mt-1 text-amber-800/90">
-                We sent a confirmation link from {COMPANY_EMAIL_SENDER_NAME} when you registered.
-                Open that email and click the link, then come back here to sign in.
-              </p>
-              <p className="mt-2 text-xs text-amber-800/80">{getAuthEmailSenderHint()}</p>
-              <button
-                type="button"
-                onClick={handleResendConfirmation}
-                disabled={resending}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 transition hover:bg-amber-100 disabled:opacity-60"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                {resending ? 'Sending...' : 'Resend confirmation email'}
-              </button>
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-navy-800">Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-navy-900/10 bg-navy-900/[0.03] px-3.5 py-2.5 text-sm focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/25"
-              />
-            </div>
+        <div className="relative z-10 w-full max-w-md">
+          <div className="text-center">
+            <h1 className="font-display text-2xl font-extrabold text-[#004D55] drop-shadow-sm sm:text-3xl">Welcome Back</h1>
+            <p className="mt-2 text-sm text-[#004D55]/85 drop-shadow-sm">Sign in to send and track your enquiries</p>
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="mt-6 w-full rounded-lg bg-gold-500 py-3 text-sm font-bold text-navy-950 transition hover:bg-gold-400 disabled:opacity-60"
+          <form
+            onSubmit={handleSubmit}
+            className="relative mt-6 overflow-hidden rounded-2xl border border-[#004D55]/10 shadow-[0_12px_40px_rgba(0,77,85,0.12)]"
           >
-            {submitting ? 'Signing in...' : 'Sign In'}
-          </button>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url('${PRIME_BRAND.loginCardBg}')` }}
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.88)_35%,rgba(255,255,255,0.55)_100%)]"
+              aria-hidden="true"
+            />
 
-          <p className="mt-5 text-center text-sm text-navy-700/70">
-            Don&apos;t have an account?{' '}
-            <Link to="/register" className="font-semibold text-gold-600 hover:text-gold-500">
-              Create one
-            </Link>
-          </p>
+            <div className="relative p-6 sm:p-8">
+            <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#004D55]">
+              <LogIn className="h-4 w-4 text-[#FFC107]" />
+              Customer login
+            </div>
 
-          <p className="mt-3 text-center text-xs text-navy-600/60">
-            Store owner?{' '}
-            <Link to="/admin/login" className="font-semibold text-gold-600 hover:text-gold-500">
-              Admin login
-            </Link>
-          </p>
-        </form>
+            {info && (
+              <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{info}</div>
+            )}
+
+            {error && !emailNotConfirmed && (
+              <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+            )}
+
+            {emailNotConfirmed && (
+              <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <p className="font-semibold">Please confirm your email first</p>
+                <p className="mt-1 text-amber-800/90">
+                  We sent a confirmation link from {COMPANY_EMAIL_SENDER_NAME} when you registered.
+                  Open that email and click the link, then come back here to sign in.
+                </p>
+                <p className="mt-2 text-xs text-amber-800/80">{getAuthEmailSenderHint()}</p>
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={resending}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 transition hover:bg-amber-100 disabled:opacity-60"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  {resending ? 'Sending...' : 'Resend confirmation email'}
+                </button>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[#004D55]">Email</label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-lg border border-[#004D55]/15 bg-white px-3.5 py-2.5 text-sm focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/30"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[#004D55]">Password</label>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-lg border border-[#004D55]/15 bg-white px-3.5 py-2.5 text-sm focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/30"
+                />
+                <div className="mt-1.5 text-right">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-semibold text-[#E65100] hover:text-[#FF8C00]"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-6 w-full rounded-xl bg-[#FFC107] py-3 text-sm font-bold text-[#004D55] shadow-md transition hover:bg-[#FFD54F] disabled:opacity-60"
+            >
+              {submitting ? 'Signing in...' : 'Sign In'}
+            </button>
+
+            <p className="mt-5 text-center text-sm text-[#004D55]/70">
+              Don&apos;t have an account?{' '}
+              <Link to="/register" className="font-semibold text-[#E65100] hover:text-[#FF8C00]">
+                Create one
+              </Link>
+            </p>
+
+            <p className="mt-3 text-center text-xs text-[#004D55]/55">
+              Store owner?{' '}
+              <Link to="/admin/login" className="font-semibold text-[#E65100] hover:text-[#FF8C00]">
+                Admin login
+              </Link>
+            </p>
+            </div>
+          </form>
+        </div>
       </div>
     </>
   )

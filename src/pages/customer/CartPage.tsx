@@ -17,6 +17,9 @@ import {
   BadgeCheck,
   Minus,
   Plus,
+  ClipboardList,
+  Zap,
+  ChevronRight,
 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { AnimateIn } from '@/components/customer/AnimateIn'
@@ -41,13 +44,15 @@ import { formatPrice, validatePhone, cn } from '@/lib/utils'
 import { formatDisplayPhone } from '@/lib/businessInfo'
 import type { CartItem } from '@/types/database'
 
+import { PageHeaderBackground } from '@/components/customer/PageHeader'
+
 const inputClass =
   'w-full rounded-xl border border-[#004D55]/12 bg-white px-3.5 py-2.5 text-sm text-[#004D55] placeholder:text-slate-400 transition focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/25'
 
-const trustPoints = [
-  { icon: ShieldCheck, label: 'No online payment' },
-  { icon: MessageCircle, label: 'WhatsApp enquiry' },
-  { icon: Truck, label: 'Delivery across India' },
+const journeySteps = [
+  { icon: ClipboardList, label: 'Review cart' },
+  { icon: User, label: 'Your details' },
+  { icon: MessageCircle, label: 'WhatsApp send' },
 ]
 
 function CartQuantityControls({
@@ -58,7 +63,7 @@ function CartQuantityControls({
   onChange: (qty: number) => void
 }) {
   return (
-    <div className="flex h-9 items-stretch overflow-hidden rounded-lg bg-white shadow-[0_2px_10px_rgba(0,77,85,0.12)] ring-1 ring-[#004D55]/15 sm:h-10">
+    <div className="flex h-9 items-stretch overflow-hidden rounded-lg bg-[#FFF8E1]/80 shadow-sm ring-1 ring-[#004D55]/12 sm:h-10">
       <button
         type="button"
         onClick={() => onChange(Math.max(1, value - 1))}
@@ -88,73 +93,98 @@ function CartItemCard({
   index,
   onUpdateQuantity,
   onRemove,
-  isLast,
 }: {
   item: CartItem
   index: number
   onUpdateQuantity: (productId: string, qty: number) => void
   onRemove: (productId: string) => void
-  isLast?: boolean
 }) {
   const lineTotal = item.price != null ? item.price * item.quantity : null
   const isGiftBox = Boolean(item.isGiftBox)
 
   const title = isGiftBox ? (
-    <p className="line-clamp-2 text-sm font-extrabold leading-snug text-[#004D55] sm:text-[15px]">
+    <p className="line-clamp-2 font-display text-base font-extrabold leading-snug text-[#004D55] sm:text-lg">
       {item.productName}
     </p>
   ) : (
     <Link
       to={`/products/${item.slug}`}
-      className="line-clamp-2 text-sm font-extrabold leading-snug text-[#004D55] transition hover:text-[#006670] sm:text-[15px]"
+      className="line-clamp-2 font-display text-base font-extrabold leading-snug text-[#004D55] transition hover:text-[#006670] sm:text-lg"
     >
       {item.productName}
     </Link>
   )
 
-  const image = (
-    <div className="relative h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-xl bg-[#FFF8E1] ring-1 ring-[#004D55]/10 sm:h-20 sm:w-20">
-      <ProductImage src={item.imageUrl} alt={item.productName} className="h-full w-full object-cover" />
+  const imageBlock = (
+    <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gradient-to-br from-[#004D55]/8 via-[#FFF8E1] to-[#FFC107]/15 ring-1 ring-[#004D55]/10">
+      {item.imageUrl ? (
+        <ProductImage src={item.imageUrl} alt={item.productName} className="h-full w-full object-cover" />
+      ) : (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-[#004D55]/35">
+          <Sparkles className="h-7 w-7 text-[#FFC107]/70" />
+          <Package className="h-5 w-5" />
+        </div>
+      )}
       {isGiftBox && (
-        <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#004D55] text-[#FFC107] ring-1 ring-white">
-          <Gift className="h-2.5 w-2.5" />
+        <span className="absolute bottom-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#004D55] text-[#FFC107] shadow-md ring-2 ring-white">
+          <Gift className="h-3 w-3" />
         </span>
       )}
+      <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFC107] font-display text-[10px] font-extrabold text-[#004D55] shadow-sm">
+        {String(index + 1).padStart(2, '0')}
+      </span>
     </div>
   )
 
   return (
-    <AnimateIn animation="fade-up" delay={40 + index * 30}>
+    <AnimateIn animation="fade-up" delay={40 + index * 40}>
       <article
-        className={cn(
-          'px-3 py-3.5 sm:px-4 sm:py-4',
-          !isLast && 'border-b border-[#004D55]/8',
-        )}
+        className="group relative overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white p-3 shadow-sm transition hover:border-[#FFC107]/45 hover:shadow-md sm:p-4"
       >
-        <div className="flex gap-3 sm:gap-4">
-          {isGiftBox ? image : <Link to={`/products/${item.slug}`} className="shrink-0">{image}</Link>}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#FFC107] via-[#E65100] to-[#004D55] opacity-80"
+          aria-hidden="true"
+        />
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-            <div className="flex items-start justify-between gap-3">
+        <div className="grid grid-cols-[5.5rem_1fr] gap-3 sm:grid-cols-[6.5rem_1fr] sm:gap-4">
+          <div className="shrink-0">
+            {isGiftBox ? imageBlock : <Link to={`/products/${item.slug}`}>{imageBlock}</Link>}
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-2.5">
+            <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1 space-y-1.5">
                 {title}
-                {item.pieces != null && item.pieces > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#004D55] px-2 py-0.5 text-[9px] font-extrabold text-[#FFC107] sm:text-[10px]">
-                    <span className="h-1 w-1 rounded-full bg-[#FFC107]" aria-hidden="true" />
-                    {item.pieces} pcs
-                  </span>
-                )}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {item.pieces != null && item.pieces > 0 && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#004D55]/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#004D55] sm:text-[10px]">
+                      {item.pieces} pcs / unit
+                    </span>
+                  )}
+                  {isGiftBox && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#FFC107]/25 px-2 py-0.5 text-[9px] font-bold uppercase text-[#004D55]">
+                      Gift box
+                    </span>
+                  )}
+                </div>
               </div>
 
               {lineTotal != null && (
-                <p className="shrink-0 text-right text-base font-extrabold tabular-nums leading-none text-[#E65100] sm:text-lg">
-                  {formatPrice(lineTotal)}
-                </p>
+                <div className="shrink-0 text-right">
+                  <p className="text-lg font-extrabold tabular-nums leading-none text-[#E65100] sm:text-xl">
+                    {formatPrice(lineTotal)}
+                  </p>
+                  {item.quantity > 1 && item.price != null && (
+                    <p className="mt-0.5 text-[10px] tabular-nums text-slate-500">
+                      {formatPrice(item.price)} each
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
             {isGiftBox && item.giftBoxItems && item.giftBoxItems.length > 0 && (
-              <ul className="space-y-0.5 rounded-lg border border-[#FFC107]/30 bg-[#FFF8E1]/60 px-2.5 py-2 text-[11px] text-[#004D55]/80">
+              <ul className="space-y-0.5 rounded-xl border border-dashed border-[#FFC107]/40 bg-[#FFF8E1]/50 px-2.5 py-2 text-[11px] text-[#004D55]/80">
                 {item.giftBoxItems.map((inner) => (
                   <li key={inner.productId} className="flex justify-between gap-2">
                     <span className="truncate">{inner.productName}</span>
@@ -164,32 +194,20 @@ function CartItemCard({
               </ul>
             )}
 
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0 text-xs text-slate-600">
-                {item.price != null ? (
-                  <span className="font-medium tabular-nums">
-                    {formatPrice(item.price)}
-                    {item.quantity > 1 ? ` × ${item.quantity}` : ''}
-                  </span>
-                ) : (
-                  <span>Qty {item.quantity}</span>
-                )}
-              </div>
-
-              <div className="flex shrink-0 items-center gap-1.5">
-                <CartQuantityControls
-                  value={item.quantity}
-                  onChange={(qty) => onUpdateQuantity(item.productId, qty)}
-                />
-                <button
-                  type="button"
-                  onClick={() => onRemove(item.productId)}
-                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-500 sm:h-10 sm:w-10"
-                  aria-label={`Remove ${item.productName}`}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+            <div className="flex items-center justify-between gap-2 pt-0.5">
+              <CartQuantityControls
+                value={item.quantity}
+                onChange={(qty) => onUpdateQuantity(item.productId, qty)}
+              />
+              <button
+                type="button"
+                onClick={() => onRemove(item.productId)}
+                className="inline-flex h-9 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-slate-400 transition hover:bg-red-50 hover:text-red-500 sm:h-10"
+                aria-label={`Remove ${item.productName}`}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Remove</span>
+              </button>
             </div>
           </div>
         </div>
@@ -212,6 +230,10 @@ function EnquiryForm({
   isLoggedIn,
   customerEmail,
   settings,
+  itemCount,
+  estimatedTotal,
+  hasPricedItems,
+  spinReward,
   onUseLocation,
   onSendEnquiry,
   className,
@@ -229,183 +251,253 @@ function EnquiryForm({
   isLoggedIn: boolean
   customerEmail?: string
   settings: ReturnType<typeof useSettings>['settings']
+  itemCount: number
+  estimatedTotal: number
+  hasPricedItems: boolean
+  spinReward: SpinReward | null
   onUseLocation: () => void
   onSendEnquiry: () => void
   className?: string
 }) {
   return (
-    <div
-      className={cn(
-        'overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_8px_32px_rgba(0,77,85,0.08)]',
-        className,
+    <div className={cn('space-y-4', className)}>
+      {hasPricedItems && (
+        <div className="overflow-hidden rounded-2xl border border-[#FFC107]/35 bg-gradient-to-br from-[#004D55] via-[#005a64] to-[#006670] p-4 text-white shadow-lg">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFC107]/90">
+                Order snapshot
+              </p>
+              <p className="mt-1 font-display text-2xl font-extrabold tabular-nums">
+                {formatPrice(estimatedTotal)}
+              </p>
+              <p className="text-xs text-white/70">{itemCount} item{itemCount !== 1 ? 's' : ''} · price confirmed on WhatsApp</p>
+            </div>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFC107]/15 ring-1 ring-[#FFC107]/30">
+              <Zap className="h-7 w-7 text-[#FFC107]" />
+            </div>
+          </div>
+          {spinReward && (
+            <p className="mt-3 rounded-lg bg-white/10 px-3 py-2 text-xs font-semibold text-[#FFC107]">
+              Spin reward applied: {spinReward.label}
+            </p>
+          )}
+        </div>
       )}
-    >
-      <div className="relative border-b border-[#FFC107]/25 bg-[#004D55] px-5 py-4 sm:px-6">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_100%_at_100%_0%,rgba(255,193,7,0.15),transparent_55%)]"
-          aria-hidden="true"
-        />
-        <div className="relative flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FFC107]/15 ring-1 ring-[#FFC107]/30">
-            <MessageCircle className="h-5 w-5 text-[#FFC107]" />
-          </span>
-          <div>
-            <h2 className="font-display text-lg font-bold text-white">Send Enquiry</h2>
-            <p className="text-xs text-white/70">One tap to WhatsApp — no online payment</p>
+
+      <div className="overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_12px_40px_rgba(0,77,85,0.1)]">
+        <div className="relative border-b border-[#004D55]/8 bg-[#FFF8E1]/40 px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#25D366]/15 ring-1 ring-[#25D366]/30">
+              <MessageCircle className="h-5 w-5 text-[#25D366]" />
+            </span>
+            <div>
+              <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-[#004D55]">
+                Send Enquiry
+              </h2>
+              <p className="text-xs text-[#004D55]/65">One message — our team replies on WhatsApp</p>
+            </div>
           </div>
         </div>
-      </div>
 
-                <div className="p-5 sm:p-6">
-                  {settings.whatsapp_number && (
-          <p className="inline-flex items-center gap-1.5 rounded-full border border-[#25D366]/25 bg-[#25D366]/10 px-3 py-1 text-xs font-semibold text-[#128C7E]">
-                      <MessageCircle className="h-3.5 w-3.5" />
-                      {formatDisplayPhone(settings.whatsapp_number)}
-                    </p>
-                  )}
+        <div className="p-5 sm:p-6">
+          {settings.whatsapp_number && (
+            <a
+              href={buildWhatsAppUrl(settings.whatsapp_number, 'Hi! I have a cart enquiry.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-3 py-1.5 text-xs font-bold text-[#128C7E] transition hover:bg-[#25D366]/20"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              {formatDisplayPhone(settings.whatsapp_number)}
+            </a>
+          )}
 
-        {isLoggedIn && (
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/40 bg-[#FFF8E1] px-3 py-1 text-xs font-semibold text-[#004D55]">
-            <BadgeCheck className="h-3.5 w-3.5 text-[#E65100]" />
-            Logged in — your details will be included in the enquiry
-            {customerEmail ? ` (${customerEmail})` : ''}
-          </p>
-        )}
+          {isLoggedIn && (
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/40 bg-[#FFF8E1] px-3 py-1 text-xs font-semibold text-[#004D55]">
+              <BadgeCheck className="h-3.5 w-3.5 text-[#E65100]" />
+              Logged in{customerEmail ? ` · ${customerEmail}` : ''}
+            </p>
+          )}
 
-                  <div className="mt-5 space-y-4">
-                    <div>
-                      <label className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-[#004D55]">
-                        <User className="h-3.5 w-3.5 text-[#E65100]" />
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="Enter your name"
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-[#004D55]">
-                        <Phone className="h-3.5 w-3.5 text-[#E65100]" />
-                        Phone *
-                      </label>
-                      <input
-                        type="tel"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        placeholder="+91 98765 43210"
-                        className={inputClass}
-                      />
-                    </div>
-
-          <div className="space-y-3 rounded-xl border border-[#004D55]/10 bg-gradient-to-br from-[#FFF8E1]/50 to-white p-3.5">
-            <div className="flex items-center justify-between gap-2">
-              <label className="flex items-center gap-1.5 text-sm font-semibold text-[#004D55]">
-                <MapPin className="h-3.5 w-3.5 text-[#E65100]" />
-                Delivery Address *
-              </label>
-              <button
-                type="button"
-                onClick={onUseLocation}
-                disabled={locating}
-                className="inline-flex items-center gap-1 rounded-full border border-[#FFC107]/50 bg-[#FFF8E1] px-2.5 py-1 text-[11px] font-semibold text-[#004D55] transition hover:bg-[#FFC107]/20 disabled:opacity-60"
-              >
-                {locating ? <Loader2 className="h-3 w-3 animate-spin" /> : <MapPin className="h-3 w-3" />}
-                Use my location
-              </button>
-            </div>
-
-            {addressFields.locationSnapshot ? (
-              <div className="rounded-xl border border-[#FFC107]/30 bg-white px-3 py-2.5 text-xs leading-relaxed text-slate-700">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#E65100]">
-                  Detected area
-                </p>
-                <p className="whitespace-pre-wrap">{addressFields.locationSnapshot}</p>
-              </div>
-            ) : (
-              <p className="text-xs text-slate-500">
-                Tap &quot;Use my location&quot; for area &amp; map, then fill door details below.
-              </p>
-            )}
-
+          <div className="mt-5 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-[#004D55]">Door / Flat No. *</label>
+                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+                  <User className="h-3.5 w-3.5 text-[#FFC107]" />
+                  Name *
+                </label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Your name"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+                  <Phone className="h-3.5 w-3.5 text-[#FFC107]" />
+                  Phone *
+                </label>
+                <input
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#004D55]/10 bg-gradient-to-br from-[#FFF8E1]/60 to-white p-4">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]">
+                  <MapPin className="h-3.5 w-3.5 text-[#FFC107]" />
+                  Delivery address *
+                </label>
+                <button
+                  type="button"
+                  onClick={onUseLocation}
+                  disabled={locating}
+                  className="inline-flex items-center gap-1 rounded-full bg-[#004D55] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white transition hover:bg-[#006670] disabled:opacity-60"
+                >
+                  {locating ? <Loader2 className="h-3 w-3 animate-spin" /> : <MapPin className="h-3 w-3" />}
+                  Detect location
+                </button>
+              </div>
+
+              {addressFields.locationSnapshot ? (
+                <div className="mb-3 rounded-xl border border-[#FFC107]/30 bg-white px-3 py-2.5 text-xs leading-relaxed text-[#004D55]/80">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#E65100]">Detected area</p>
+                  <p className="whitespace-pre-wrap">{addressFields.locationSnapshot}</p>
+                </div>
+              ) : (
+                <p className="mb-3 text-xs text-slate-500">Use detect location, then add door no. and street.</p>
+              )}
+
+              <div className="grid gap-3 sm:grid-cols-2">
                 <input
                   type="text"
                   value={addressFields.doorNo}
                   onChange={(e) => updateAddress({ doorNo: e.target.value })}
-                  placeholder="e.g. 12B, Flat 3"
+                  placeholder="Door / Flat no. *"
                   className={inputClass}
                 />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-[#004D55]">Street / Building *</label>
                 <input
                   type="text"
                   value={addressFields.street}
                   onChange={(e) => updateAddress({ street: e.target.value })}
-                  placeholder="Street name, apartment"
+                  placeholder="Street / Building *"
                   className={inputClass}
                 />
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-[#004D55]">Landmark (optional)</label>
                 <input
                   type="text"
                   value={addressFields.landmark}
                   onChange={(e) => updateAddress({ landmark: e.target.value })}
-                  placeholder="Near temple, school…"
+                  placeholder="Landmark (optional)"
                   className={inputClass}
                 />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-[#004D55]">Pincode (optional)</label>
                 <input
                   type="text"
                   inputMode="numeric"
                   value={addressFields.pincode}
                   onChange={(e) => updateAddress({ pincode: e.target.value })}
-                  placeholder="6-digit pincode"
+                  placeholder="Pincode (optional)"
                   className={inputClass}
                 />
               </div>
             </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+                Message (optional)
+              </label>
+              <textarea
+                value={customerMessage}
+                onChange={(e) => setCustomerMessage(e.target.value)}
+                placeholder="Event date, bulk order, special notes…"
+                rows={3}
+                className={cn(inputClass, 'resize-none')}
+              />
+            </div>
           </div>
 
-                    <div>
-                      <label className="mb-1.5 block text-sm font-semibold text-[#004D55]">Message (optional)</label>
-                      <textarea
-                        value={customerMessage}
-                        onChange={(e) => setCustomerMessage(e.target.value)}
-              placeholder="Event date, bulk quantity, special instructions…"
-                        rows={3}
-                        className={cn(inputClass, 'resize-none')}
-                      />
-                    </div>
-                  </div>
+          <button
+            type="button"
+            onClick={onSendEnquiry}
+            disabled={loading}
+            className="group mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-4 text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#25D366]/35 transition hover:brightness-105 hover:shadow-xl disabled:opacity-60"
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <>
+                <MessageCircle className="h-5 w-5" />
+                Send on WhatsApp
+                <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </>
+            )}
+          </button>
 
-                  <button
-                    type="button"
-          onClick={onSendEnquiry}
-                    disabled={loading}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/30 transition hover:bg-[#20bd5a] hover:shadow-xl disabled:opacity-60"
-        >
-          {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}
-                    Send Enquiry on WhatsApp
-                  </button>
-
-                  <p className="mt-3 flex items-start justify-center gap-1.5 text-center text-[11px] leading-relaxed text-slate-500">
-                    <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-[#FFC107]" />
-          Enquiry only — our team confirms price &amp; stock on WhatsApp.
-        </p>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-500">
+            <ShieldCheck className="h-3.5 w-3.5 text-[#004D55]" />
+            No online payment — enquiry only
+          </p>
+        </div>
       </div>
     </div>
+  )
+}
+
+function CartHero({
+  itemCount,
+  totalUnits,
+}: {
+  itemCount: number
+  totalUnits: number
+}) {
+  return (
+    <header className="relative overflow-hidden border-b-2 border-[#004D55]">
+      <PageHeaderBackground />
+      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <nav className="flex items-center gap-2 text-xs text-white/70">
+          <Link to="/" className="transition hover:text-[#FFC107]">Home</Link>
+          <span aria-hidden="true">/</span>
+          <span className="font-semibold text-white">Cart</span>
+        </nav>
+
+        <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFC107]">
+              <ShoppingBag className="h-3.5 w-3.5" />
+              {itemCount} item{itemCount !== 1 ? 's' : ''} · {totalUnits} units
+            </div>
+            <h1 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide text-white sm:text-4xl lg:text-5xl">
+              Cart & <span className="text-[#FFC107]">Enquiry</span>
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-white/85 sm:text-base">
+              Build your list, add delivery details, and send one WhatsApp message — we confirm price &amp; stock for you.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+            {journeySteps.map((step, i) => (
+              <span
+                key={step.label}
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm"
+              >
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FFC107] text-[10px] font-extrabold text-[#004D55]">
+                  {i + 1}
+                </span>
+                <step.icon className="h-3.5 w-3.5 text-[#FFC107]" />
+                {step.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </header>
   )
 }
 
@@ -459,6 +551,11 @@ export function CartPage() {
         if (item.price == null) return sum
         return sum + item.price * item.quantity
       }, 0),
+    [items],
+  )
+
+  const totalUnits = useMemo(
+    () => items.reduce((sum, item) => sum + item.quantity, 0),
     [items],
   )
 
@@ -570,6 +667,10 @@ export function CartPage() {
     isLoggedIn: Boolean(isCustomer && user),
     customerEmail,
     settings,
+    itemCount: items.length,
+    estimatedTotal: estimatedAfterSpin,
+    hasPricedItems,
+    spinReward,
     onUseLocation: handleUseCurrentLocation,
     onSendEnquiry: handleSendEnquiry,
   }
@@ -579,60 +680,48 @@ export function CartPage() {
       <>
         <SEO title="Cart" description="Review your selected products and send enquiry on WhatsApp" noIndex />
 
-        <div className="bg-gradient-to-b from-[#FFF8E1]/40 to-white">
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-            <nav className="flex items-center gap-2 text-xs text-slate-500">
-              <Link to="/" className="transition hover:text-[#004D55]">
-                Home
-              </Link>
-              <span aria-hidden="true">/</span>
-              <span className="font-medium text-[#004D55]">Cart</span>
-            </nav>
+        <div className="bg-gradient-to-b from-[#FFF8E1]/30 to-white">
+          <header className="relative overflow-hidden border-b-2 border-[#004D55]">
+            <PageHeaderBackground />
+            <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+              <nav className="flex items-center gap-2 text-xs text-white/70">
+                <Link to="/" className="hover:text-[#FFC107]">Home</Link>
+                <span>/</span>
+                <span className="text-white">Cart</span>
+              </nav>
+              <h1 className="mt-4 font-display text-3xl font-extrabold uppercase text-white sm:text-4xl">
+                Your cart is <span className="text-[#FFC107]">empty</span>
+              </h1>
+            </div>
+          </header>
 
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <AnimateIn animation="fade-up">
-              <div className="mt-4 max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/50 bg-[#FFF8E1] px-3.5 py-1.5">
-                  <ShoppingBag className="h-3.5 w-3.5 text-[#E65100]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#004D55]">
-                    Your Cart
-                  </span>
-                </div>
-                <h1 className="mt-4 font-display text-3xl font-bold text-[#004D55] sm:text-4xl">
-                  Cart & Enquiry
-                </h1>
-              </div>
-            </AnimateIn>
-
-            <AnimateIn animation="fade-up" delay={60}>
-              <div className="relative mt-8 overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white px-6 py-14 text-center shadow-[0_8px_32px_rgba(0,77,85,0.08)] sm:px-12 sm:py-16">
-                <div
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(255,193,7,0.1),transparent_65%)]"
-                  aria-hidden="true"
-                />
-                <div className="relative">
-                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-[#FFC107]/40 bg-gradient-to-br from-[#FFF8E1] to-white shadow-inner">
-                    <ShoppingBag className="h-10 w-10 text-[#E65100]" />
+              <div className="relative overflow-hidden rounded-3xl border border-[#004D55]/10 bg-white px-6 py-14 text-center shadow-lg sm:px-12">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,193,7,0.12),transparent_55%)]" aria-hidden="true" />
+                <div className="relative mx-auto max-w-md">
+                  <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#004D55] to-[#006670] shadow-xl">
+                    <ShoppingBag className="h-11 w-11 text-[#FFC107]" />
                   </div>
-                  <h2 className="mt-6 font-display text-2xl font-bold text-[#004D55]">Your cart is empty</h2>
-                  <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600">
-                    Browse our catalogue and add products — send everything in one WhatsApp enquiry when
-                    you&apos;re ready.
+                  <h2 className="mt-6 font-display text-2xl font-extrabold text-[#004D55]">Start your celebration list</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    Pick crackers from our catalogue, then send one WhatsApp enquiry with everything in your cart.
                   </p>
-                  <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                     <Link
                       to="/#shop"
-                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#004D55] to-[#006670] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#004D55]/20 transition hover:shadow-xl"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FFC107] px-6 py-3.5 text-sm font-extrabold uppercase tracking-wide text-[#004D55] shadow-lg transition hover:bg-[#FFD54F]"
                     >
                       <Package className="h-4 w-4" />
-                      Browse Products
+                      Shop now
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                     <Link
                       to="/gift-box"
-                      className="inline-flex items-center gap-2 rounded-xl border border-[#004D55]/15 bg-white px-6 py-3 text-sm font-bold text-[#004D55] transition hover:border-[#FFC107]"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-[#004D55] px-6 py-3.5 text-sm font-extrabold uppercase tracking-wide text-[#004D55] transition hover:bg-[#004D55]/5"
                     >
-                      <Gift className="h-4 w-4 text-[#E65100]" />
-                      Build a Gift Box
+                      <Gift className="h-4 w-4" />
+                      Gift box
                     </Link>
                   </div>
                 </div>
@@ -648,63 +737,49 @@ export function CartPage() {
     <>
       <SEO title="Cart" description="Review your selected products and send enquiry on WhatsApp" noIndex />
 
-      <div className="bg-gradient-to-b from-[#FFF8E1]/40 to-white pb-28 sm:pb-10">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-          <nav className="flex items-center gap-2 text-xs text-slate-500">
-            <Link to="/" className="transition hover:text-[#004D55]">
-              Home
-            </Link>
-            <span aria-hidden="true">/</span>
-            <span className="font-medium text-[#004D55]">Cart</span>
-          </nav>
+      <div className="bg-gradient-to-b from-[#FFF8E1]/25 to-white pb-28 sm:pb-10">
+        <CartHero itemCount={items.length} totalUnits={totalUnits} />
 
-          <AnimateIn animation="fade-up">
-            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/50 bg-[#FFF8E1] px-3.5 py-1.5">
-                  <ShoppingBag className="h-3.5 w-3.5 text-[#E65100]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#004D55]">
-                    {items.length} item{items.length !== 1 ? 's' : ''} selected
-                  </span>
-                </div>
-                <h1 className="mt-3 font-display text-3xl font-bold text-[#004D55] sm:text-4xl">
-                  Cart & Enquiry
-                </h1>
-                <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-600">
-                  Review your items and send everything in one WhatsApp message — no payment online.
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mb-6 grid grid-cols-3 gap-2 sm:gap-3">
+            {[
+              { label: 'Products', value: String(items.length), icon: Package },
+              { label: 'Total qty', value: String(totalUnits), icon: ClipboardList },
+              {
+                label: 'Est. value',
+                value: hasPricedItems ? formatPrice(estimatedAfterSpin) : 'On request',
+                icon: Sparkles,
+              },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-2xl border border-[#004D55]/10 bg-white px-3 py-3 text-center shadow-sm sm:px-4 sm:py-4"
+              >
+                <stat.icon className="mx-auto h-4 w-4 text-[#FFC107]" />
+                <p className="mt-1 font-display text-lg font-extrabold tabular-nums text-[#004D55] sm:text-xl">
+                  {stat.value}
                 </p>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{stat.label}</p>
               </div>
+            ))}
+          </div>
 
-              <div className="flex flex-wrap gap-2">
-                {trustPoints.map(({ icon: Icon, label }) => (
-                  <span
-                    key={label}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#004D55]/10 bg-white px-3 py-1.5 text-xs font-semibold text-[#004D55] shadow-sm"
-                  >
-                    <Icon className="h-3 w-3 text-[#E65100]" />
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </AnimateIn>
-
-          <div className="mt-8 grid gap-8 lg:grid-cols-5">
-            <div className="space-y-4 lg:col-span-3">
+          <div className="grid gap-8 lg:grid-cols-5">
+            <div className="space-y-5 lg:col-span-3">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="inline-flex items-center gap-2 font-display text-lg font-bold text-[#004D55]">
-                  <Package className="h-5 w-5 text-[#E65100]" />
-                  Selected Products
+                <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[#004D55]">
+                  Your selection
                 </h2>
                 <Link
                   to="/#shop"
-                  className="text-xs font-semibold text-[#E65100] hover:text-[#004D55] sm:text-sm"
+                  className="inline-flex items-center gap-1 rounded-full bg-[#004D55]/10 px-3 py-1.5 text-xs font-bold text-[#004D55] transition hover:bg-[#FFC107]/30"
                 >
-                  + Add more
+                  <Plus className="h-3.5 w-3.5" />
+                  Add more
                 </Link>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_4px_24px_rgba(0,77,85,0.06)]">
+              <div className="space-y-3">
                 {items.map((item, index) => (
                   <CartItemCard
                     key={item.productId}
@@ -712,7 +787,6 @@ export function CartPage() {
                     index={index}
                     onUpdateQuantity={updateQuantity}
                     onRemove={removeItem}
-                    isLast={index === items.length - 1}
                   />
                 ))}
               </div>
@@ -725,26 +799,23 @@ export function CartPage() {
                 />
               </AnimateIn>
 
-              {hasPricedItems && (
-                <AnimateIn animation="fade-up" delay={150}>
-                  <div className="flex items-center justify-between rounded-2xl border border-[#FFC107]/40 bg-gradient-to-r from-[#FFF8E1] to-white px-4 py-3.5 sm:px-5 sm:py-4">
-                    <div>
-                      <span className="text-sm font-semibold text-[#004D55]">Estimated total</span>
-                      <p className="text-[11px] text-slate-500">Confirmed on WhatsApp</p>
-                      {spinReward && (
-                        <p className="mt-1 text-[11px] font-semibold text-[#E65100]">
-                          Spin gift: {spinReward.label}
-                        </p>
-                      )}
+              <AnimateIn animation="fade-up" delay={160}>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    { icon: ShieldCheck, text: 'No online payment' },
+                    { icon: MessageCircle, text: '24/7 WhatsApp support' },
+                    { icon: Truck, text: 'All-India delivery' },
+                  ].map(({ icon: Icon, text }) => (
+                    <div
+                      key={text}
+                      className="flex items-center gap-2 rounded-xl border border-[#004D55]/10 bg-white px-3 py-2.5 text-xs font-semibold text-[#004D55]"
+                    >
+                      <Icon className="h-4 w-4 shrink-0 text-[#FFC107]" />
+                      {text}
                     </div>
-                    <div className="text-right">
-                      <span className="text-xl font-extrabold tabular-nums text-[#004D55] sm:text-2xl">
-                        {formatPrice(estimatedTotal)}
-                      </span>
-                    </div>
-                  </div>
-                </AnimateIn>
-              )}
+                  ))}
+                </div>
+              </AnimateIn>
             </div>
 
             <div className="hidden lg:col-span-2 lg:block">
@@ -759,25 +830,29 @@ export function CartPage() {
           </div>
         </div>
 
-        {hasPricedItems && (
-          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#004D55]/10 bg-white/95 px-4 py-3 shadow-[0_-8px_32px_rgba(0,77,85,0.12)] backdrop-blur-md sm:hidden">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Estimated</p>
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#004D55]/10 bg-white/95 px-4 py-3 shadow-[0_-8px_32px_rgba(0,77,85,0.15)] backdrop-blur-md lg:hidden">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                {items.length} items ready
+              </p>
+              {hasPricedItems ? (
                 <p className="text-lg font-extrabold tabular-nums text-[#004D55]">{formatPrice(estimatedAfterSpin)}</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleSendEnquiry}
-                disabled={loading}
-                className="inline-flex max-w-[220px] flex-1 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-bold text-white shadow-lg disabled:opacity-60"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
-                WhatsApp
-              </button>
+              ) : (
+                <p className="text-sm font-semibold text-[#004D55]">Tap to send enquiry</p>
+              )}
             </div>
+            <button
+              type="button"
+              onClick={handleSendEnquiry}
+              disabled={loading}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-extrabold text-white shadow-lg disabled:opacity-60"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+              WhatsApp
+            </button>
           </div>
-        )}
+        </div>
       </div>
     </>
   )

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SEO } from '@/components/shared/SEO'
-import { AccountPageHeader, accountInputClass, accountLabelClass } from '@/components/customer/account/AccountUI'
+import { AccountPageHeader, accountInputClass, accountLabelClass, accountContentClass } from '@/components/customer/account/AccountUI'
 import { useAccountProfile } from '@/contexts/AccountProfileContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
@@ -78,7 +78,7 @@ export function PersonalInfoPage() {
 
       <AccountPageHeader backTo="/account" subtitle="Personal Information" />
 
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className={accountContentClass}>
         <form onSubmit={handleSave} className="rounded-2xl border border-navy-900/10 bg-white p-6 shadow-sm sm:p-8">
           <p className="text-sm text-navy-700/65">
             Used when you send a WhatsApp enquiry or contact us. Keep your name and mobile number accurate.
