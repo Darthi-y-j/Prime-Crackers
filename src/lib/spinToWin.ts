@@ -11,7 +11,10 @@ export interface SpinReward {
   label: string
   type: SpinRewardType
   segmentIndex: number
+  /** Outer edge / base segment color */
   color: string
+  /** Inner glow — fireworks burst centre */
+  highlightColor: string
   textColor: string
 }
 
@@ -34,48 +37,54 @@ export const SPIN_REWARDS: SpinReward[] = [
     label: '4" TIN FOUNTAIN',
     type: 'tin_fountain',
     segmentIndex: 0,
-    color: '#1e1b4b',
-    textColor: '#fde68a',
+    color: '#FFC107',
+    highlightColor: '#FFF59D',
+    textColor: '#004D55',
   },
   {
     id: 'helicopter',
     label: 'HELICOPTER',
     type: 'helicopter',
     segmentIndex: 1,
-    color: '#ea580c',
-    textColor: '#fff7ed',
+    color: '#004D55',
+    highlightColor: '#26A69A',
+    textColor: '#FFF8E1',
   },
   {
     id: 'one_k_wala',
     label: '1K WALA',
     type: 'one_k_wala',
     segmentIndex: 2,
-    color: '#f59e0b',
-    textColor: '#1c1917',
+    color: '#00BCD4',
+    highlightColor: '#80DEEA',
+    textColor: '#003840',
   },
   {
     id: 'single_pipe',
     label: '2" SINGLE PIPE',
     type: 'single_pipe',
     segmentIndex: 3,
-    color: '#0f172a',
-    textColor: '#fbbf24',
+    color: '#FF9800',
+    highlightColor: '#FFCC80',
+    textColor: '#FFFFFF',
   },
   {
     id: 'thirty_shot',
     label: '30 SHOT',
     type: 'thirty_shot',
     segmentIndex: 4,
-    color: '#c2410c',
-    textColor: '#fffbeb',
+    color: '#E53935',
+    highlightColor: '#FF8A80',
+    textColor: '#FFFFFF',
   },
   {
     id: 'thirty_shot_plus_one_k',
     label: '30 SHOT + 1K',
     type: 'thirty_shot_plus_one_k',
     segmentIndex: 5,
-    color: '#7c2d12',
-    textColor: '#fef3c7',
+    color: '#EC407A',
+    highlightColor: '#F48FB1',
+    textColor: '#FFFFFF',
   },
 ]
 
