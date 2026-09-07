@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
 import { supabase, getSupabaseErrorMessage, isSupabaseConfigured } from '@/lib/supabase'
 import { getAuthConfirmRedirectUrl, getPasswordResetRedirectUrl } from '@/lib/authRedirects'
+import {
+  ADMIN_ACCESS_DENIED_MESSAGE,
+  formatAuthConfigError,
+  formatAuthError,
+} from '@/lib/authErrors'
 import { COMPANY_EMAIL_SENDER_NAME } from '@/lib/companyEmail'
 import { cleanPhone } from '@/lib/utils'
 import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
@@ -218,16 +223,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
-      return { error: 'Supabase is not configured. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env' }
+      return { error: formatAuthConfigError() }
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      const message = error.message.toLowerCase().includes('invalid login credentials')
-        ? 'Invalid email or password. Use the credentials from Supabase > Authentication > Users.'
-        : error.message
-      return { error: message }
+      return { error: formatAuthError(error) }
     }
 
     const activeSession = data.session
@@ -248,8 +250,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAdmin(false)
       lastCheckedTokenRef.current = null
       return {
-        error:
-          'This account is not set up as admin. In Supabase SQL Editor, add your user to admin_users (see supabase/fix-admin-login.sql).',
+        error: ADMIN_ACCESS_DENIED_MESSAGE,
       }
     }
 
@@ -259,7 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInCustomer = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) return { error: error.message }
+    if (error) return { error: formatAuthError(error) }
 
     const activeSession = data.session
     if (!activeSession) {
@@ -299,7 +300,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     })
 
-    if (error) return { error: error.message }
+    if (error) return { error: formatAuthError(error) }
 
     if (data.user && data.user.identities?.length === 0) {
       return {
@@ -339,27 +340,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     })
 
-    if (error) return { error: error.message }
+    if (error) return { error: formatAuthError(error) }
     return { error: null }
   }
 
   const requestPasswordReset = async (email: string) => {
     if (!isSupabaseConfigured) {
-      return { error: 'Supabase is not configured. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env' }
+      return { error: formatAuthConfigError() }
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: getPasswordResetRedirectUrl(),
     })
 
-    if (error) return { error: error.message }
+    if (error) return { error: formatAuthError(error) }
     return { error: null }
   }
 
   const updatePassword = async (password: string) => {
     const { error } = await supabase.auth.updateUser({ password })
 
-    if (error) return { error: error.message }
+    if (error) return { error: formatAuthError(error) }
 
     await supabase.auth.signOut()
     setSession(null)

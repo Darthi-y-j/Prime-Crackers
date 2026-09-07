@@ -79,7 +79,7 @@ export function AdminLoginPage() {
             <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200/80">{error}</div>
           )}
 
-          {!isSupabaseConfigured && (
+          {import.meta.env.DEV && !isSupabaseConfigured && (
             <div className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200/80">
               Supabase is not configured. Add <code className="text-xs">VITE_SUPABASE_URL</code> and{' '}
               <code className="text-xs">VITE_SUPABASE_ANON_KEY</code> to your <code className="text-xs">.env</code>{' '}
@@ -113,15 +113,14 @@ export function AdminLoginPage() {
 
           <button
             type="submit"
-            disabled={submitting || !isSupabaseConfigured}
+            disabled={submitting || (import.meta.env.DEV && !isSupabaseConfigured)}
             className="admin-btn-primary mt-6 w-full disabled:opacity-60"
           >
             {submitting ? 'Signing in...' : 'Sign In'}
           </button>
 
           <p className="mt-5 text-center text-xs text-[#004D55]/60">
-            Admin accounts are created in Supabase by the store owner — there is no public sign-up for
-            the control panel.
+            Admin access is by invitation only. Contact the store owner if you need an account.
           </p>
         </form>
       </div>
