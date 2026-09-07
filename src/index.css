@@ -5,7 +5,8 @@
   --color-navy-950: #004D55;
   --color-navy-900: #003840;
   --color-navy-800: #006670;
-  --color-navy-700: #29B6F6;
+  --color-navy-700: #3D5F68;
+  --color-navy-600: #5A737C;
   --color-gold-500: #FFC107;
   --color-gold-400: #FFD54F;
   --color-gold-300: #FFF8E1;
@@ -588,7 +589,7 @@
   }
 
   .admin-input {
-    @apply rounded-xl border border-navy-900/10 bg-white px-3 py-2 text-sm text-navy-900 shadow-sm transition focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20;
+    @apply rounded-xl border border-navy-900/10 bg-white px-3 py-2 text-sm text-navy-900 shadow-sm transition placeholder:text-slate-400 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20;
   }
 
   .admin-btn-primary {

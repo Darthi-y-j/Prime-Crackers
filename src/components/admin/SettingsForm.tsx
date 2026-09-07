@@ -19,7 +19,6 @@ export function SettingsForm() {
     facebook: settings.social_links.facebook || '',
     instagram: settings.social_links.instagram || '',
     youtube: settings.social_links.youtube || '',
-    twitter: settings.social_links.twitter || '',
     weekdays: settings.business_hours.weekdays || '',
     saturday: settings.business_hours.saturday || '',
     sunday: settings.business_hours.sunday || '',
@@ -41,7 +40,6 @@ export function SettingsForm() {
         facebook: form.facebook || undefined,
         instagram: form.instagram || undefined,
         youtube: form.youtube || undefined,
-        twitter: form.twitter || undefined,
       },
       business_hours: {
         weekdays: form.weekdays || undefined,
@@ -61,7 +59,7 @@ export function SettingsForm() {
   }
 
   const inputClass =
-    'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+    'admin-input w-full placeholder:text-slate-400'
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
@@ -152,7 +150,7 @@ export function SettingsForm() {
       <section className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">Social Media</h3>
         <div className="grid gap-4 sm:grid-cols-2">
-          {(['facebook', 'instagram', 'youtube', 'twitter'] as const).map((platform) => (
+          {(['facebook', 'instagram', 'youtube'] as const).map((platform) => (
             <div key={platform}>
               <label className="mb-1 block text-sm font-medium capitalize text-slate-700">
                 {platform}

@@ -80,7 +80,7 @@ export function PersonalInfoPage() {
 
       <div className={accountContentClass}>
         <form onSubmit={handleSave} className="rounded-2xl border border-navy-900/10 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-sm text-navy-700/65">
+          <p className="text-sm text-navy-800">
             Used when you send a WhatsApp enquiry or contact us. Keep your name and mobile number accurate.
           </p>
 

@@ -171,6 +171,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
 
+    if (!isSupabaseConfigured) {
+      setLoading(false)
+      return () => {
+        mounted = false
+      }
+    }
+
     supabase.auth
       .getSession()
       .then(({ data: { session: s } }) => {
@@ -258,6 +265,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInCustomer = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: formatAuthConfigError() }
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) return { error: formatAuthError(error) }
@@ -289,6 +300,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signUpCustomer = async (email: string, password: string, fullName: string, phone: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: formatAuthConfigError() }
+    }
+
     const normalizedPhone = cleanPhone(phone)
 
     const { data, error } = await supabase.auth.signUp({
@@ -332,6 +347,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const resendConfirmationEmail = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: formatAuthConfigError() }
+    }
+
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
@@ -358,6 +377,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const updatePassword = async (password: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: formatAuthConfigError() }
+    }
+
     const { error } = await supabase.auth.updateUser({ password })
 
     if (error) return { error: formatAuthError(error) }

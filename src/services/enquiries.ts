@@ -532,6 +532,24 @@ export function getEnquiryCategoryLabel(category: string | null): string {
   return ENQUIRY_CATEGORY_LABELS[category] || category
 }
 
+/** Customer-facing note only — hides cart/order metadata (address, spin reward, etc.). */
+export function getCustomerFacingEnquiryMessage(message: string | null): string | null {
+  if (!message?.trim()) return null
+
+  const messageIdx = message.indexOf('Message:\n')
+  if (messageIdx >= 0) {
+    const userMessage = message.slice(messageIdx + 'Message:\n'.length).trim()
+    return userMessage || null
+  }
+
+  const isStructuredOrderNote =
+    message.includes('Delivery Address:') || message.startsWith('Registered customer')
+
+  if (isStructuredOrderNote) return null
+
+  return message.trim()
+}
+
 export function parseEnquiryMessage(message: string | null): {
   email: string | null
   category: string | null
