@@ -15,6 +15,7 @@ import { ProductTagBadge } from './ProductTagBadge'
 import { WishlistButton } from './WishlistButton'
 import { ProductHighlightBadges } from './ProductHighlightBadges'
 import { isCardVisibleProductTag } from '@/lib/productTags'
+import { isPriorityProductIndex } from './ProductImage'
 
 interface ProductCardProps {
   product: Product
@@ -150,6 +151,8 @@ export const ProductCard = memo(function ProductCard({
   const isElite = isEliteProductTag(product.tag)
   const showCategory = product.category && !isCardVisibleProductTag(product.tag)
   const hasProductImage = Boolean(product.image_url?.trim())
+  const priorityImage =
+    variant === 'featured' || variant === 'featured-hero' || isPriorityProductIndex(index)
 
   if (variant === 'catalogue') {
     return <CatalogueProductCard product={product} index={index} />
@@ -178,8 +181,9 @@ export const ProductCard = memo(function ProductCard({
             <img
               src={getImageUrl(product.image_url, '/placeholder-product.svg', IMAGE_WIDTH.card)}
               alt={product.name}
-              loading="lazy"
-              decoding="async"
+              loading={priorityImage ? 'eager' : 'lazy'}
+              decoding={priorityImage ? 'sync' : 'async'}
+              fetchPriority={priorityImage ? 'high' : 'auto'}
               className="image-zoom h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-navy-950/50 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-navy-950/20" />
@@ -284,8 +288,9 @@ export const ProductCard = memo(function ProductCard({
           <img
             src={getImageUrl(product.image_url, '/placeholder-product.svg', IMAGE_WIDTH.card)}
             alt={product.name}
-            loading="lazy"
-            decoding="async"
+            loading={priorityImage ? 'eager' : 'lazy'}
+            decoding={priorityImage ? 'sync' : 'async'}
+            fetchPriority={priorityImage ? 'high' : 'auto'}
             className={cn(
               'image-zoom object-cover',
               fillHeight ? 'absolute inset-0 h-full w-full' : 'h-full w-full',
@@ -440,8 +445,9 @@ export const ProductCard = memo(function ProductCard({
             <img
               src={getImageUrl(product.image_url, '/placeholder-product-dark.svg', IMAGE_WIDTH.card)}
               alt={product.name}
-              loading="lazy"
-              decoding="async"
+              loading={priorityImage ? 'eager' : 'lazy'}
+              decoding={priorityImage ? 'sync' : 'async'}
+              fetchPriority={priorityImage ? 'high' : 'auto'}
               className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.04]"
             />
             {hasProductImage && (

@@ -14,7 +14,13 @@ function formatRsAmount(value: string | null): string {
   return value.replace(/^₹\s?/, '').trim()
 }
 
-function PrimeCompactProductCardInner({ product }: { product: Product }) {
+function PrimeCompactProductCardInner({
+  product,
+  priority = false,
+}: {
+  product: Product
+  priority?: boolean
+}) {
   const { inCart, quantity, price, originalPrice, handleQuantityChange, handleAddToCart } =
     useProductCartState(product)
 
@@ -39,7 +45,9 @@ function PrimeCompactProductCardInner({ product }: { product: Product }) {
             src={getImageUrl(product.image_url, '/placeholder-product.svg', IMAGE_WIDTH.card)}
             alt=""
             className="h-full min-h-[5.75rem] w-full object-cover transition duration-300 group-hover:scale-[1.03] sm:min-h-[8rem] lg:aspect-auto lg:min-h-[7.5rem]"
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
+            decoding={priority ? 'sync' : 'async'}
+            fetchPriority={priority ? 'high' : 'auto'}
           />
         </ProductLink>
 

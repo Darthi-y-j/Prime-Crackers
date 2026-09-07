@@ -8,7 +8,7 @@ import { WishlistButton } from '@/components/customer/WishlistButton'
 import { ProductHighlightBadges } from '@/components/customer/ProductHighlightBadges'
 import { ProductLink } from '@/components/customer/ProductLink'
 
-function PrimeProductCardInner({ product }: { product: Product }) {
+function PrimeProductCardInner({ product, priority = false }: { product: Product; priority?: boolean }) {
   const { inCart, quantity, price, originalPrice, handleQuantityChange, handleAddToCart } =
     useProductCartState(product)
   const brand = getDisplayBrand(product.brand)
@@ -28,7 +28,9 @@ function PrimeProductCardInner({ product }: { product: Product }) {
             src={getImageUrl(product.image_url, '/placeholder-product.svg', IMAGE_WIDTH.card)}
             alt=""
             className="aspect-[5/4] w-full object-cover transition duration-500 group-hover:scale-105"
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
+            decoding={priority ? 'sync' : 'async'}
+            fetchPriority={priority ? 'high' : 'auto'}
           />
         </ProductLink>
 

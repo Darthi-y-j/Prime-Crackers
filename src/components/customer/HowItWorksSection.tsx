@@ -135,9 +135,9 @@ export function HowItWorksSection() {
         <img
           src={HOW_IT_WORKS_BG_FALLBACK}
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
-          fetchPriority="low"
+          fetchPriority="high"
           className="h-full w-full object-cover object-[center_35%]"
         />
       </picture>

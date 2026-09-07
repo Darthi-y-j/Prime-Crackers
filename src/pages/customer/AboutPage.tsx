@@ -276,7 +276,7 @@ export function AboutPage() {
 
         {/* CTA — edge-to-edge celebration band */}
         <section className="relative w-full overflow-hidden" data-reveal="fade-up">
-          <OptimizedBackground src={FESTIVE_HEADER_BG} />
+          <OptimizedBackground src={FESTIVE_HEADER_BG} priority={false} />
           <div
             className="absolute inset-0 bg-gradient-to-r from-[#004D55]/96 via-[#003840]/92 to-[#004D55]/88"
             aria-hidden="true"

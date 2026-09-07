@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react'
 import { getImageUrl, IMAGE_WIDTH, cn } from '@/lib/utils'
 
 interface ProductImageProps {
@@ -9,33 +8,29 @@ interface ProductImageProps {
   width?: number
 }
 
-export function ProductImage({ src, alt, className, priority = false, width = IMAGE_WIDTH.detail }: ProductImageProps) {
-  const [loaded, setLoaded] = useState(false)
+/** Product thumbnail — always visible (no fade-in); uses resized Supabase URLs. */
+export function ProductImage({
+  src,
+  alt,
+  className,
+  priority = false,
+  width = IMAGE_WIDTH.detail,
+}: ProductImageProps) {
   const imageSrc = getImageUrl(src, '/placeholder-product.svg', width, width)
-
-  const imgRef = useCallback(
-    (node: HTMLImageElement | null) => {
-      if (node?.complete && node.naturalWidth > 0) {
-        setLoaded(true)
-      }
-    },
-    [imageSrc],
-  )
 
   return (
     <img
-      ref={imgRef}
       src={imageSrc}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
-      decoding="async"
+      decoding={priority ? 'sync' : 'async'}
       fetchPriority={priority ? 'high' : 'auto'}
-      onLoad={() => setLoaded(true)}
-      className={cn(
-        priority ? 'opacity-100' : loaded ? 'opacity-100' : 'opacity-0',
-        !priority && 'transition-opacity duration-200',
-        className,
-      )}
+      className={cn(className)}
     />
   )
+}
+
+/** First visible rows in the shop grid load immediately. */
+export function isPriorityProductIndex(index: number): boolean {
+  return index < 12
 }

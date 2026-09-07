@@ -12,6 +12,7 @@ import { ProductBrandBadge } from './ProductBrandBadge'
 import { ProductTagBadge } from './ProductTagBadge'
 import { ProductHighlightBadges } from './ProductHighlightBadges'
 import { getCardDescriptionClass, getCardCategoryClass, getCardTitleClass, CARD_TITLE_BASE_CLASS, getCardViewButtonClass, getCardPerforationDotClass, getCardPerforationLineClass, isEliteProductTag } from '@/lib/productCardThemes'
+import { isPriorityProductIndex } from './ProductImage'
 import { isCardVisibleProductTag } from '@/lib/productTags'
 
 interface CatalogueProductCardProps {
@@ -19,7 +20,11 @@ interface CatalogueProductCardProps {
   index?: number
 }
 
-export const CatalogueProductCard = memo(function CatalogueProductCard({ product }: CatalogueProductCardProps) {
+export const CatalogueProductCard = memo(function CatalogueProductCard({
+  product,
+  index = 0,
+}: CatalogueProductCardProps) {
+  const priorityImage = isPriorityProductIndex(index)
   const { inCart, quantity, price, originalPrice, handleQuantityChange, handleAddToCart } =
     useProductCartState(product)
 
@@ -35,8 +40,9 @@ export const CatalogueProductCard = memo(function CatalogueProductCard({ product
           <img
             src={getImageUrl(product.image_url, '/placeholder-product.svg', IMAGE_WIDTH.card)}
             alt={product.name}
-            loading="lazy"
-            decoding="async"
+            loading={priorityImage ? 'eager' : 'lazy'}
+            decoding={priorityImage ? 'sync' : 'async'}
+            fetchPriority={priorityImage ? 'high' : 'auto'}
             className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10" />
