@@ -10,6 +10,11 @@ import { PrimeLayout } from '@/layouts/PrimeLayout'
 import { AdminLayout } from '@/layouts/AdminLayout'
 import { LoadingState } from '@/components/customer/LoadingState'
 import { ScrollToTop } from '@/components/shared/ScrollToTop'
+import { LoginPage } from '@/pages/customer/LoginPage'
+import { RegisterPage } from '@/pages/customer/RegisterPage'
+import { ForgotPasswordPage } from '@/pages/customer/ForgotPasswordPage'
+import { ResetPasswordPage } from '@/pages/customer/ResetPasswordPage'
+import { AdminLoginPage } from '@/pages/admin/AdminLoginPage'
 
 const HomePage = lazy(() => import('@/pages/customer/HomePage').then((m) => ({ default: m.HomePage })))
 const AboutPage = lazy(() => import('@/pages/customer/AboutPage').then((m) => ({ default: m.AboutPage })))
@@ -25,16 +30,6 @@ const PrimeProductDetailPage = lazy(() =>
     default: m.PrimeProductDetailPage,
   })),
 )
-const LoginPage = lazy(() => import('@/pages/customer/LoginPage').then((m) => ({ default: m.LoginPage })))
-const ForgotPasswordPage = lazy(() =>
-  import('@/pages/customer/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })),
-)
-const ResetPasswordPage = lazy(() =>
-  import('@/pages/customer/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })),
-)
-const RegisterPage = lazy(() =>
-  import('@/pages/customer/RegisterPage').then((m) => ({ default: m.RegisterPage })),
-)
 const AccountPage = lazy(() => import('@/pages/customer/AccountPage').then((m) => ({ default: m.AccountPage })))
 const AuthConfirmPage = lazy(() =>
   import('@/pages/customer/AuthConfirmPage').then((m) => ({ default: m.AuthConfirmPage })),
@@ -49,9 +44,6 @@ const DeliveryPage = lazy(() =>
   import('@/pages/customer/DeliveryPage').then((m) => ({ default: m.DeliveryPage })),
 )
 
-const AdminLoginPage = lazy(() =>
-  import('@/pages/admin/AdminLoginPage').then((m) => ({ default: m.AdminLoginPage })),
-)
 const AdminDashboardPage = lazy(() =>
   import('@/pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })),
 )

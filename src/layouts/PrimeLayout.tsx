@@ -12,7 +12,7 @@ import { getCategories } from '@/services/categories'
 import { getProducts } from '@/services/products'
 import { ScrollRevealInit } from '@/components/shared/ScrollRevealInit'
 import { FloatingActionButtons } from '@/components/customer/FloatingActionButtons'
-import { preloadSiteImages } from '@/lib/preloadSiteImages'
+import { preloadSiteImagesDeferred } from '@/lib/preloadSiteImages'
 import { cn } from '@/lib/utils'
 
 export function PrimeLayout() {
@@ -24,10 +24,10 @@ export function PrimeLayout() {
     (isHome || location.pathname === '/wishlist' || location.pathname.startsWith('/products/'))
 
   useEffect(() => {
-    preloadSiteImages()
+    preloadSiteImagesDeferred(location.pathname)
     void getCategories().catch(() => undefined)
     void getProducts({ sortBy: 'sort_order', lite: true }).catch(() => undefined)
-  }, [])
+  }, [location.pathname])
 
   useEffect(() => {
     if (location.hash === '#shop') {
