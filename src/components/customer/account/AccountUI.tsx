@@ -272,6 +272,6 @@ export function ToggleRow({ label, description, checked, onChange }: ToggleRowPr
 }
 
 export const accountInputClass =
-  'w-full rounded-xl border border-[#004D55]/15 bg-white px-3.5 py-2.5 text-sm text-[#004D55] placeholder:text-[#004D55]/40 transition focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/25'
+  'w-full rounded-xl border border-[#004D55]/15 bg-white px-3.5 py-2.5 text-sm text-[#004D55] placeholder:text-slate-400 transition focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/25'
 
 export const accountLabelClass = 'mb-1.5 block text-xs font-semibold text-[#004D55]/70'

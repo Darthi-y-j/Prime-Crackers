@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { COMPANY_EMAIL_SENDER_NAME, getAuthEmailSenderHint } from '@/lib/companyEmail'
 import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
+import { isSupabaseConfigured } from '@/lib/supabase'
 
 function isEmailNotConfirmedError(message: string): boolean {
   const lower = message.toLowerCase()
@@ -133,6 +134,16 @@ export function LoginPage() {
               <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{info}</div>
             )}
 
+            {import.meta.env.DEV && !isSupabaseConfigured && (
+              <div className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200/80">
+                Supabase is not configured. Copy <code className="text-xs">.env.example</code> to{' '}
+                <code className="text-xs">.env</code>, add your{' '}
+                <code className="text-xs">VITE_SUPABASE_URL</code> and{' '}
+                <code className="text-xs">VITE_SUPABASE_ANON_KEY</code>, then restart{' '}
+                <code className="text-xs">npm run dev</code>.
+              </div>
+            )}
+
             {error && !emailNotConfirmed && (
               <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
             )}
@@ -191,7 +202,7 @@ export function LoginPage() {
 
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || (import.meta.env.DEV && !isSupabaseConfigured)}
               className="mt-6 w-full rounded-xl bg-[#FFC107] py-3 text-sm font-bold text-[#004D55] shadow-md transition hover:bg-[#FFD54F] disabled:opacity-60"
             >
               {submitting ? 'Signing in...' : 'Sign In'}
