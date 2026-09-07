@@ -41,7 +41,7 @@ export function PrimeProductGroupedViews({
   if (view === 'card') {
     return (
       <div className="space-y-6">
-        {groups.map((group) => (
+        {groups.map((group, groupIndex) => (
           <section key={group.id} id={`category-${group.id}`} className="scroll-mt-44">
             <div className="overflow-hidden rounded-xl border-2 border-[#004D55]/15 bg-white shadow-md">
               {showCategoryHeaders && <PrimeCategoryHeader name={group.name} />}
@@ -52,7 +52,7 @@ export function PrimeProductGroupedViews({
                     data-reveal="scale-in"
                     style={{ '--reveal-delay': `${(i % 6) * 50}ms` } as CSSProperties}
                   >
-                    <PrimeProductCard product={product} />
+                    <PrimeProductCard product={product} priority={groupIndex === 0 && i < 12} />
                   </div>
                 ))}
               </div>
@@ -65,7 +65,7 @@ export function PrimeProductGroupedViews({
 
   return (
     <div className="space-y-6">
-        {groups.map((group) => (
+        {groups.map((group, groupIndex) => (
           <section key={group.id} id={`category-${group.id}`} className="scroll-mt-44">
             <div className="overflow-hidden rounded-xl border-2 border-[#004D55]/15 bg-white shadow-md">
               {showCategoryHeaders && <PrimeCategoryHeader name={group.name} />}
@@ -76,7 +76,7 @@ export function PrimeProductGroupedViews({
                   data-reveal="scale-in"
                   style={{ '--reveal-delay': `${(i % 6) * 50}ms` } as CSSProperties}
                 >
-                  <PrimeProductCompactCard product={product} />
+                  <PrimeProductCompactCard product={product} priority={groupIndex === 0 && i < 8} />
                 </div>
               ))}
             </div>

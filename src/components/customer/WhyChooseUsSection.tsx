@@ -100,9 +100,9 @@ function FeatureCard({
             <img
               src={PREMIUM_QUALITY_IMAGE_FALLBACK}
               alt=""
-              loading="lazy"
+              loading="eager"
               decoding="async"
-              fetchPriority="low"
+              fetchPriority="high"
               className="h-full w-full object-cover object-[center_35%]"
             />
           </picture>

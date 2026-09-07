@@ -98,7 +98,8 @@ export function getImageUrl(
 
   const renderUrl = url.replace(SUPABASE_OBJECT_PATH, SUPABASE_RENDER_PATH)
   const h = height ?? Math.round((width * 3) / 4)
-  return `${renderUrl}?width=${width}&height=${h}&quality=80&resize=${resize}`
+  const quality = width <= IMAGE_WIDTH.thumb ? 70 : width <= IMAGE_WIDTH.card ? 75 : 80
+  return `${renderUrl}?width=${width}&height=${h}&quality=${quality}&resize=${resize}`
 }
 
 /** 4:4 (1:1) category artwork from Supabase — never crop to 4:3 */

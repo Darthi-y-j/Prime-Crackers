@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 interface OptimizedBackgroundProps {
   src: string
   alt?: string
-  /** Above-the-fold backgrounds — eager load + high fetch priority */
+  /** Eager load + preload (default true — backgrounds should appear without pop-in). */
   priority?: boolean
   className?: string
   imgClassName?: string
@@ -14,12 +14,12 @@ interface OptimizedBackgroundProps {
 
 /**
  * Decorative full-bleed background using WebP with PNG/JPG fallback.
- * Prefer this over CSS background-image for faster decode and browser prioritization.
+ * Always renders at full opacity — no lazy fade-in.
  */
 export function OptimizedBackground({
   src,
   alt = '',
-  priority = false,
+  priority = true,
   className,
   imgClassName,
   style,

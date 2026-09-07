@@ -326,7 +326,7 @@ export function ContactPage() {
 
         {/* Bottom CTA */}
         <section className="relative w-full overflow-hidden" data-reveal="fade-up">
-          <OptimizedBackground src={PRIME_BRAND.contactCtaBg} />
+          <OptimizedBackground src={PRIME_BRAND.contactCtaBg} priority={false} />
           <div
             className="absolute inset-0 bg-gradient-to-r from-[#004D55]/85 via-[#003840]/78 to-[#004D55]/82"
             aria-hidden="true"

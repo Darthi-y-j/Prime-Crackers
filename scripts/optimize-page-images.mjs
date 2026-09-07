@@ -4,53 +4,54 @@ import fs from 'node:fs'
 
 const publicDir = path.resolve('public')
 
-/** Large decorative backgrounds — resized + WebP for faster page loads. */
-const PAGE_BACKGROUNDS = [
-  'hero-fireworks-bg.png',
-  'contact-cta-bg.png',
-  'page-header-bg.png',
-  'about-header-bg.png',
-  'festive-header-bg.png',
-  'login-bg.png',
-  'login-card-bg.png',
-  'account-bg.png',
-  'safety-dos-donts-bg.png',
-  'why-choose-bg.png',
-  'prime-storefront-bg.png',
-  'about-our-story-bg.jpg',
-  'about-visit-us-bg.jpg',
-]
+const SKIP_DIRS = new Set(['brands'])
+const SKIP_NAME = /^favicon|^apple-touch|^og-image/i
+const MIN_BYTES = 48 * 1024
 
-const MAX_WIDTH = 1920
-const WEBP_QUALITY = 82
-
-async function optimizeImage(filename) {
-  const input = path.join(publicDir, filename)
-  if (!fs.existsSync(input)) {
-    console.warn(`Skip (missing): ${filename}`)
-    return
+function collectRasterFiles(dir, out = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      if (!SKIP_DIRS.has(entry.name)) collectRasterFiles(full, out)
+      continue
+    }
+    if (!/\.(png|jpe?g)$/i.test(entry.name) || SKIP_NAME.test(entry.name)) continue
+    if (fs.statSync(full).size < MIN_BYTES) continue
+    out.push(path.relative(publicDir, full).replace(/\\/g, '/'))
   }
+  return out
+}
 
-  const webpName = filename.replace(/\.(png|jpe?g)$/i, '.webp')
+function maxWidthFor(file) {
+  if (/step-bg|card\.|wide-variety|competitive|customer-support|trusted-service|fast-delivery|premium-quality/i.test(file)) {
+    return 960
+  }
+  if (/hero|header|bg|cta|storefront|works|visit|story|account|login|safety|contact|festive|page-header|why-choose/i.test(file)) {
+    return 1920
+  }
+  return 1400
+}
+
+async function optimizeImage(relativePath) {
+  const input = path.join(publicDir, relativePath)
+  const webpName = relativePath.replace(/\.(png|jpe?g)$/i, '.webp')
   const output = path.join(publicDir, webpName)
   const before = fs.statSync(input).size
+  const maxWidth = maxWidthFor(relativePath)
 
   await sharp(input)
-    .resize(MAX_WIDTH, null, { withoutEnlargement: true, fit: 'inside' })
-    .webp({ quality: WEBP_QUALITY, effort: 4 })
+    .resize(maxWidth, null, { withoutEnlargement: true, fit: 'inside' })
+    .webp({ quality: 80, effort: 4 })
     .toFile(output)
 
   const after = fs.statSync(output).size
   const saved = Math.round((1 - after / before) * 100)
-  console.log(`Wrote ${webpName} (${formatKb(before)} → ${formatKb(after)}, −${saved}%)`)
+  console.log(`Wrote ${webpName} (${Math.round(before / 1024)} KB → ${Math.round(after / 1024)} KB, −${saved}%)`)
 }
 
-function formatKb(bytes) {
-  return `${Math.round(bytes / 1024)} KB`
-}
-
-for (const file of PAGE_BACKGROUNDS) {
+const files = collectRasterFiles(publicDir)
+console.log(`Optimizing ${files.length} raster images…`)
+for (const file of files) {
   await optimizeImage(file)
 }
-
-console.log('Page background WebP optimization complete.')
+console.log('Public image WebP optimization complete.')
