@@ -23,6 +23,12 @@ function collectRasterFiles(dir, out = []) {
 }
 
 function maxWidthFor(file) {
+  if (/login-card/i.test(file)) {
+    return 800
+  }
+  if (/login-bg|account-bg/i.test(file)) {
+    return 1200
+  }
   if (/step-bg|card\.|wide-variety|competitive|customer-support|trusted-service|fast-delivery|premium-quality/i.test(file)) {
     return 960
   }
@@ -32,16 +38,22 @@ function maxWidthFor(file) {
   return 1400
 }
 
+function webpQualityFor(file) {
+  if (/login|account-bg|card\.|step-bg/i.test(file)) return 72
+  return 80
+}
+
 async function optimizeImage(relativePath) {
   const input = path.join(publicDir, relativePath)
   const webpName = relativePath.replace(/\.(png|jpe?g)$/i, '.webp')
   const output = path.join(publicDir, webpName)
   const before = fs.statSync(input).size
   const maxWidth = maxWidthFor(relativePath)
+  const quality = webpQualityFor(relativePath)
 
   await sharp(input)
     .resize(maxWidth, null, { withoutEnlargement: true, fit: 'inside' })
-    .webp({ quality: 80, effort: 4 })
+    .webp({ quality, effort: 4 })
     .toFile(output)
 
   const after = fs.statSync(output).size

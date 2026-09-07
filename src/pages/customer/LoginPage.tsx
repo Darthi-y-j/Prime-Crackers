@@ -46,9 +46,17 @@ export function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold-500 border-t-transparent" />
-      </div>
+      <>
+        <SEO title="Login" description="Sign in to your Prime Crackers account to send enquiries." noIndex />
+        <div className="relative flex min-h-[calc(100vh-10rem)] items-center justify-center overflow-hidden px-4 py-10 sm:px-6 sm:py-14">
+          <OptimizedBackground src={PRIME_BRAND.loginBg} priority />
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/25 to-[#004D55]/15"
+            aria-hidden="true"
+          />
+          <div className="relative z-10 flex h-8 w-8 animate-spin rounded-full border-2 border-gold-500 border-t-transparent" />
+        </div>
+      </>
     )
   }
 
