@@ -109,27 +109,20 @@ function PrimeProductCardInner({ product, priority = false }: { product: Product
             aria-hidden="true"
           />
 
-          <div className="relative flex items-end justify-between gap-1 sm:gap-2">
-            <div className="min-w-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#004D55]/55 sm:text-[10px]">
-                Offer price
-              </p>
-              <div className="mt-0.5 flex min-w-0 flex-nowrap items-baseline gap-1.5 sm:gap-2">
-                {originalPrice && (
-                  <span className="shrink-0 text-[11px] font-semibold tabular-nums text-slate-400 line-through sm:text-sm">
-                    {originalPrice}
-                  </span>
-                )}
-                <span className="shrink-0 text-lg font-extrabold tabular-nums leading-none text-[#E65100] sm:text-2xl">
-                  {price ?? 'Enquire'}
+          <div className="relative min-w-0">
+            <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#004D55]/55 sm:text-[10px]">
+              Offer price
+            </p>
+            <div className="mt-0.5 flex min-w-0 flex-wrap items-baseline gap-1.5 sm:gap-2">
+              {originalPrice && (
+                <span className="shrink-0 text-[11px] font-semibold tabular-nums text-slate-400 line-through sm:text-sm">
+                  {originalPrice}
                 </span>
-              </div>
-            </div>
-            {hasDiscount && (
-              <span className="shrink-0 rounded-full bg-gradient-to-r from-[#E65100] to-[#FF8C00] px-2 py-1 text-[9px] font-extrabold uppercase tracking-wide text-white shadow-sm sm:px-2.5 sm:text-[10px]">
-                Save {product.discount_percentage}%
+              )}
+              <span className="shrink-0 text-lg font-extrabold tabular-nums leading-none text-[#E65100] sm:text-2xl">
+                {price ?? 'Enquire'}
               </span>
-            )}
+            </div>
           </div>
 
           <div className="relative mt-2 sm:mt-3">
