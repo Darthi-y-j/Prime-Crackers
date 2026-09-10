@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
   Trash2,
   ShoppingBag,
@@ -291,7 +291,10 @@ function EnquiryForm({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_12px_40px_rgba(0,77,85,0.1)]">
+      <div
+        id="send-enquiry"
+        className="scroll-mt-24 overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_12px_40px_rgba(0,77,85,0.1)]"
+      >
         <div className="relative border-b border-[#004D55]/8 bg-[#FFF8E1]/40 px-5 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#25D366]/15 ring-1 ring-[#25D366]/30">
@@ -533,6 +536,7 @@ export function CartPage() {
   const { settings } = useSettings()
   const { showToast } = useToast()
   const { user, isCustomer } = useAuth()
+  const location = useLocation()
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [addressFields, setAddressFields] = useState<DeliveryAddressFields>(emptyAddressFields)
@@ -556,6 +560,13 @@ export function CartPage() {
     if (phone && !customerPhone) setCustomerPhone(phone)
     setPrefilledFromAccount(true)
   }, [isCustomer, user, prefilledFromAccount, customerName, customerPhone])
+
+  useEffect(() => {
+    if (location.hash !== '#send-enquiry') return
+    requestAnimationFrame(() => {
+      document.getElementById('send-enquiry')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [location.pathname, location.hash])
 
   const handleSpinRewardChange = useCallback((reward: SpinReward | null, discount: number) => {
     setSpinReward(reward)
@@ -889,12 +900,13 @@ export function CartPage() {
             </div>
             <button
               type="button"
-              onClick={handleSendEnquiry}
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-extrabold text-white shadow-lg disabled:opacity-60"
+              onClick={() => {
+                document.getElementById('send-enquiry')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-extrabold text-white shadow-lg"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
-              WhatsApp
+              <MessageCircle className="h-4 w-4" />
+              Send Enquiry
             </button>
           </div>
         </div>
