@@ -8,6 +8,9 @@ import { PRIME_BRAND } from '@/lib/primeBrand'
 
 const QUICK_LINKS = [
   { to: '/#shop', label: 'Products' },
+  { to: '/categories', label: 'Categories' },
+  { to: '/gift-box', label: 'Gift Boxes' },
+  { to: '/cart', label: 'Cart' },
   { to: '/about', label: 'About Us' },
   { to: '/contact', label: 'Contact' },
   { to: '/faq', label: 'FAQ' },

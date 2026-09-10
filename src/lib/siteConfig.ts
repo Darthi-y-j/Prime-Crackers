@@ -14,7 +14,7 @@ export const DEFAULT_DESCRIPTION =
   'Prime Crackers — We Bring Festivals. Buy Diwali crackers wholesale & retail from Sivakasi. Fancy items, rockets, sparklers & more. All-India delivery.'
 
 /** Homepage document title — ~50 chars, aligned with on-page H1 keywords. */
-export const HOME_PAGE_TITLE = 'Prime Crackers | Diwali Crackers Wholesale Sivakasi'
+export const HOME_PAGE_TITLE = 'Sivakasi Diwali Fireworks Wholesale | Prime Crackers'
 
 /** OG image dimensions (public/og-image.png). */
 export const OG_IMAGE_WIDTH = 4167

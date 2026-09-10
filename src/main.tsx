@@ -6,6 +6,8 @@ import { preloadRouteImages } from '@/lib/preloadSiteImages'
 
 preloadRouteImages(window.location.pathname)
 
+document.getElementById('static-seo-fallback')?.remove()
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
