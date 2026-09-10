@@ -7,7 +7,7 @@ import { groupProductsByCategory } from '@/components/customer/CategoryGroupedPr
 import { getProducts, getCachedCatalogueProducts } from '@/services/products'
 import { getCategories, getCachedCatalogueCategories } from '@/services/categories'
 import { filterProductsByQuery } from '@/lib/productSearch'
-import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
+import { logLandingPageApi } from '@/lib/landingPageApiLog'
 import { PRODUCT_SORT_OPTIONS, sortProducts, type ProductSortOption } from '@/lib/productSort'
 import { usePrimeShop } from '@/contexts/PrimeShopContext'
 import { usePrimeProductViewMode } from '@/hooks/usePrimeProductViewMode'
