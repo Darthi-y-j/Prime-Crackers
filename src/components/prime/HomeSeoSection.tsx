@@ -12,7 +12,8 @@ import { cn } from '@/lib/utils'
 const PESO_SAFETY_URL = 'https://peso.gov.in/web/en/fireworks'
 const SIVAKASI_WIKI_URL = 'https://en.wikipedia.org/wiki/Sivakasi'
 const CELEBRATION_IMG = '/about-celebration-sparkler.webp'
-const SECTION_BG = '/home-seo-festive-bg.png'
+const SECTION_BG_WEBP = '/home-seo-festive-bg.webp'
+const SECTION_BG_FALLBACK = '/home-seo-festive-bg.png'
 
 const PAGE_LINKS = [
   { to: '/#shop', label: 'Shop' },
@@ -81,17 +82,21 @@ export function HomeSeoSection() {
 
   return (
     <section
-      className="relative isolate overflow-hidden py-8 sm:py-10"
+      className="relative isolate overflow-hidden py-8 sm:py-10 [content-visibility:auto]"
       aria-labelledby="home-seo-heading"
     >
-      <img
-        src={SECTION_BG}
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        loading="lazy"
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[center_42%]"
-      />
+      <picture className="pointer-events-none absolute inset-0 z-0">
+        <source srcSet={SECTION_BG_WEBP} type="image/webp" />
+        <img
+          src={SECTION_BG_FALLBACK}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          loading="lazy"
+          fetchPriority="low"
+          className="h-full w-full object-cover object-[center_42%]"
+        />
+      </picture>
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
         <AnimateIn animation="fade-up">
@@ -117,13 +122,24 @@ export function HomeSeoSection() {
                   </p>
                 </div>
 
-                <div className="absolute left-3 top-12 flex items-center gap-1 text-white/90">
-                  <MapPin className="h-3 w-3 text-[#FFC107]" aria-hidden="true" />
-                  <span className="text-[10px] font-medium">Sivakasi, Tamil Nadu</span>
+                <div className="absolute left-3 top-16 right-3 rounded-xl border border-white/15 bg-black/50 p-2.5 sm:top-[4.75rem] sm:p-3">
+                  <div className="flex items-start gap-2">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
+                      <MapPin className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
+                        Based in Sivakasi
+                      </p>
+                      <p className="mt-0.5 text-[10px] leading-snug text-white/85 sm:text-[11px]">
+                        Alamarathupatti — heart of India&apos;s fireworks industry
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="absolute inset-x-2 bottom-2 grid gap-1.5 sm:inset-x-3 sm:bottom-3">
-                  <div className="rounded-xl border border-white/15 bg-black/40 p-2.5 backdrop-blur-md sm:p-3">
+                <div className="absolute inset-x-2 bottom-1 grid gap-1.5 sm:inset-x-3 sm:bottom-1.5">
+                  <div className="rounded-xl border border-white/15 bg-black/50 p-2.5 sm:p-3">
                     <div className="flex items-start gap-2">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
                         <Shield className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
@@ -144,7 +160,7 @@ export function HomeSeoSection() {
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-xl border border-white/15 bg-black/40 p-2.5 backdrop-blur-md sm:p-3">
+                  <div className="rounded-xl border border-white/15 bg-black/50 p-2.5 sm:p-3">
                     <div className="flex items-start gap-2">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
                         <Truck className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />

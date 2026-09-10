@@ -22,7 +22,9 @@ export function HomePage() {
       <PrimeServiceBar />
       <PrimeCategoryGrid />
       <PrimeWhyChooseBar />
-      <HomeSeoSection />
+      <LazySection minHeight="320px" rootMargin="200px 0px">
+        <HomeSeoSection />
+      </LazySection>
       <LazySection minHeight="520px">
         <PrimeShopCatalog />
       </LazySection>
