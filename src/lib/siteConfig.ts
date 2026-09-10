@@ -1,5 +1,5 @@
 /** Canonical production site URL — used for SEO meta tags and sitemap generation. */
-export const SITE_URL = 'https://www.primecrackers.in'
+export const SITE_URL = 'https://www.primecracker.com'
 
 export const SITE_NAME = 'Prime Crackers'
 

@@ -2,13 +2,20 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "primecrackers.in"
-        }
-      ],
-      "destination": "https://www.primecrackers.in/:path*",
+      "has": [{ "type": "host", "value": "primecrackers.in" }],
+      "destination": "https://www.primecracker.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.primecrackers.in" }],
+      "destination": "https://www.primecracker.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "primecracker.com" }],
+      "destination": "https://www.primecracker.com/:path*",
       "permanent": true
     }
   ],
@@ -27,7 +34,7 @@
       "headers": [
         {
           "key": "Link",
-          "value": "<https://www.primecrackers.in/>; rel=\"canonical\""
+          "value": "<https://www.primecracker.com/>; rel=\"canonical\""
         }
       ]
     }

@@ -1,5 +1,5 @@
 /** Shared SEO constants for build scripts (keep in sync with src/lib/siteConfig.ts). */
-export const SITE_URL = 'https://www.primecrackers.in'
+export const SITE_URL = 'https://www.primecracker.com'
 
 /** Public indexable routes only — no auth, admin, or redirect-only paths. */
 export const SITEMAP_STATIC_ROUTES = [

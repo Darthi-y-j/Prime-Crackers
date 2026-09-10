@@ -21,7 +21,7 @@
 --    Body: paste supabase/email-templates/confirm-signup.html
 --
 -- 4. Authentication → URL configuration
---    Site URL: https://www.primecrackers.in  (or http://localhost:5173 for dev)
+--    Site URL: https://www.primecracker.com  (or http://localhost:5173 for dev)
 --    Redirect URLs: add /auth/confirm for your domain and localhost
 --
 -- 5. Send a test signup from /register and verify the From address.
