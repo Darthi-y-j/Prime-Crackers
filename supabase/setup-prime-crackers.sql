@@ -165,7 +165,7 @@ SELECT
   'We Bring Festivals',
   '+91 63697 73883',
   '916369773883',
-  'primecrackers@gmail.com',
+  'primecrackerssivakasi@gmail.com',
   'Prime Crackers, Chillayanayakanpatti Road, Alamarathupatti, Sivakasi, Tamil Nadu, India',
   'Prime Crackers brings festivals to life with quality crackers from Sivakasi. Wholesale & retail fireworks with all-India delivery.',
   '{

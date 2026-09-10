@@ -1,5 +1,5 @@
 /** Outgoing mail identity for customer auth emails (configure SMTP in Supabase). */
-export const COMPANY_EMAIL = 'primecrackers@gmail.com'
+export const COMPANY_EMAIL = 'primecrackerssivakasi@gmail.com'
 
 export const COMPANY_EMAIL_SENDER_NAME = 'Prime Crackers'
 
