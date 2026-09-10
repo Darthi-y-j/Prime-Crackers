@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/sitemap.xml.js": {
+      "includeFiles": "public/sitemap.xml"
+    }
+  },
   "redirects": [
     {
       "source": "/:path*",
@@ -65,10 +70,9 @@
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|site\\.webmanifest|favicon\\.ico|.*\\..*).*)",
-      "destination": "/index.html"
-    }
+  "routes": [
+    { "src": "/sitemap.xml", "dest": "/api/sitemap.xml" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
