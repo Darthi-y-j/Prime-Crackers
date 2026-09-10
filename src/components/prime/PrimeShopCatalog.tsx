@@ -7,6 +7,7 @@ import { groupProductsByCategory } from '@/components/customer/CategoryGroupedPr
 import { getProducts, getCachedCatalogueProducts } from '@/services/products'
 import { getCategories, getCachedCatalogueCategories } from '@/services/categories'
 import { filterProductsByQuery } from '@/lib/productSearch'
+import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
 import { PRODUCT_SORT_OPTIONS, sortProducts, type ProductSortOption } from '@/lib/productSort'
 import { usePrimeShop } from '@/contexts/PrimeShopContext'
 import { usePrimeProductViewMode } from '@/hooks/usePrimeProductViewMode'
@@ -30,11 +31,19 @@ export function PrimeShopCatalog() {
 
   useEffect(() => {
     let cancelled = false
+    logLandingPageApi('PrimeShopCatalog:fetch:start', {
+      initialCategories: getCachedCatalogueCategories()?.length ?? 0,
+      initialProducts: getCachedCatalogueProducts()?.length ?? 0,
+    })
     void Promise.all([
       getCategories().catch(() => [] as Category[]),
       getProducts({ sortBy: 'sort_order', lite: true }).catch(() => [] as Product[]),
     ]).then(([cats, prods]) => {
       if (cancelled) return
+      logLandingPageApi('PrimeShopCatalog:fetch:done', {
+        categories: cats.length,
+        products: prods.length,
+      })
       setCategories(cats)
       setProducts(prods)
       setLoading(false)

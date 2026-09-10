@@ -31,19 +31,17 @@ export function HeroMemberOfferCard() {
 
   return (
     <div className="mt-3 w-full max-w-xl">
-      <div className="flex items-center gap-2 rounded-full border-2 border-[#FFC107]/55 bg-gradient-to-r from-[#004D55]/75 via-[#003840]/65 to-[#004D55]/75 p-1 pl-1.5 shadow-[0_4px_24px_rgba(255,193,7,0.2)] backdrop-blur-md sm:gap-2.5 sm:pl-2">
+      <div className="flex items-center gap-2.5 rounded-full border border-[#FFC107]/40 bg-[#004D55]/55 px-2 py-2 backdrop-blur-md sm:gap-3 sm:px-2.5">
         <span
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFC107] shadow-[0_0_16px_rgba(255,193,7,0.45)] sm:h-10 sm:w-10"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFC107] sm:h-10 sm:w-10"
           aria-hidden="true"
         >
           <Sparkles className="h-4 w-4 text-[#004D55] sm:h-[18px] sm:w-[18px]" />
         </span>
 
-        <p className="min-w-0 flex-1 py-1 text-[11px] leading-snug text-white sm:text-xs">
+        <p className="min-w-0 flex-1 py-0.5 text-[11px] leading-snug text-white sm:text-xs">
           <span className="font-extrabold uppercase tracking-wide text-[#FFC107]">Login free</span>
-          <span className="text-white/90"> — unlock </span>
-          <span className="font-bold text-white">50% OFF</span>
-          <span className="hidden text-white/80 sm:inline">, spin-to-win &amp; track orders</span>
+          <span className="text-white/90"> — spin-to-win &amp; track orders</span>
         </p>
 
         <Link

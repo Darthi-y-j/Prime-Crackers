@@ -1,5 +1,6 @@
 import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
 import { supabaseRestGet } from '@/lib/supabaseRest'
+import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
 import { CACHE_KEYS, readSessionCache, writeSessionCache } from '@/lib/sessionCache'
 import type { Category } from '@/types/database'
 
@@ -13,6 +14,15 @@ export async function getCategories(
   activeOnly = true,
   archived: CategoryArchiveFilter = 'active',
 ): Promise<Category[]> {
+  const cached = activeOnly && archived === 'active' ? getCachedCatalogueCategories() : null
+  if (cached?.length) {
+    logLandingPageApi('getCategories:cache_hit', { count: cached.length })
+    return cached
+  }
+
+  logLandingPageApi('getCategories:start', { activeOnly, archived })
+  const startedAt = performance.now()
+
   const fetchRest = (withArchiveFilter: boolean) => {
     const parts = ['select=*', 'order=sort_order.asc']
     if (activeOnly) {
@@ -30,6 +40,10 @@ export async function getCategories(
     if (activeOnly && archived === 'active') {
       writeSessionCache(CACHE_KEYS.catalogueCategories, data)
     }
+    logLandingPageApi('getCategories:done', {
+      count: data.length,
+      ms: Math.round(performance.now() - startedAt),
+    })
     return data
   } catch (error) {
     if (isMissingColumnError(error, 'is_archived')) {
@@ -38,8 +52,17 @@ export async function getCategories(
       if (activeOnly && archived === 'active') {
         writeSessionCache(CACHE_KEYS.catalogueCategories, data)
       }
+      logLandingPageApi('getCategories:done', {
+        count: data.length,
+        ms: Math.round(performance.now() - startedAt),
+        fallback: 'no_is_archived_column',
+      })
       return data
     }
+    logLandingPageApiError('getCategories:error', {
+      ms: Math.round(performance.now() - startedAt),
+      error: error instanceof Error ? error.message : String(error),
+    })
     throw error
   }
 }

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { DEFAULT_SETTINGS, getWebsiteSettings } from '@/services/settings'
 import type { WebsiteSettings } from '@/types/database'
+import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
 
 interface SettingsContextType {
   settings: WebsiteSettings
@@ -16,11 +17,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const loadSettings = async () => {
     setLoading(true)
+    logLandingPageApi('SettingsContext.loadSettings:start')
     try {
       const data = await getWebsiteSettings()
       setSettings(data)
-    } catch {
+      logLandingPageApi('SettingsContext.loadSettings:done', {
+        businessName: data.business_name,
+        fromDefault: data.id === 'default',
+      })
+    } catch (error) {
       setSettings(DEFAULT_SETTINGS)
+      logLandingPageApiError('SettingsContext.loadSettings:failed', {
+        error: error instanceof Error ? error.message : String(error),
+      })
     } finally {
       setLoading(false)
     }

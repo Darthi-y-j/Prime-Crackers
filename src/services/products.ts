@@ -1,5 +1,6 @@
 import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
 import { supabaseRestGet } from '@/lib/supabaseRest'
+import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
 import { CACHE_KEYS, readSessionCache, writeSessionCache } from '@/lib/sessionCache'
 import { isLowStock } from '@/lib/stock'
 import type { Product, ProductFilters } from '@/types/database'
@@ -40,20 +41,50 @@ async function withProductCache(
   const key = getProductCacheKey(filters)
   const cached = productCache.get(key)
   if (cached && Date.now() - cached.at < PRODUCT_CACHE_MS) {
+    logLandingPageApi('getProducts:memory_cache_hit', {
+      count: cached.data.length,
+      filters,
+    })
     return cached.data
   }
 
+  const sessionCached = isCatalogueFilters(filters) ? getCachedCatalogueProducts() : null
+  if (sessionCached?.length) {
+    logLandingPageApi('getProducts:session_cache_hit', {
+      count: sessionCached.length,
+      filters,
+    })
+    productCache.set(key, { data: sessionCached, at: Date.now() })
+    return sessionCached
+  }
+
+  logLandingPageApi('getProducts:start', { filters })
+  const startedAt = performance.now()
+
   const pending = inflight.get(key)
-  if (pending) return pending
+  if (pending) {
+    logLandingPageApi('getProducts:inflight_reuse', { filters })
+    return pending
+  }
 
   const request = withTimeout(fetcher(), REQUEST_TIMEOUT_MS)
     .then((data) => {
       productCache.set(key, { data, at: Date.now() })
       inflight.delete(key)
+      logLandingPageApi('getProducts:done', {
+        count: data.length,
+        ms: Math.round(performance.now() - startedAt),
+        filters,
+      })
       return data
     })
     .catch((error) => {
       inflight.delete(key)
+      logLandingPageApiError('getProducts:error', {
+        ms: Math.round(performance.now() - startedAt),
+        filters,
+        error: error instanceof Error ? error.message : String(error),
+      })
       throw error
     })
 
