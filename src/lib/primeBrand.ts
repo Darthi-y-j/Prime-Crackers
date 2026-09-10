@@ -13,8 +13,8 @@ export const PRIME_BRAND = {
   tagline: 'We Bring Festivals',
   displayName: 'Prime Crackers',
   heroVideo: '/hero-fireworks.mp4',
-  heroPoster: '/hero-fireworks-bg.png',
-  heroImage: '/hero-fireworks-bg.png',
+  heroPoster: '/hero-fireworks-bg.webp',
+  heroImage: '/hero-fireworks-bg.webp',
   /** Fireworks celebration scene — contact page CTA */
   contactCtaBg: '/contact-cta-bg.png',
   /** Teal storefront image used behind inner-page heroes (About, Cart, FAQ, etc.) */
