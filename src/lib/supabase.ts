@@ -1,4 +1,10 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import {
+  isLandingPage,
+  logLandingPageApi,
+  logLandingPageApiError,
+  sanitizeApiUrl,
+} from '@/lib/landingPageApiLog'
 
 /** Project root only — e.g. https://xxx.supabase.co (no /rest/v1 suffix). */
 export function normalizeSupabaseUrl(url: string | undefined): string {
@@ -20,6 +26,19 @@ const supabaseFetch: typeof fetch = (input, init) => {
   const timeoutMs = 12_000
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
+  const landing = isLandingPage()
+  const url =
+    typeof input === 'string'
+      ? input
+      : input instanceof Request
+        ? input.url
+        : String(input)
+  const method = init?.method ?? (input instanceof Request ? input.method : 'GET')
+  const startedAt = performance.now()
+
+  if (landing) {
+    logLandingPageApi('fetch:start', { method, url: sanitizeApiUrl(url) })
+  }
 
   const cleanup = () => clearTimeout(timer)
 
@@ -28,8 +47,28 @@ const supabaseFetch: typeof fetch = (input, init) => {
   }
 
   return fetch(input, { ...init, signal: controller.signal })
+    .then((response) => {
+      if (landing) {
+        logLandingPageApi('fetch:done', {
+          method,
+          url: sanitizeApiUrl(url),
+          status: response.status,
+          ok: response.ok,
+          ms: Math.round(performance.now() - startedAt),
+        })
+      }
+      return response
+    })
     .finally(cleanup)
     .catch((error) => {
+      if (landing) {
+        logLandingPageApiError('fetch:error', {
+          method,
+          url: sanitizeApiUrl(url),
+          ms: Math.round(performance.now() - startedAt),
+          error: error instanceof Error ? error.message : String(error),
+        })
+      }
       if (error instanceof DOMException && error.name === 'AbortError') {
         throw new Error('Supabase request timed out')
       }

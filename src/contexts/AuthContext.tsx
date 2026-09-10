@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
 import { supabase, getSupabaseErrorMessage, isSupabaseConfigured } from '@/lib/supabase'
+import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
 import { getAuthConfirmRedirectUrl, getPasswordResetRedirectUrl } from '@/lib/authRedirects'
 import {
   ADMIN_ACCESS_DENIED_MESSAGE,
@@ -33,13 +34,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 async function verifyAdminAccess(): Promise<boolean> {
+  logLandingPageApi('AuthContext.is_admin:start', { rpc: 'is_admin' })
+  const startedAt = performance.now()
   const { data, error } = await supabase.rpc('is_admin')
 
   if (error) {
+    logLandingPageApiError('AuthContext.is_admin:failed', {
+      ms: Math.round(performance.now() - startedAt),
+      error: error.message,
+    })
     console.error('Admin check failed:', error.message)
     return false
   }
 
+  logLandingPageApi('AuthContext.is_admin:done', {
+    ms: Math.round(performance.now() - startedAt),
+    isAdmin: data === true,
+  })
   return data === true
 }
 
@@ -172,16 +183,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true
 
     if (!isSupabaseConfigured) {
+      logLandingPageApi('AuthContext.getSession:skipped', { reason: 'supabase_not_configured' })
       setLoading(false)
       return () => {
         mounted = false
       }
     }
 
+    logLandingPageApi('AuthContext.getSession:start')
+    const sessionStartedAt = performance.now()
+
     supabase.auth
       .getSession()
       .then(({ data: { session: s } }) => {
         if (!mounted) return
+        logLandingPageApi('AuthContext.getSession:done', {
+          ms: Math.round(performance.now() - sessionStartedAt),
+          hasSession: Boolean(s),
+          userId: s?.user?.id ?? null,
+        })
         setSession(s)
         setUser(s?.user ?? null)
         if (s) {
@@ -192,7 +212,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false)
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        logLandingPageApiError('AuthContext.getSession:failed', {
+          ms: Math.round(performance.now() - sessionStartedAt),
+          error: error instanceof Error ? error.message : String(error),
+        })
         if (mounted) setLoading(false)
       })
 

@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Ticket,
 } from 'lucide-react'
+import { PAYMENT_POLICY_PATH } from '@/lib/paymentPolicyContent'
 import { SEO } from '@/components/shared/SEO'
 import { AnimateIn } from '@/components/customer/AnimateIn'
 import { ProductImage } from '@/components/customer/ProductImage'
@@ -144,7 +145,7 @@ function CartItemCard({
         className="group relative overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white p-3 shadow-sm transition hover:border-[#FFC107]/45 hover:shadow-md sm:p-4"
       >
         <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#FFC107] via-[#E65100] to-[#004D55] opacity-80"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#006670] via-[#004D55] to-[#003840]"
           aria-hidden="true"
         />
 
@@ -470,9 +471,15 @@ function EnquiryForm({
             )}
           </button>
 
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-500">
+          <p className="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-[11px] text-slate-500">
             <ShieldCheck className="h-3.5 w-3.5 text-[#004D55]" />
-            No online payment — enquiry only
+            <span>No online payment — enquiry only</span>
+            <Link
+              to={PAYMENT_POLICY_PATH}
+              className="font-semibold text-[#004D55] underline decoration-[#FFC107]/60 underline-offset-2 hover:text-[#E65100]"
+            >
+              Read why
+            </Link>
           </p>
         </div>
       </div>
@@ -858,16 +865,29 @@ export function CartPage() {
               <AnimateIn animation="fade-up" delay={160}>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {[
-                    { icon: ShieldCheck, text: 'No online payment' },
+                    { icon: ShieldCheck, text: 'No online payment', readWhy: true },
                     { icon: MessageCircle, text: '24/7 WhatsApp support' },
                     { icon: Truck, text: 'All-India delivery' },
-                  ].map(({ icon: Icon, text }) => (
+                  ].map(({ icon: Icon, text, readWhy }) => (
                     <div
                       key={text}
                       className="flex items-center gap-2 rounded-xl border border-[#004D55]/10 bg-white px-3 py-2.5 text-xs font-semibold text-[#004D55]"
                     >
                       <Icon className="h-4 w-4 shrink-0 text-[#FFC107]" />
-                      {text}
+                      <span className="min-w-0">
+                        {text}
+                        {readWhy && (
+                          <>
+                            {' · '}
+                            <Link
+                              to={PAYMENT_POLICY_PATH}
+                              className="font-bold text-[#E65100] underline decoration-[#FFC107]/60 underline-offset-2 hover:text-[#004D55]"
+                            >
+                              Read why
+                            </Link>
+                          </>
+                        )}
+                      </span>
                     </div>
                   ))}
                 </div>

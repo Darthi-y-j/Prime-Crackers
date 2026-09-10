@@ -239,7 +239,7 @@ export function SpinToWinWheel({
           <Link
             to="/login"
             state={{ from: '/cart' }}
-            className="btn-hover-lift mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-festive-500 to-gold-500 px-6 py-3 text-sm font-bold text-navy-950 shadow-lg shadow-festive-500/30"
+            className="btn-hover-lift mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#004D55] to-[#006670] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#004D55]/25 transition hover:from-[#006670] hover:to-[#00838f]"
           >
             <LogIn className="h-4 w-4" />
             Login to Spin

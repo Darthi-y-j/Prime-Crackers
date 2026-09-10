@@ -43,6 +43,9 @@ const TermsPage = lazy(() => import('@/pages/customer/TermsPage').then((m) => ({
 const DeliveryPage = lazy(() =>
   import('@/pages/customer/DeliveryPage').then((m) => ({ default: m.DeliveryPage })),
 )
+const PaymentPolicyPage = lazy(() =>
+  import('@/pages/customer/PaymentPolicyPage').then((m) => ({ default: m.PaymentPolicyPage })),
+)
 
 const AdminDashboardPage = lazy(() =>
   import('@/pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })),
@@ -114,6 +117,7 @@ function App() {
                       <Route path="/gift-box" element={<Navigate to="/" replace />} />
                       <Route path="/faq" element={<FAQPage />} />
                       <Route path="/delivery" element={<DeliveryPage />} />
+                      <Route path="/why-no-online-payment" element={<PaymentPolicyPage />} />
                       <Route path="/safety" element={<SafetyPage />} />
                       <Route path="/privacy" element={<PrivacyPolicyPage />} />
                       <Route path="/terms" element={<TermsPage />} />

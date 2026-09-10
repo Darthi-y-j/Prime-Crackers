@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { CartEnquiryFormData, Enquiry } from '@/types/database'
-import { SITE_LOGO_PATH, SITE_NAME, SITE_WORDMARK_PATH } from '@/lib/siteConfig'
+import { SITE_LOGO_PATH, SITE_NAME } from '@/lib/siteConfig'
 import { BUSINESS_ADDRESS } from '@/lib/businessInfo'
 import { generateEnquiryNumber } from '@/lib/utils'
 
@@ -10,6 +10,14 @@ const NAVY: [number, number, number] = [30, 27, 75]
 const ORBITRON_FONT_FILE = 'Orbitron-Bold.ttf'
 
 let orbitronFontBase64: string | null = null
+
+function formatAddressForPdf(address: string): string {
+  return address
+    .split('\n')
+    .map((line) => line.trim().replace(/,\s*$/, ''))
+    .filter(Boolean)
+    .join(', ')
+}
 
 function formatPdfAmount(price: number | null | undefined): string {
   if (price == null) return '—'
@@ -50,78 +58,6 @@ async function loadImageDataUrl(
       reader.readAsDataURL(blob)
     })
     return { dataUrl, format }
-  } catch {
-    return null
-  }
-}
-
-function loadHtmlImage(dataUrl: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => resolve(img)
-    img.onerror = reject
-    img.src = dataUrl
-  })
-}
-
-/** Trim empty padding from the wordmark PNG so PDF scaling keeps correct proportions. */
-async function loadWordmarkForPdf(
-  path: string,
-): Promise<{ dataUrl: string; aspectRatio: number } | null> {
-  const loaded = await loadImageDataUrl(path)
-  if (!loaded) return null
-
-  try {
-    const img = await loadHtmlImage(loaded.dataUrl)
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return null
-
-    canvas.width = img.naturalWidth
-    canvas.height = img.naturalHeight
-    ctx.drawImage(img, 0, 0)
-
-    const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    let minX = width
-    let minY = height
-    let maxX = 0
-    let maxY = 0
-
-    for (let py = 0; py < height; py++) {
-      for (let px = 0; px < width; px++) {
-        const i = (py * width + px) * 4
-        const r = data[i]!
-        const g = data[i + 1]!
-        const b = data[i + 2]!
-        const a = data[i + 3]!
-        if (a > 20 && r + g + b > 40) {
-          minX = Math.min(minX, px)
-          minY = Math.min(minY, py)
-          maxX = Math.max(maxX, px)
-          maxY = Math.max(maxY, py)
-        }
-      }
-    }
-
-    if (maxX <= minX || maxY <= minY) return null
-
-    const pad = Math.round(Math.min(width, height) * 0.02)
-    const cropX = Math.max(0, minX - pad)
-    const cropY = Math.max(0, minY - pad)
-    const cropW = Math.min(width - cropX, maxX - minX + 1 + pad * 2)
-    const cropH = Math.min(height - cropY, maxY - minY + 1 + pad * 2)
-
-    const out = document.createElement('canvas')
-    out.width = cropW
-    out.height = cropH
-    const outCtx = out.getContext('2d')
-    if (!outCtx) return null
-    outCtx.drawImage(canvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH)
-
-    return {
-      dataUrl: out.toDataURL('image/png'),
-      aspectRatio: cropW / cropH,
-    }
   } catch {
     return null
   }
@@ -177,38 +113,30 @@ export async function downloadCartEnquiryPdf(
   const margin = 14
   let y = margin
 
-  const [fontBase64, logo, wordmark] = await Promise.all([
+  const [fontBase64, logo] = await Promise.all([
     loadOrbitronFont(),
     loadImageDataUrl(SITE_LOGO_PATH),
-    loadWordmarkForPdf(SITE_WORDMARK_PATH),
   ])
   registerOrbitronFont(doc, fontBase64)
 
   const businessName = (options.businessName || SITE_NAME).toUpperCase()
   const logoSize = 18
-  const wordmarkX = margin + logoSize + 3
+  const textX = margin + (logo ? logoSize + 3 : 0)
 
   if (logo) {
     doc.addImage(logo.dataUrl, logo.format, margin, y - 2, logoSize, logoSize)
   }
 
-  if (wordmark) {
-    const wordmarkHeight = 10
-    const wordmarkWidth = wordmarkHeight * wordmark.aspectRatio
-    const wordmarkY = y - 2 + (logoSize - wordmarkHeight) / 2
-    doc.addImage(wordmark.dataUrl, 'PNG', wordmarkX, wordmarkY, wordmarkWidth, wordmarkHeight)
-  } else {
-    doc.setFont('Orbitron', 'bold')
-    doc.setFontSize(16)
-    doc.setTextColor(...BRAND_ORANGE)
-    doc.text(businessName, logo ? wordmarkX : margin, y + 5)
-  }
+  doc.setFont('Orbitron', 'bold')
+  doc.setFontSize(16)
+  doc.setTextColor(...BRAND_ORANGE)
+  doc.text(businessName, textX, y + 5)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(80, 80, 80)
   y += logoSize + 2
-  const addressLines = doc.splitTextToSize(BUSINESS_ADDRESS.replace(/\n/g, ', '), pageWidth - margin * 2)
+  const addressLines = doc.splitTextToSize(formatAddressForPdf(BUSINESS_ADDRESS), pageWidth - margin * 2)
   doc.text(addressLines, margin, y)
   y += addressLines.length * 4
 
