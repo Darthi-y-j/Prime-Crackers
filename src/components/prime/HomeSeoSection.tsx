@@ -1,18 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  ArrowRight,
-  Check,
-  Copy,
-  Link2,
-  MapPin,
-  Package,
-  Percent,
-  Share2,
-  Shield,
-  Sparkles,
-  Truck,
-} from 'lucide-react'
+import { Check, Copy, MapPin, Percent, Share2, Shield, Sparkles, Truck } from 'lucide-react'
 import { AnimateIn } from '@/components/customer/AnimateIn'
 import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { useToast } from '@/contexts/ToastContext'
@@ -24,42 +12,55 @@ import { cn } from '@/lib/utils'
 const PESO_SAFETY_URL = 'https://peso.gov.in/web/en/fireworks'
 const SIVAKASI_WIKI_URL = 'https://en.wikipedia.org/wiki/Sivakasi'
 const CELEBRATION_IMG = '/about-celebration-sparkler.webp'
+const SECTION_BG = '/home-seo-festive-bg.png'
 
-const HIGHLIGHTS = [
-  {
-    icon: Shield,
-    title: 'Licensed Quality',
-    desc: 'Original Sivakasi fireworks with strict checks.',
-  },
-  {
-    icon: Truck,
-    title: 'All-India Delivery',
-    desc: 'Festival-season dispatch across India.',
-  },
-  {
-    icon: Package,
-    title: 'Wholesale & Retail',
-    desc: 'Transparent pricing for every order size.',
-  },
-] as const
-
-const QUICK_LINKS = [
-  { to: '/#shop', label: 'Shop', icon: Package },
-  { to: '/about', label: 'About', icon: Sparkles },
-  { to: '/contact', label: 'Contact', icon: MapPin },
-  { to: '/faq', label: 'FAQ', icon: Sparkles },
-  { to: '/safety', label: 'Safety', icon: Shield },
-  { to: '/delivery', label: 'Delivery', icon: Truck },
-  { to: '/cart', label: 'Cart', icon: Package },
-  { to: '/gift-box', label: 'Gift Boxes', icon: Package },
+const PAGE_LINKS = [
+  { to: '/#shop', label: 'Shop' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/safety', label: 'Safety' },
+  { to: '/delivery', label: 'Delivery' },
+  { to: '/cart', label: 'Cart' },
 ] as const
 
 function buildWhatsAppShareUrl(): string {
   const pageUrl = encodeURIComponent(SITE_URL)
   const text = encodeURIComponent(
-    `${PRIME_BRAND.displayName} — ${PRIME_BRAND.tagline}. Sivakasi Diwali fireworks wholesale with up to 50% off.`,
+    `${PRIME_BRAND.displayName} — Sivakasi Diwali fireworks wholesale with up to 50% off.`,
   )
   return `https://wa.me/?text=${text}%20${pageUrl}`
+}
+
+function TextLink({
+  to,
+  href,
+  children,
+  className,
+}: {
+  to?: string
+  href?: string
+  children: ReactNode
+  className?: string
+}) {
+  const linkClass = cn(
+    'font-semibold text-[#004D55] underline decoration-[#FFC107]/60 underline-offset-[3px] hover:text-[#006670]',
+    className,
+  )
+
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+        {children}
+      </a>
+    )
+  }
+
+  return (
+    <Link to={to!} className={linkClass}>
+      {children}
+    </Link>
+  )
 }
 
 export function HomeSeoSection() {
@@ -71,279 +72,189 @@ export function HomeSeoSection() {
     try {
       await navigator.clipboard.writeText(SITE_URL)
       setCopied(true)
-      showToast('Page link copied!', 'success')
+      showToast('Link copied!', 'success')
       window.setTimeout(() => setCopied(false), 2000)
     } catch {
       showToast('Could not copy link', 'error')
     }
   }, [showToast])
 
-  const nativeShare = useCallback(async () => {
-    if (!navigator.share) return
-    try {
-      await navigator.share({
-        title: PRIME_BRAND.displayName,
-        text: `${PRIME_BRAND.displayName} — Sivakasi Diwali fireworks wholesale.`,
-        url: SITE_URL,
-      })
-    } catch {
-      /* user cancelled */
-    }
-  }, [])
-
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-white via-[#FFF8E1]/25 to-white py-10 sm:py-14 lg:py-16"
+      className="relative isolate overflow-hidden py-8 sm:py-10"
       aria-labelledby="home-seo-heading"
     >
-      <div
-        className="pointer-events-none absolute -left-24 top-8 h-72 w-72 rounded-full bg-[#FFC107]/10 blur-3xl"
+      <img
+        src={SECTION_BG}
+        alt=""
         aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-[#004D55]/8 blur-3xl"
-        aria-hidden="true"
+        decoding="async"
+        loading="lazy"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-[center_42%]"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
         <AnimateIn animation="fade-up">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/40 bg-[#FFC107]/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#E65100]">
-              <Sparkles className="h-3 w-3" aria-hidden="true" />
-              Sivakasi Fireworks Wholesale
-            </p>
-            <h2
-              id="home-seo-heading"
-              className="mt-4 font-display text-2xl font-extrabold leading-tight text-[#004D55] sm:text-3xl lg:text-4xl"
-            >
-              Shop Diwali Fireworks Online
-            </h2>
-            <div className="mx-auto mt-4 flex items-center justify-center gap-2" aria-hidden="true">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#FFC107]/60" />
-              <span className="h-1.5 w-14 rounded-full bg-gradient-to-r from-[#004D55] via-[#FFC107] to-[#004D55]" />
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#FFC107]/60" />
-            </div>
-          </div>
-        </AnimateIn>
+          <div className="overflow-hidden rounded-2xl bg-white shadow-[0_10px_40px_rgba(0,77,85,0.18)] ring-1 ring-[#004D55]/10">
+            <div
+              className="h-1 bg-gradient-to-r from-[#004D55] via-[#FFC107] to-[#004D55]"
+              aria-hidden="true"
+            />
 
-        <div className="mt-8 grid gap-5 lg:grid-cols-12 lg:gap-6 lg:mt-10">
-          {/* Visual panel */}
-          <AnimateIn animation="fade-up" delay={80} className="lg:col-span-5">
-            <div className="group relative min-h-[280px] overflow-hidden rounded-2xl border border-[#004D55]/10 shadow-[0_16px_48px_rgba(0,77,85,0.12)] sm:min-h-[340px] lg:h-full lg:min-h-[420px]">
-              <OptimizedBackground src={CELEBRATION_IMG} priority={false} />
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-[#003840]/90 via-[#004D55]/35 to-[#004D55]/10"
-                aria-hidden="true"
-              />
+            <div className="grid md:grid-cols-[38%_1fr]">
+              {/* Image + overlay info cards */}
+              <div className="relative min-h-[240px] md:min-h-[300px]">
+                <OptimizedBackground src={CELEBRATION_IMG} priority={false} />
+                <div
+                  className="absolute inset-0 bg-gradient-to-t from-[#003840]/90 via-[#004D55]/25 to-transparent"
+                  aria-hidden="true"
+                />
 
-              <div className="absolute left-4 top-4 flex items-center gap-2 rounded-2xl border border-[#FFC107]/40 bg-black/35 px-3 py-2 backdrop-blur-md">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFC107]">
-                  <Percent className="h-4 w-4 text-[#004D55]" aria-hidden="true" />
+                <div className="absolute left-3 top-3 rounded-lg bg-[#FFC107] px-2.5 py-1.5 shadow-md">
+                  <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-[#004D55]">
+                    <Percent className="h-3 w-3" aria-hidden="true" />
+                    Up to 50% off
+                  </p>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">Up to</p>
-                  <p className="font-display text-xl font-extrabold leading-none text-[#FFC107]">50% OFF</p>
+
+                <div className="absolute left-3 top-12 flex items-center gap-1 text-white/90">
+                  <MapPin className="h-3 w-3 text-[#FFC107]" aria-hidden="true" />
+                  <span className="text-[10px] font-medium">Sivakasi, Tamil Nadu</span>
                 </div>
-              </div>
 
-              <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/15 bg-black/40 p-3 backdrop-blur-md">
-                <div className="flex items-start gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20">
-                    <MapPin className="h-4 w-4 text-[#FFC107]" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
-                      Based in Sivakasi
-                    </p>
-                    <p className="mt-0.5 text-xs leading-snug text-white/85">
-                      Alamarathupatti — India&apos;s fireworks capital
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </AnimateIn>
-
-          {/* Content panel */}
-          <AnimateIn animation="fade-up" delay={140} className="lg:col-span-7">
-            <div className="flex h-full flex-col rounded-2xl border border-[#004D55]/10 bg-white/80 p-5 shadow-[0_8px_32px_rgba(0,77,85,0.08)] backdrop-blur-sm sm:p-6 lg:p-7">
-              <div className="space-y-4 text-sm leading-relaxed text-slate-600 sm:text-[15px]">
-                <p>
-                  <strong className="text-[#004D55]">{PRIME_BRAND.displayName}</strong> — We Bring
-                  Festivals. Buy premium <strong>Sivakasi Diwali fireworks wholesale</strong> and
-                  retail at up to 50% off — fancy crackers, sparklers, rockets, chakras, and gift
-                  boxes with reliable all-India delivery.
-                </p>
-
-                <h3 className="font-display text-lg font-bold text-[#004D55]">Why Prime Crackers</h3>
-                <p>
-                  Licensed originals from trusted manufacturers, tamper-proof packaging, and
-                  responsive support.{' '}
-                  <Link
-                    to="/about"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    Learn our story
-                  </Link>
-                  .
-                </p>
-
-                <h3 className="font-display text-lg font-bold text-[#004D55]">Safety &amp; Delivery</h3>
-                <p>
-                  Review our{' '}
-                  <Link
-                    to="/safety"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    Safety Guide
-                  </Link>{' '}
-                  and{' '}
-                  <Link
-                    to="/delivery"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    Delivery Info
-                  </Link>
-                  . Follow{' '}
-                  <a
-                    href={PESO_SAFETY_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    PESO guidance
-                  </a>
-                  , find us on{' '}
-                  <a
-                    href={PRIME_CRACKERS_GOOGLE_MAPS_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    Google Maps
-                  </a>
-                  , and explore the{' '}
-                  <a
-                    href={SIVAKASI_WIKI_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    Sivakasi industry
-                  </a>
-                  . Follow{' '}
-                  <a
-                    href={instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    Instagram
-                  </a>{' '}
-                  &amp;{' '}
-                  <a
-                    href={youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[#004D55] underline decoration-[#FFC107]/70 underline-offset-2 hover:text-[#006670]"
-                  >
-                    YouTube
-                  </a>
-                  .
-                </p>
-              </div>
-
-              <div className="mt-5 grid gap-2.5 sm:grid-cols-3">
-                {HIGHLIGHTS.map(({ icon: Icon, title, desc }) => (
-                  <div
-                    key={title}
-                    className="rounded-xl border border-[#004D55]/8 bg-[#FFF8E1]/40 p-3"
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#004D55]/10">
-                      <Icon className="h-4 w-4 text-[#004D55]" aria-hidden="true" />
+                <div className="absolute inset-x-2 bottom-2 grid gap-1.5 sm:inset-x-3 sm:bottom-3">
+                  <div className="rounded-xl border border-white/15 bg-black/40 p-2.5 backdrop-blur-md sm:p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
+                        <Shield className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
+                          Why Prime Crackers
+                        </h3>
+                        <p className="mt-0.5 text-[10px] leading-snug text-white/85 sm:text-[11px]">
+                          Licensed originals &amp; safe packaging.{' '}
+                          <TextLink
+                            to="/about"
+                            className="text-[10px] text-[#FFC107] decoration-[#FFC107]/70 hover:text-white sm:text-[11px]"
+                          >
+                            Our story
+                          </TextLink>
+                        </p>
+                      </div>
                     </div>
-                    <p className="mt-2 text-xs font-bold text-[#004D55]">{title}</p>
-                    <p className="mt-0.5 text-[11px] leading-snug text-slate-500">{desc}</p>
                   </div>
-                ))}
+                  <div className="rounded-xl border border-white/15 bg-black/40 p-2.5 backdrop-blur-md sm:p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
+                        <Truck className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
+                          Safety &amp; Delivery
+                        </h3>
+                        <p className="mt-0.5 text-[10px] leading-snug text-white/85 sm:text-[11px]">
+                          <TextLink
+                            to="/safety"
+                            className="text-[10px] text-[#FFC107] decoration-[#FFC107]/70 hover:text-white sm:text-[11px]"
+                          >
+                            Safety
+                          </TextLink>
+                          {' · '}
+                          <TextLink
+                            to="/delivery"
+                            className="text-[10px] text-[#FFC107] decoration-[#FFC107]/70 hover:text-white sm:text-[11px]"
+                          >
+                            Delivery
+                          </TextLink>
+                          {' · '}
+                          <TextLink
+                            href={PESO_SAFETY_URL}
+                            className="text-[10px] text-[#FFC107] decoration-[#FFC107]/70 hover:text-white sm:text-[11px]"
+                          >
+                            PESO
+                          </TextLink>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </AnimateIn>
-        </div>
 
-        {/* Quick links rail */}
-        <AnimateIn animation="fade-up" delay={220}>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:mt-6">
-            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-              Explore
-            </span>
-            {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-full border border-[#004D55]/12 bg-white px-3.5 py-1.5 text-[11px] font-bold text-[#004D55] shadow-sm transition',
-                  'hover:border-[#FFC107]/50 hover:bg-[#FFF8E1] hover:text-[#003840]',
-                )}
-              >
-                <Icon className="h-3.5 w-3.5 text-[#FFC107]" aria-hidden="true" />
-                {label}
-              </Link>
-            ))}
-          </div>
-        </AnimateIn>
+              {/* Main copy — compact */}
+              <div className="flex flex-col gap-3 px-4 py-4 sm:px-5 sm:py-5">
+                <h2
+                  id="home-seo-heading"
+                  className="font-display text-lg font-extrabold leading-snug text-[#004D55] sm:text-xl"
+                >
+                  Shop Diwali Fireworks Online
+                </h2>
 
-        {/* CTA + share strip */}
-        <AnimateIn animation="fade-up" delay={280}>
-          <div className="mt-5 overflow-hidden rounded-2xl border border-[#004D55]/10 bg-gradient-to-r from-[#004D55] via-[#003840] to-[#004D55] shadow-[0_12px_40px_rgba(0,77,85,0.2)] lg:mt-6">
-            <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-              <div>
-                <p className="font-display text-lg font-bold text-white sm:text-xl">
-                  Ready to celebrate?
+                <div className="rounded-lg border border-[#FFC107]/25 bg-gradient-to-br from-[#FFF8E1] to-[#FFF8E1]/50 p-3">
+                  <p className="text-xs leading-[1.65] text-slate-700 sm:text-[13px]">
+                    <strong className="font-semibold text-[#004D55]">{PRIME_BRAND.displayName}</strong>{' '}
+                    brings premium <strong>Sivakasi Diwali fireworks wholesale</strong> and retail —
+                    sparklers, rockets, fancy items, chakras, and gift boxes at up to 50% off with
+                    all-India delivery.
+                  </p>
+                </div>
+
+                <p className="text-[11px] leading-relaxed text-slate-500 sm:text-xs">
+                  Find us on{' '}
+                  <TextLink href={PRIME_CRACKERS_GOOGLE_MAPS_URL}>Google Maps</TextLink>, explore the{' '}
+                  <TextLink href={SIVAKASI_WIKI_URL}>Sivakasi industry</TextLink>,{' '}
+                  <TextLink href={instagramUrl}>Instagram</TextLink> &amp;{' '}
+                  <TextLink href={youtubeUrl}>YouTube</TextLink>.
                 </p>
-                <p className="mt-1 text-sm text-white/75">
-                  Browse the catalogue or share Prime Crackers with friends &amp; family.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  to="/#shop"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FFC107] px-5 py-2.5 text-sm font-bold text-[#004D55] shadow-lg transition hover:bg-[#FFD54F]"
+
+                <nav
+                  className="flex flex-wrap gap-1.5"
+                  aria-label="Quick page links"
                 >
-                  Browse Shop
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-                <a
-                  href={buildWhatsAppShareUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/50 bg-[#25D366]/15 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#25D366]/25"
-                >
-                  <Share2 className="h-4 w-4" aria-hidden="true" />
-                  Share
-                </a>
-                <button
-                  type="button"
-                  onClick={copyPageUrl}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/15"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-[#FFC107]" aria-hidden="true" />
-                  ) : (
-                    <Copy className="h-4 w-4" aria-hidden="true" />
-                  )}
-                  Copy Link
-                </button>
-                {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
+                  <span className="mr-1 flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-[#004D55]/50">
+                    <Sparkles className="h-2.5 w-2.5 text-[#FFC107]" aria-hidden="true" />
+                    Explore
+                  </span>
+                  {PAGE_LINKS.map(({ to, label }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      className="rounded-full border border-[#004D55]/10 bg-[#004D55]/5 px-2 py-0.5 text-[10px] font-semibold text-[#004D55] transition hover:border-[#FFC107]/40 hover:bg-[#FFF8E1]"
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="mt-auto flex flex-wrap items-center gap-2 rounded-lg bg-gradient-to-r from-[#004D55] to-[#003840] px-3 py-2.5">
+                  <Link
+                    to="/#shop"
+                    className="inline-flex items-center rounded-full bg-[#FFC107] px-4 py-1.5 text-[11px] font-bold text-[#004D55] transition hover:bg-[#FFD54F] sm:text-xs"
+                  >
+                    Browse Shop
+                  </Link>
+                  <a
+                    href={buildWhatsAppShareUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-[#25D366]/30"
+                    aria-label="Share on WhatsApp"
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
+                  </a>
                   <button
                     type="button"
-                    onClick={nativeShare}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/15"
+                    onClick={copyPageUrl}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white/20"
+                    aria-label="Copy page link"
                   >
-                    <Link2 className="h-4 w-4" aria-hidden="true" />
-                    More
+                    {copied ? (
+                      <Check className="h-3.5 w-3.5 text-[#FFC107]" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
                   </button>
-                )}
+                </div>
               </div>
             </div>
           </div>
