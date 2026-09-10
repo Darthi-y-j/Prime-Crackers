@@ -12,7 +12,7 @@ export const PRIME_BRAND = {
   white: '#FFFFFF',
   tagline: 'We Bring Festivals',
   displayName: 'Prime Crackers',
-  heroVideo: '/prime-hero.mp4',
+  heroVideo: '/hero-fireworks.mp4',
   heroPoster: '/hero-fireworks-bg.png',
   heroImage: '/hero-fireworks-bg.png',
   /** Fireworks celebration scene — contact page CTA */

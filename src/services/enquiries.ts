@@ -1,5 +1,6 @@
 import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
-import { generateEnquiryNumber, cleanPhone } from '@/lib/utils'
+import { normalizeReferralCode } from '@/lib/referralCode'
+import { generateEnquiryNumber, cleanPhone, sanitizeEnquiryProductId } from '@/lib/utils'
 import { expandCartItemsForEnquiry, enquiryHeaderProductId } from '@/lib/giftBox'
 import type {
   Enquiry,
@@ -38,6 +39,7 @@ type EnquiryInsertExtended = EnquiryInsertBase & {
   customer_email?: string | null
   enquiry_category?: string | null
   auth_user_id?: string | null
+  referral_code?: string | null
 }
 
 function buildLegacyContactMessage(
@@ -60,15 +62,44 @@ function prefixProductName(productName: string, enquiryType?: EnquiryType): stri
   return productName
 }
 
-async function insertEnquiry(payload: EnquiryInsertExtended) {
-  const { enquiry_type, customer_email, enquiry_category, auth_user_id, ...base } = payload
+function isRpcSignatureMismatch(error: unknown): boolean {
+  const code = (error as { code?: string })?.code
+  const message = getSupabaseErrorMessage(error).toLowerCase()
+  return code === 'PGRST202' || message.includes('no matches were found in the schema cache')
+}
 
-  const rpcResult = await supabase.rpc('submit_enquiry', {
+function isRpcMissing(error: unknown): boolean {
+  const code = (error as { code?: string })?.code
+  const message = getSupabaseErrorMessage(error).toLowerCase()
+  return (
+    code === '42883' ||
+    (message.includes('could not find the function') && message.includes('submit_enquiry'))
+  )
+}
+
+function isForeignKeyViolation(error: unknown): boolean {
+  const code = (error as { code?: string })?.code
+  const message = getSupabaseErrorMessage(error).toLowerCase()
+  return code === '23503' || message.includes('foreign key constraint')
+}
+
+function isEnquiryTypeConstraint(error: unknown): boolean {
+  const message = getSupabaseErrorMessage(error).toLowerCase()
+  return message.includes('enquiries_enquiry_type_check') || message.includes('enquiry_type')
+}
+
+async function insertEnquiry(payload: EnquiryInsertExtended) {
+  const { enquiry_type, customer_email, enquiry_category, auth_user_id, referral_code, ...base } =
+    payload
+  const normalizedReferral = referral_code ? normalizeReferralCode(referral_code) || null : null
+  const safeProductId = sanitizeEnquiryProductId(base.product_id)
+
+  const rpcParams: Record<string, unknown> = {
     p_enquiry_number: base.enquiry_number,
     p_product_name: base.product_name,
     p_customer_name: base.customer_name,
     p_customer_phone: base.customer_phone,
-    p_product_id: base.product_id,
+    p_product_id: safeProductId,
     p_quantity: base.quantity,
     p_customer_message: base.customer_message,
     p_items: base.items ?? [],
@@ -76,21 +107,39 @@ async function insertEnquiry(payload: EnquiryInsertExtended) {
     p_customer_email: customer_email ?? null,
     p_enquiry_category: enquiry_category ?? null,
     p_auth_user_id: auth_user_id ?? null,
-  })
+  }
+
+  // Only pass when set — sending p_referral_code at all breaks DBs without migration 024.
+  if (normalizedReferral) {
+    rpcParams.p_referral_code = normalizedReferral
+  }
+
+  let rpcResult = await supabase.rpc('submit_enquiry', rpcParams)
+
+  if (rpcResult.error && normalizedReferral && isRpcSignatureMismatch(rpcResult.error)) {
+    const { p_referral_code: _removed, ...withoutReferral } = rpcParams
+    rpcResult = await supabase.rpc('submit_enquiry', withoutReferral)
+  }
+
+  if (rpcResult.error && isForeignKeyViolation(rpcResult.error) && rpcParams.p_product_id) {
+    rpcParams.p_product_id = null
+    rpcResult = await supabase.rpc('submit_enquiry', rpcParams)
+  }
+
+  if (
+    rpcResult.error &&
+    isEnquiryTypeConstraint(rpcResult.error) &&
+    rpcParams.p_enquiry_type === 'order'
+  ) {
+    rpcParams.p_enquiry_type = 'cart'
+    rpcResult = await supabase.rpc('submit_enquiry', rpcParams)
+  }
 
   if (!rpcResult.error && rpcResult.data) {
     return { data: rpcResult.data, error: null }
   }
 
-  const rpcErrorMessage = rpcResult.error ? getSupabaseErrorMessage(rpcResult.error) : ''
-  const rpcUnavailable =
-    rpcResult.error &&
-    (rpcErrorMessage.includes('submit_enquiry') ||
-      rpcErrorMessage.includes('Could not find the function') ||
-      (rpcResult.error as { code?: string }).code === '42883' ||
-      (rpcResult.error as { code?: string }).code === 'PGRST202')
-
-  if (rpcUnavailable) {
+  if (rpcResult.error && isRpcMissing(rpcResult.error)) {
     return {
       data: null,
       error: {
@@ -112,6 +161,7 @@ async function insertEnquiry(payload: EnquiryInsertExtended) {
       customer_email,
       enquiry_category,
       auth_user_id,
+      referral_code: normalizedReferral,
     })
     .select()
     .single()
@@ -162,6 +212,7 @@ function formatCustomerNotes(
   message?: string,
   extras?: {
     email?: string
+    referralCode?: string
     spinReward?: { label: string; discountAmount?: number }
     isRegistered?: boolean
   },
@@ -173,6 +224,9 @@ function formatCustomerNotes(
   }
   if (extras?.email?.trim()) {
     parts.push(`Email: ${extras.email.trim()}`)
+  }
+  if (extras?.referralCode?.trim()) {
+    parts.push(`Referral code: ${normalizeReferralCode(extras.referralCode)}`)
   }
 
   parts.push(`Delivery Address:\n${address.trim()}`)
@@ -241,18 +295,24 @@ export async function createCartEnquiry(
 
   await upsertCustomer(formData.customerName, phone, formData.customerEmail)
 
+  const referralCode = formData.referralCode
+    ? normalizeReferralCode(formData.referralCode) || null
+    : null
+
   const { data, error } = await insertEnquiry({
     enquiry_number: enquiryNumber,
     enquiry_type: 'order',
-    product_id: enquiryHeaderProductId(formData.items),
+    product_id: enquiryHeaderProductId(formData.items) ?? null,
     product_name: productName,
     quantity: totalQuantity,
     customer_name: formData.customerName,
     customer_phone: phone,
     customer_email: formData.customerEmail ?? null,
     auth_user_id: formData.authUserId ?? null,
+    referral_code: referralCode,
     customer_message: formatCustomerNotes(formData.customerAddress, formData.customerMessage, {
       email: formData.customerEmail,
+      referralCode: referralCode ?? undefined,
       spinReward: formData.spinReward,
       isRegistered: Boolean(formData.authUserId),
     }),
@@ -553,20 +613,30 @@ export function getCustomerFacingEnquiryMessage(message: string | null): string 
 export function parseEnquiryMessage(message: string | null): {
   email: string | null
   category: string | null
+  referralCode: string | null
   body: string
 } {
-  if (!message) return { email: null, category: null, body: '' }
+  if (!message) return { email: null, category: null, referralCode: null, body: '' }
 
   let email: string | null = null
   let category: string | null = null
+  let referralCode: string | null = null
   const bodyLines: string[] = []
 
   for (const line of message.split('\n')) {
     if (line.startsWith('Email: ')) email = line.slice(7).trim()
     else if (line.startsWith('Category: ')) category = line.slice(10).trim()
+    else if (line.startsWith('Referral code: ')) referralCode = line.slice(15).trim()
     else bodyLines.push(line)
   }
 
   const body = bodyLines.join('\n').trim()
-  return { email, category, body: body || message }
+  return { email, category, referralCode, body: body || message }
+}
+
+export function getEnquiryReferralCode(
+  enquiry: Pick<Enquiry, 'referral_code' | 'customer_message'>,
+): string | null {
+  if (enquiry.referral_code?.trim()) return enquiry.referral_code.trim()
+  return parseEnquiryMessage(enquiry.customer_message).referralCode
 }

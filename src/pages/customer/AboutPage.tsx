@@ -16,12 +16,13 @@ import { PRIME_BRAND, SERVICE_HIGHLIGHTS, WHY_CHOOSE } from '@/lib/primeBrand'
 import { FESTIVE_HEADER_BG, PageHeaderBackground } from '@/components/customer/PageHeader'
 import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { SITE_LOGO_PATH } from '@/lib/siteConfig'
+import { AboutIntroSection } from '@/components/prime/AboutIntroSection'
 import { cn } from '@/lib/utils'
 
 const OUR_STORY_BG = '/about-our-story-bg.jpg'
 
 const STATS = [
-  { value: '90%', label: 'Wholesale savings', accent: '#FFC107' },
+  { value: '50%', label: 'Wholesale savings', accent: '#FFC107' },
   { value: '10+', label: 'Years in business', accent: '#004D55' },
   { value: '24/7', label: 'WhatsApp support', accent: '#006670' },
   { value: 'All India', label: 'Delivery available', accent: '#E65100' },
@@ -136,6 +137,8 @@ export function AboutPage() {
             ))}
           </div>
         </section>
+
+        <AboutIntroSection />
 
         {/* Full-bleed story + visit — asymmetric split */}
         <section className="w-full overflow-hidden py-0" data-reveal="fade-up">

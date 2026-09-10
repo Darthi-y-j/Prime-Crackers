@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
 import {
   ArrowRight,
   Clock,
@@ -7,12 +8,15 @@ import {
   MessageCircle,
   Navigation,
   Phone,
+  Send,
   Sparkles,
   Truck,
 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { FestivePageBackground } from '@/components/customer/FestivePageBackground'
 import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
+import { EnquiryForm } from '@/components/customer/EnquiryForm'
+import { useAuth } from '@/contexts/AuthContext'
 import { useSettings } from '@/contexts/SettingsContext'
 import { formatDisplayPhone, getBusinessPolicies, getWhatsAppNumbers } from '@/lib/businessInfo'
 import { buildWhatsAppContactUrl, buildTelUrl, buildMailtoUrl } from '@/lib/whatsapp'
@@ -87,7 +91,20 @@ function ContactCard({
 
 export function ContactPage() {
   const { settings } = useSettings()
+  const { user, isCustomer } = useAuth()
   const whatsappNumbers = getWhatsAppNumbers(settings)
+
+  const enquiryDefaults = useMemo(() => {
+    if (!user || !isCustomer) return undefined
+    const fullName = (user.user_metadata?.full_name as string | undefined)?.trim() || ''
+    const parts = fullName.split(/\s+/).filter(Boolean)
+    return {
+      firstName: parts[0] || '',
+      lastName: parts.slice(1).join(' '),
+      email: user.email || '',
+      phone: (user.user_metadata?.phone as string | undefined) || '',
+    }
+  }, [user, isCustomer])
   const policies = getBusinessPolicies(settings)
   const primaryWhatsapp = whatsappNumbers[0]
   const hours =
@@ -186,7 +203,8 @@ export function ContactPage() {
               </h1>
               <p className="font-script mt-2 text-xl text-white/80 sm:text-2xl">{PRIME_BRAND.tagline}</p>
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-white/70">
-                Send your cart on WhatsApp — our team replies with prices, stock, and delivery across India.
+                Send an enquiry using the form below, or message us on WhatsApp — we reply with prices, stock, and
+                delivery across India.
               </p>
             </div>
           </div>
@@ -253,6 +271,37 @@ export function ContactPage() {
                 </a>
               </div>
             )}
+
+            {/* General enquiry form */}
+            <div
+              id="enquiry-form"
+              className="overflow-hidden rounded-2xl border border-[#004D55]/15 bg-white shadow-lg"
+              data-reveal="fade-up"
+            >
+              <div className="border-b border-[#004D55]/10 bg-gradient-to-r from-[#004D55]/8 to-[#FFC107]/10 px-5 py-5 sm:px-6">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#004D55]">
+                    <Send className="h-5 w-5 text-[#FFC107]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[#004D55] sm:text-2xl">
+                      Send an Enquiry
+                    </h2>
+                    <p className="mt-1 text-sm leading-relaxed text-[#004D55]/70">
+                      Fill in your details and requirements. Your enquiry is saved in our system and appears in
+                      admin — we will contact you soon.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="px-5 py-6 sm:px-6 sm:py-7">
+                <EnquiryForm
+                  enquiryType="contact"
+                  authUserId={user && isCustomer ? user.id : undefined}
+                  defaults={enquiryDefaults}
+                />
+              </div>
+            </div>
 
             {/* Contact cards */}
             <div data-reveal="fade-up">

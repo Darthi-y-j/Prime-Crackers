@@ -44,6 +44,30 @@ export function PrimeFooter() {
               </p>
             </div>
             <p className="mt-2 text-xs leading-snug text-white/65">{tagline}</p>
+            {(settings.social_links.instagram || settings.social_links.youtube) && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {settings.social_links.instagram && (
+                  <a
+                    href={settings.social_links.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-white/80 transition hover:border-[#FFC107]/40 hover:text-[#FFC107]"
+                  >
+                    Instagram
+                  </a>
+                )}
+                {settings.social_links.youtube && (
+                  <a
+                    href={settings.social_links.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-white/80 transition hover:border-[#FFC107]/40 hover:text-[#FFC107]"
+                  >
+                    YouTube
+                  </a>
+                )}
+              </div>
+            )}
             {settings.address && (
               <div className="mt-2 flex items-start gap-1.5 text-xs leading-snug text-white/70">
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#FFC107]" aria-hidden="true" />

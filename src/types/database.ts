@@ -63,6 +63,7 @@ export interface Enquiry {
   customer_phone: string
   customer_email: string | null
   customer_message: string | null
+  referral_code: string | null
   enquiry_type: EnquiryType | null
   enquiry_category: string | null
   auth_user_id: string | null
@@ -111,6 +112,7 @@ export interface CartEnquiryFormData {
   customerAddress: string
   customerMessage?: string
   customerEmail?: string
+  referralCode?: string
   authUserId?: string
   spinReward?: {
     label: string
@@ -164,6 +166,8 @@ export interface SocialLinks {
   youtube?: string
   twitter?: string
   whatsapp_numbers?: string[]
+  /** Active referral codes customers can enter at checkout (admin-managed). */
+  referral_codes?: string[]
   policies?: BusinessPolicies
 }
 

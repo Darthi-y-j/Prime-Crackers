@@ -1,5 +1,6 @@
 import { SEO } from '@/components/shared/SEO'
 import { JsonLd } from '@/components/shared/JsonLd'
+import { LazySection } from '@/components/customer/LazySection'
 import { PrimeHero } from '@/components/prime/PrimeHero'
 import { PrimeServiceBar } from '@/components/prime/PrimeServiceBar'
 import { PrimeCategoryGrid } from '@/components/prime/PrimeCategoryGrid'
@@ -20,7 +21,9 @@ export function HomePage() {
       <PrimeServiceBar />
       <PrimeCategoryGrid />
       <PrimeWhyChooseBar />
-      <PrimeShopCatalog />
+      <LazySection minHeight="520px">
+        <PrimeShopCatalog />
+      </LazySection>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useOutletContext, useLocation } from 'react-router-dom'
 import {
   MessageCircle,
@@ -28,8 +28,11 @@ import {
   isOrderEnquiry,
   isGeneralEnquiry,
   parseEnquiryMessage,
+  getEnquiryReferralCode,
 } from '@/services/enquiries'
+import { useAuth } from '@/contexts/AuthContext'
 import { useSettings } from '@/contexts/SettingsContext'
+import { getSupabaseErrorMessage } from '@/lib/supabase'
 import { useToast } from '@/contexts/ToastContext'
 import { useStockAlerts } from '@/contexts/StockAlertContext'
 import { applyEnquiryStockChange } from '@/services/products'
@@ -77,6 +80,7 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
   const { onMenuClick } = useOutletContext<{ onMenuClick: () => void }>()
   const location = useLocation()
   const enquiryIdFromNav = (location.state as { enquiryId?: string } | null)?.enquiryId
+  const { isAdmin } = useAuth()
   const { settings } = useSettings()
   const { showToast } = useToast()
   const { showStockAlerts } = useStockAlerts()
@@ -90,21 +94,32 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
   const [togglingReplyId, setTogglingReplyId] = useState<string | null>(null)
   const [pdfDownloading, setPdfDownloading] = useState(false)
 
-  const loadEnquiries = async () => {
+  const loadEnquiries = useCallback(async () => {
     setLoading(true)
     try {
+      if (!isAdmin) {
+        setEnquiries([])
+        return
+      }
       const data = await getEnquiries(statusFilter === 'all' ? undefined : statusFilter)
       setEnquiries(data)
-    } catch {
+    } catch (error) {
       setEnquiries([])
+      showToast(`Could not load enquiries: ${getSupabaseErrorMessage(error)}`, 'error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [isAdmin, showToast, statusFilter])
 
   useEffect(() => {
     loadEnquiries()
-  }, [statusFilter])
+  }, [loadEnquiries])
+
+  useEffect(() => {
+    if (!isAdmin) {
+      showToast('Log in as admin to view enquiries.', 'error')
+    }
+  }, [isAdmin, showToast])
 
   const handleStatusChange = async (id: string, status: EnquiryStatus) => {
     const previous = enquiries.find((enquiry) => enquiry.id === id) ?? selectedEnquiry
@@ -277,6 +292,7 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
   const selectedType = selectedEnquiry ? resolveEnquiryType(selectedEnquiry) : null
   const selectedParsed = selectedEnquiry ? parseEnquiryMessage(selectedEnquiry.customer_message) : null
   const selectedEmail = selectedEnquiry?.customer_email || selectedParsed?.email || null
+  const selectedReferralCode = selectedEnquiry ? getEnquiryReferralCode(selectedEnquiry) : null
   const selectedMessageBody = selectedParsed?.body || selectedEnquiry?.customer_message || ''
 
   return (
@@ -308,17 +324,26 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
             ))}
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as EnquiryStatus | 'all')}
-            className="admin-input"
-          >
-            <option value="all">All statuses</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as EnquiryStatus | 'all')}
+              className="admin-input"
+            >
+              <option value="all">All statuses</option>
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => loadEnquiries()}
+              className="admin-input whitespace-nowrap px-3 py-2 text-sm font-semibold"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
@@ -387,6 +412,11 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
                                 {getEnquirySummary(enquiry)}
                               </p>
                               <p className="mt-1 line-clamp-1 text-xs text-slate-500">{getMessagePreview(enquiry)}</p>
+                              {getEnquiryReferralCode(enquiry) && (
+                                <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-violet-600">
+                                  Ref: {getEnquiryReferralCode(enquiry)}
+                                </p>
+                              )}
                               <div className="mt-2 flex flex-wrap items-center gap-2">
                                 <span className={cn('rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ring-inset', typeStyles[type])}>
                                   {getEnquiryTypeLabel(enquiry.enquiry_type, enquiry.product_name)}
@@ -496,6 +526,12 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
                           <div>
                             <dt className="text-slate-500">Quantity</dt>
                             <dd className="font-medium text-slate-900">{selectedEnquiry.quantity}</dd>
+                          </div>
+                        )}
+                        {selectedReferralCode && (
+                          <div>
+                            <dt className="text-slate-500">Referral code</dt>
+                            <dd className="font-mono font-bold text-violet-700">{selectedReferralCode}</dd>
                           </div>
                         )}
                       </dl>

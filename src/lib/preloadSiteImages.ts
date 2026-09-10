@@ -57,11 +57,7 @@ export function preloadSiteImagesDeferred(pathname: string): void {
       return
     }
 
-    preloadPaths([
-      ...HOME_PRIORITY_PATHS,
-      ...AUTH_IMAGE_PATHS,
-      ...DEFERRED_SITE_PATHS,
-    ])
+    preloadPaths(DEFERRED_SITE_PATHS)
   }
 
   if ('requestIdleCallback' in window) {

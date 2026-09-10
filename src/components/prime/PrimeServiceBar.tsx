@@ -7,7 +7,11 @@ const ICON_COLOR = ['text-[#004D55]', 'text-[#E65100]', 'text-[#0288D1]', 'text-
 
 export function PrimeServiceBar() {
   return (
-    <section className="border-b border-slate-100 bg-white py-3 sm:py-5">
+    <section
+      className="border-b border-slate-100 bg-white py-3 sm:py-5"
+      aria-labelledby="service-bar-heading"
+    >
+      <h2 id="service-bar-heading" className="sr-only">Our Service Highlights</h2>
       <div className="mx-auto grid max-w-7xl grid-cols-4 gap-1.5 px-2 sm:gap-6 sm:px-6">
         {SERVICE_HIGHLIGHTS.map((item, i) => {
           const Icon = ICONS[i]
@@ -19,12 +23,12 @@ export function PrimeServiceBar() {
               <div
                 className={`mb-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full sm:mb-0 sm:mr-3 sm:h-14 sm:w-14 ${ICON_BG[i]}`}
               >
-                <Icon className={`h-4 w-4 sm:h-6 sm:w-6 ${ICON_COLOR[i]}`} />
+                <Icon className={`h-4 w-4 sm:h-6 sm:w-6 ${ICON_COLOR[i]}`} aria-hidden="true" />
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] font-bold leading-tight text-[#1e3a5f] sm:text-sm sm:leading-normal">
+                <h3 className="text-[9px] font-bold leading-tight text-[#1e3a5f] sm:text-sm sm:leading-normal">
                   {item.title}
-                </p>
+                </h3>
                 <p className="mt-0.5 hidden text-xs leading-relaxed text-slate-500 sm:block">
                   {item.desc}
                 </p>

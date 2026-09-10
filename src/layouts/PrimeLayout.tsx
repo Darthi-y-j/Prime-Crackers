@@ -8,8 +8,6 @@ import { PrimeShopProvider } from '@/contexts/PrimeShopContext'
 import { RouteSEO } from '@/components/shared/RouteSEO'
 import { ToastContainer } from '@/components/customer/Toast'
 import { ImportantNoticeModal } from '@/components/customer/ImportantNoticeModal'
-import { getCategories } from '@/services/categories'
-import { getProducts } from '@/services/products'
 import { ScrollRevealInit } from '@/components/shared/ScrollRevealInit'
 import { FloatingActionButtons } from '@/components/customer/FloatingActionButtons'
 import { preloadSiteImagesDeferred } from '@/lib/preloadSiteImages'
@@ -25,8 +23,6 @@ export function PrimeLayout() {
 
   useEffect(() => {
     preloadSiteImagesDeferred(location.pathname)
-    void getCategories().catch(() => undefined)
-    void getProducts({ sortBy: 'sort_order', lite: true }).catch(() => undefined)
   }, [location.pathname])
 
   useEffect(() => {

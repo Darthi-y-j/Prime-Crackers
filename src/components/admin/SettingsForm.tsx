@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatReferralCodesForStorage, parseReferralCodeList } from '@/lib/referralCode'
 import { updateWebsiteSettings } from '@/services/settings'
 import { useToast } from '@/contexts/ToastContext'
 import { useSettings } from '@/contexts/SettingsContext'
@@ -22,6 +23,7 @@ export function SettingsForm() {
     weekdays: settings.business_hours.weekdays || '',
     saturday: settings.business_hours.saturday || '',
     sunday: settings.business_hours.sunday || '',
+    referral_codes: (settings.social_links.referral_codes ?? []).join('\n'),
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +42,7 @@ export function SettingsForm() {
         facebook: form.facebook || undefined,
         instagram: form.instagram || undefined,
         youtube: form.youtube || undefined,
+        referral_codes: formatReferralCodesForStorage(parseReferralCodeList(form.referral_codes)),
       },
       business_hours: {
         weekdays: form.weekdays || undefined,
@@ -144,6 +147,31 @@ export function SettingsForm() {
             rows={2}
             className={inputClass}
           />
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="text-lg font-semibold text-slate-900">Referral Codes</h3>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Active referral codes
+          </label>
+          <textarea
+            value={form.referral_codes}
+            onChange={(e) => setForm({ ...form, referral_codes: e.target.value })}
+            rows={4}
+            className={inputClass}
+            placeholder="PRIME50&#10;DIWALI2026&#10;One code per line"
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            Customers can enter these on the cart enquiry form. Leave empty to accept any code.
+          </p>
+          {form.referral_codes.trim() && (
+            <p className="mt-2 text-xs font-medium text-slate-600">
+              {formatReferralCodesForStorage(parseReferralCodeList(form.referral_codes)).length}{' '}
+              code(s) configured
+            </p>
+          )}
         </div>
       </section>
 

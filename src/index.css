@@ -125,6 +125,33 @@
   100% { background-position: 200% center; }
 }
 
+@keyframes hero-offer-glow {
+  0%, 100% { opacity: 0.65; filter: blur(2px); }
+  50% { opacity: 1; filter: blur(3px); }
+}
+
+@keyframes hero-offer-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes hero-offer-cta-pulse {
+  0%, 100% { box-shadow: 0 8px 28px rgba(255, 193, 7, 0.45); }
+  50% { box-shadow: 0 8px 36px rgba(255, 193, 7, 0.65), 0 0 20px rgba(255, 193, 7, 0.25); }
+}
+
+.hero-offer-glow {
+  animation: hero-offer-glow 2.5s ease-in-out infinite;
+}
+
+.hero-offer-shimmer {
+  animation: hero-offer-shimmer 3.5s ease-in-out infinite;
+}
+
+.hero-offer-cta {
+  animation: hero-offer-cta-pulse 2s ease-in-out infinite;
+}
+
 @keyframes bounce-subtle {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
@@ -331,11 +358,11 @@
   }
 
   .animate-recommended-badge {
-    animation: recommended-badge-blink 1.8s ease-in-out infinite;
+    animation: recommended-badge-blink 1.8s ease-in-out 2;
   }
 
   .animate-best-seller-pop {
-    animation: best-seller-pop 1.4s ease-in-out infinite;
+    animation: best-seller-pop 1.4s ease-in-out 2;
   }
 
   .hero-search-bar {

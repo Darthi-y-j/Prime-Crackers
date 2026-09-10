@@ -260,6 +260,9 @@ export async function downloadCartEnquiryPdf(
   if (data.customerEmail) {
     customerLines.push(`Email: ${data.customerEmail}`)
   }
+  if (data.referralCode?.trim()) {
+    customerLines.push(`Referral code: ${data.referralCode.trim().toUpperCase()}`)
+  }
   if (data.authUserId) {
     customerLines.push('Account: Registered customer (logged in)')
   }
@@ -452,6 +455,7 @@ export function enquiryToPdfData(enquiry: Enquiry): CartEnquiryFormData {
     customerAddress: parsed.customerAddress,
     customerMessage: parsed.customerMessage,
     customerEmail: enquiry.customer_email ?? undefined,
+    referralCode: enquiry.referral_code ?? undefined,
     authUserId: enquiry.auth_user_id ?? undefined,
     spinReward: parsed.spinReward,
   }

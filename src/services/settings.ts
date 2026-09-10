@@ -4,13 +4,14 @@ import { BUSINESS_ADDRESS,
   BUSINESS_POLICIES,
   WHATSAPP_NUMBERS,
 } from '@/lib/businessInfo'
+import { formatReferralCodesForStorage } from '@/lib/referralCode'
 import { SITE_LOGO_PATH } from '@/lib/siteConfig'
 import type { WebsiteSettings } from '@/types/database'
 
 export const SOCIAL_LINKS = {
-  youtube: '',
+  youtube: 'https://www.youtube.com/@primecrackers',
   facebook: '',
-  instagram: '',
+  instagram: 'https://www.instagram.com/primecrackers',
 } as const
 
 export const DEFAULT_SETTINGS: WebsiteSettings = {
@@ -23,7 +24,7 @@ export const DEFAULT_SETTINGS: WebsiteSettings = {
   email: 'primecrackers@gmail.com',
   address: BUSINESS_ADDRESS,
   about_text:
-    'Prime Crackers brings festivals to life with quality crackers from Sivakasi. We offer wholesale & retail fireworks at up to 90% off — fancy items, rockets, sparklers and more, with all-India delivery from Alamarathupatti.',
+    'Prime Crackers brings festivals to life with quality crackers from Sivakasi. We offer wholesale & retail fireworks at up to 50% off — fancy items, rockets, sparklers and more, with all-India delivery from Alamarathupatti.',
   social_links: {
     ...SOCIAL_LINKS,
     whatsapp_numbers: [...WHATSAPP_NUMBERS],
@@ -116,6 +117,11 @@ function mergeSettings(data: Record<string, unknown> | null): WebsiteSettings {
         socialLinks.whatsapp_numbers.length >= WHATSAPP_NUMBERS.length
           ? socialLinks.whatsapp_numbers
           : [...WHATSAPP_NUMBERS],
+      referral_codes: formatReferralCodesForStorage(
+        socialLinks.referral_codes?.length
+          ? socialLinks.referral_codes
+          : DEFAULT_SETTINGS.social_links.referral_codes ?? [],
+      ),
       policies: {
         ...DEFAULT_SETTINGS.social_links.policies,
         ...socialLinks.policies,

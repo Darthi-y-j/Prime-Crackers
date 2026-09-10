@@ -52,6 +52,18 @@ export function cleanPhone(phone: string): string {
   return phone.replace(/\D/g, '')
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+export function isValidUuid(value: string | null | undefined): boolean {
+  return Boolean(value && UUID_RE.test(value))
+}
+
+/** enquiries.product_id is a FK to products — non-UUID or stale IDs must be omitted. */
+export function sanitizeEnquiryProductId(productId: string | null | undefined): string | null {
+  return isValidUuid(productId) ? productId! : null
+}
+
 export function generateEnquiryNumber(): string {
   const date = new Date()
   const datePart = date.toISOString().slice(0, 10).replace(/-/g, '')
