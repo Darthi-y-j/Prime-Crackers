@@ -161,7 +161,7 @@ export function AboutIntroSection() {
               </div>
 
               {/* Location chip */}
-              <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/15 bg-black/40 p-3 backdrop-blur-md">
+              <div className="absolute bottom-2 left-4 right-4 rounded-xl border border-white/15 bg-black/40 p-3 sm:bottom-1.5">
                 <div className="flex items-start gap-2.5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20">
                     <MapPin className="h-4 w-4 text-[#FFC107]" aria-hidden="true" />

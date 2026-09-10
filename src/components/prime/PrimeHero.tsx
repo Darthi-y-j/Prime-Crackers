@@ -69,7 +69,7 @@ export function PrimeHero() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           poster={PRIME_BRAND.heroPoster}
           className="absolute inset-0 z-[1] h-full w-full object-cover"
           aria-hidden="true"
