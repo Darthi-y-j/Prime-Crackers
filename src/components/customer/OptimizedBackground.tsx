@@ -50,7 +50,7 @@ export function OptimizedBackground({
       <img
         src={webp}
         alt={alt}
-        decoding={priority ? 'sync' : 'async'}
+        decoding="async"
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
         className={cn('absolute h-px w-px overflow-hidden opacity-0', imgClassName)}

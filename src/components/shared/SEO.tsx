@@ -5,6 +5,8 @@ import {
   APPLE_TOUCH_ICON_PATH,
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_WIDTH,
   FAVICON_192_PATH,
   FAVICON_32_PATH,
   FAVICON_ICO_PATH,
@@ -76,6 +78,9 @@ export function SEO({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+      <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
+      <meta property="og:image:type" content="image/png" />
       <meta property="og:image:alt" content={`${SITE_NAME} — premium fireworks and crackers`} />
       <meta property="og:locale" content="en_IN" />
 

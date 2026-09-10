@@ -53,17 +53,34 @@ export function ScrollRevealInit() {
       { threshold: 0.05, rootMargin: '0px 0px 5% 0px' },
     )
 
-    const scan = () => scanForReveals(document, observer)
+    let scanScheduled = false
+    const scan = () => {
+      const root = document.getElementById('root')
+      if (!root) return
+      scanForReveals(root, observer)
+    }
+
+    const scheduleScan = () => {
+      if (scanScheduled) return
+      scanScheduled = true
+      requestAnimationFrame(() => {
+        scanScheduled = false
+        scan()
+      })
+    }
 
     scan()
     const t1 = window.setTimeout(scan, 150)
     const t2 = window.setTimeout(scan, 600)
 
     const mutationObserver = new MutationObserver(() => {
-      scan()
+      scheduleScan()
     })
 
-    mutationObserver.observe(document.body, { childList: true, subtree: true })
+    const root = document.getElementById('root')
+    if (root) {
+      mutationObserver.observe(root, { childList: true, subtree: true })
+    }
 
     return () => {
       window.clearTimeout(t1)

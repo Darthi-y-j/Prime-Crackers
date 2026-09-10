@@ -13,13 +13,16 @@ export const DEVELOPER_CREDIT = {
 export const DEFAULT_DESCRIPTION =
   'Prime Crackers — We Bring Festivals. Buy Diwali crackers wholesale & retail from Sivakasi. Fancy items, rockets, sparklers & more. All-India delivery.'
 
-/** Homepage document title — includes official brand positioning for search. */
-export const HOME_PAGE_TITLE =
-  'Prime Crackers | Best Diwali Crackers — Wholesale & Retail Sivakasi'
+/** Homepage document title — ~50 chars, aligned with on-page H1 keywords. */
+export const HOME_PAGE_TITLE = 'Prime Crackers | Diwali Crackers Wholesale Sivakasi'
+
+/** OG image dimensions (public/og-image.png). */
+export const OG_IMAGE_WIDTH = 4167
+export const OG_IMAGE_HEIGHT = 4167
 
 /** Homepage meta description — natural brand + product intent without keyword stuffing. */
 export const HOME_PAGE_DESCRIPTION =
-  'Prime Crackers — We Bring Festivals. Buy Diwali crackers from Sivakasi at up to 90% off. Wholesale & retail fireworks with all-India delivery.'
+  'Prime Crackers — We Bring Festivals. Buy Diwali crackers from Sivakasi at up to 50% off. Wholesale & retail fireworks with all-India delivery.'
 
 /** Bump when favicon assets change — busts aggressive browser favicon cache. */
 export const FAVICON_VERSION = '3'
@@ -43,7 +46,10 @@ export const FAVICON_URL = `${SITE_URL}${FAVICON_PATH.split('?')[0]}`
 export const DEFAULT_OG_IMAGE = `${SITE_URL}${OG_IMAGE_PATH}`
 
 /** Public social profiles for Organization schema (sameAs). */
-export const BRAND_SOCIAL_PROFILES = [] as const
+export const BRAND_SOCIAL_PROFILES = [
+  'https://www.instagram.com/primecrackers',
+  'https://www.youtube.com/@primecrackers',
+] as const
 
 /** Static public routes included in the sitemap (no auth/admin/user-only pages). */
 export const SITEMAP_STATIC_ROUTES = [

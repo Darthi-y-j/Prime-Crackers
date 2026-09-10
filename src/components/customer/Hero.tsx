@@ -36,7 +36,7 @@ export function Hero({ heroSelectionProducts = [] }: HeroProps) {
               <div className="inline-flex items-center gap-2 rounded-full border border-festive-500/30 bg-festive-500/10 px-4 py-1.5">
                 <Percent className="h-4 w-4 text-festive-500" />
                 <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-festive-500">
-                  Up to 90% OFF — Wholesale &amp; Retail
+                  Up to 50% OFF — Wholesale &amp; Retail
                 </span>
               </div>
             </AnimateIn>
@@ -103,7 +103,7 @@ export function Hero({ heroSelectionProducts = [] }: HeroProps) {
                 />
                 <div className="mt-6 grid grid-cols-3 gap-3 text-center">
                   {[
-                    { value: '90%', label: 'Max Discount' },
+                    { value: '50%', label: 'Max Discount' },
                     { value: '10+', label: 'Years' },
                     { value: 'PAN', label: 'India Delivery' },
                   ].map((stat) => (

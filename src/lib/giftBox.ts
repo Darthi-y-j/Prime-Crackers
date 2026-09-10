@@ -1,4 +1,5 @@
 import type { CartItem, EnquiryItem, GiftBoxContentItem } from '@/types/database'
+import { isValidUuid, sanitizeEnquiryProductId } from '@/lib/utils'
 
 export function giftBoxLineTotal(items: GiftBoxContentItem[]): number | null {
   let total = 0
@@ -32,8 +33,11 @@ export function createGiftBoxCartItem(contents: GiftBoxContentItem[]): Omit<Cart
 export function enquiryHeaderProductId(items: CartItem[]): string | null {
   const first = items[0]
   if (!first) return null
-  if (first.isGiftBox) return first.giftBoxItems?.[0]?.productId ?? null
-  return first.productId
+  if (first.isGiftBox) {
+    const innerId = first.giftBoxItems?.find((item) => isValidUuid(item.productId))?.productId
+    return sanitizeEnquiryProductId(innerId ?? null)
+  }
+  return sanitizeEnquiryProductId(first.productId)
 }
 
 export function expandCartItemsForEnquiry(items: CartItem[]): EnquiryItem[] {

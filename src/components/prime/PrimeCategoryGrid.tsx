@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { Link } from 'react-router-dom'
 import { getCategories, getCachedCatalogueCategories } from '@/services/categories'
 import { getSquareImageUrl, IMAGE_WIDTH, cn } from '@/lib/utils'
 import { usePrimeShop } from '@/contexts/PrimeShopContext'
@@ -51,13 +52,13 @@ function CategoryCard({ cat, onShop }: { cat: Category; onShop: () => void }) {
             {cat.name}
           </h3>
         </div>
-        <button
-          type="button"
+        <Link
+          to="/#shop"
           onClick={onShop}
-          className="mt-2 w-full shrink-0 rounded-md bg-[#004D55] px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition hover:bg-[#006670] sm:mt-2.5 sm:px-3 sm:py-2.5 sm:text-[11px]"
+          className="mt-2 block w-full shrink-0 rounded-md bg-[#004D55] px-2 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-white transition hover:bg-[#006670] sm:mt-2.5 sm:px-3 sm:py-2.5 sm:text-[11px]"
         >
           Shop Now
-        </button>
+        </Link>
       </div>
     </article>
   )

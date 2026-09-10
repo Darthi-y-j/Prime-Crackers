@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Zap,
   ChevronRight,
+  Ticket,
 } from 'lucide-react'
 import { SEO } from '@/components/shared/SEO'
 import { AnimateIn } from '@/components/customer/AnimateIn'
@@ -40,6 +41,7 @@ import {
   validateDeliveryAddress,
   type DeliveryAddressFields,
 } from '@/lib/deliveryAddress'
+import { isReferralCodeValid, normalizeReferralCode } from '@/lib/referralCode'
 import { formatPrice, validatePhone, cn } from '@/lib/utils'
 import { formatDisplayPhone } from '@/lib/businessInfo'
 import type { CartItem } from '@/types/database'
@@ -225,6 +227,8 @@ function EnquiryForm({
   updateAddress,
   customerMessage,
   setCustomerMessage,
+  referralCode,
+  setReferralCode,
   locating,
   loading,
   isLoggedIn,
@@ -246,6 +250,8 @@ function EnquiryForm({
   updateAddress: (patch: Partial<DeliveryAddressFields>) => void
   customerMessage: string
   setCustomerMessage: (v: string) => void
+  referralCode: string
+  setReferralCode: (v: string) => void
   locating: boolean
   loading: boolean
   isLoggedIn: boolean
@@ -410,6 +416,27 @@ function EnquiryForm({
             </div>
 
             <div>
+              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+                <Ticket className="h-3.5 w-3.5 text-[#FFC107]" />
+                Referral code (optional)
+              </label>
+              <input
+                type="text"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                placeholder="e.g. PRIME50"
+                className={cn(inputClass, 'uppercase tracking-wide')}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {(settings.social_links.referral_codes?.length ?? 0) > 0 && (
+                <p className="mt-1.5 text-[11px] text-slate-500">
+                  Have a referral code from a friend or partner? Enter it here for special offers.
+                </p>
+              )}
+            </div>
+
+            <div>
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
                 Message (optional)
               </label>
@@ -510,6 +537,7 @@ export function CartPage() {
   const [customerPhone, setCustomerPhone] = useState('')
   const [addressFields, setAddressFields] = useState<DeliveryAddressFields>(emptyAddressFields)
   const [customerMessage, setCustomerMessage] = useState('')
+  const [referralCode, setReferralCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [locating, setLocating] = useState(false)
   const [spinReward, setSpinReward] = useState<SpinReward | null>(null)
@@ -588,6 +616,16 @@ export function CartPage() {
       return null
     }
 
+    const normalizedReferral = referralCode.trim() ? normalizeReferralCode(referralCode) : ''
+    const allowedReferralCodes = settings.social_links.referral_codes ?? []
+    if (
+      normalizedReferral &&
+      !isReferralCodeValid(normalizedReferral, allowedReferralCodes)
+    ) {
+      showToast('Invalid referral code. Please check and try again.', 'error')
+      return null
+    }
+
     return {
       items,
       customerName: customerName.trim(),
@@ -595,6 +633,7 @@ export function CartPage() {
       customerAddress: buildFullDeliveryAddress(addressFields),
       customerMessage,
       customerEmail,
+      referralCode: normalizedReferral || undefined,
       authUserId: isCustomer && user?.id ? user.id : undefined,
       spinReward: spinReward
         ? {
@@ -633,8 +672,11 @@ export function CartPage() {
       const { error } = await createCartEnquiry(formData)
 
       if (error) {
-        showToast('Could not save enquiry. Opening WhatsApp anyway...', 'info')
+        showToast(`Could not save enquiry: ${error}`, 'error')
+        return
       }
+
+      showToast('Enquiry saved! Opening WhatsApp…', 'success')
 
       const message = buildCartWhatsAppMessage(formData)
       const url = buildWhatsAppUrl(settings.whatsapp_number, message)
@@ -645,6 +687,7 @@ export function CartPage() {
       setCustomerPhone('')
       setAddressFields(emptyAddressFields())
       setCustomerMessage('')
+      setReferralCode('')
       setPrefilledFromAccount(false)
     } catch {
       showToast('Something went wrong. Please try again.', 'error')
@@ -662,6 +705,8 @@ export function CartPage() {
     updateAddress,
     customerMessage,
     setCustomerMessage,
+    referralCode,
+    setReferralCode,
     locating,
     loading,
     isLoggedIn: Boolean(isCustomer && user),

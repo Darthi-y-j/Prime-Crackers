@@ -61,6 +61,10 @@ export function buildCartWhatsAppMessage(data: CartEnquiryFormData): string {
     lines.push(`Email: ${data.customerEmail.trim()}`)
   }
 
+  if (data.referralCode?.trim()) {
+    lines.push(`Referral code: ${data.referralCode.trim().toUpperCase()}`)
+  }
+
   if (data.customerMessage?.trim()) {
     lines.push('', 'Message:', data.customerMessage.trim())
   }
