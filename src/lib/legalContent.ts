@@ -7,7 +7,7 @@ const LAST_UPDATED = '27/08/2026'
 
 const BUSINESS_ADDRESS_LINE = BUSINESS_ADDRESS.replace(/\n/g, ', ')
 const CONTACT_PHONE = '+91 88254 11254'
-const CONTACT_EMAIL = 'primecrackers@gmail.com'
+const CONTACT_EMAIL = 'primecrackerssivakasi@gmail.com'
 
 const CONTACT_BLOCK = [
   `${SITE_NAME}`,

@@ -21,7 +21,7 @@ export const DEFAULT_SETTINGS: WebsiteSettings = {
   logo_url: SITE_LOGO_PATH,
   phone: '+91 63697 73883',
   whatsapp_number: WHATSAPP_NUMBERS[0],
-  email: 'primecrackers@gmail.com',
+  email: 'primecrackerssivakasi@gmail.com',
   address: BUSINESS_ADDRESS,
   about_text:
     'Prime Crackers brings festivals to life with quality crackers from Sivakasi. We offer wholesale & retail fireworks at up to 50% off — fancy items, rockets, sparklers and more, with all-India delivery from Alamarathupatti.',
@@ -45,7 +45,7 @@ function mergeSettings(data: Record<string, unknown> | null): WebsiteSettings {
     'Prime Crackers, Pallapatti, Sivakasi, Virudhunagar District, Tamil Nadu 626123, India',
   ]
 
-  const legacyEmails = ['info@primecrackers.in']
+  const legacyEmails = ['info@primecrackers.in', 'primecrackers@gmail.com']
 
   const phone =
     !data.phone || legacyPhones.includes(String(data.phone))
