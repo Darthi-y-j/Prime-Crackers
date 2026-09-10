@@ -8,40 +8,52 @@ import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 import { usePrimeShop } from '@/contexts/PrimeShopContext'
 
-function shouldPlayHeroVideo(): boolean {
+function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
-  if (window.matchMedia('(max-width: 768px)').matches) return false
-  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
-  if (connection?.saveData) return false
-  if (connection?.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)) return false
-  return true
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function PrimeHero() {
   const { scrollToShop } = usePrimeShop()
   const videoRef = useRef<HTMLVideoElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
-  const [playVideo] = useState(() => shouldPlayHeroVideo())
+  const [playVideo] = useState(() => !prefersReducedMotion())
 
   useEffect(() => {
     const video = videoRef.current
     const section = sectionRef.current
-    if (!video || !playVideo || !section) return
+    if (!video || !playVideo) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => undefined)
-        } else {
-          video.pause()
-        }
-      },
-      { threshold: 0.1 },
-    )
+    const tryPlay = () => {
+      if (video.paused) {
+        void video.play().catch(() => undefined)
+      }
+    }
 
-    observer.observe(section)
-    return () => observer.disconnect()
+    tryPlay()
+    video.addEventListener('loadeddata', tryPlay)
+    video.addEventListener('canplay', tryPlay)
+
+    let observer: IntersectionObserver | undefined
+    if (section) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            tryPlay()
+          } else {
+            video.pause()
+          }
+        },
+        { threshold: 0.1 },
+      )
+      observer.observe(section)
+    }
+
+    return () => {
+      video.removeEventListener('loadeddata', tryPlay)
+      video.removeEventListener('canplay', tryPlay)
+      observer?.disconnect()
+    }
   }, [playVideo])
 
   return (
@@ -57,7 +69,7 @@ export function PrimeHero() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           poster={PRIME_BRAND.heroPoster}
           className="absolute inset-0 z-[1] h-full w-full object-cover"
           aria-hidden="true"
