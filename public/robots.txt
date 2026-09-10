@@ -11,4 +11,4 @@ Disallow: /auth/
 Disallow: /cart
 Disallow: /wishlist
 
-Sitemap: https://www.primecrackers.in/sitemap.xml
+Sitemap: https://www.primecracker.com/sitemap.xml
