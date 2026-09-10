@@ -134,7 +134,7 @@ export function CollectiveCartBar() {
             </Link>
             {settings.whatsapp_number && (
               <Link
-                to="/cart"
+                to="/cart#send-enquiry"
                 onClick={() => setOpen(false)}
                 className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-[#25D366] px-2 py-1.5 text-[11px] font-semibold text-white hover:bg-[#20bd5a]"
               >

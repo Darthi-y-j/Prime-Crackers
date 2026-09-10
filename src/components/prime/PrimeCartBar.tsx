@@ -2,36 +2,17 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle, ShoppingCart, X } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
-import { useSettings } from '@/contexts/SettingsContext'
 import { useToast } from '@/contexts/ToastContext'
 import { formatPrice } from '@/lib/utils'
-import { buildWhatsAppContactUrl } from '@/lib/whatsapp'
 
 export function PrimeCartBar() {
   const { items, itemCount, clearCart } = useCart()
-  const { settings } = useSettings()
   const { showToast } = useToast()
   const [showClearConfirm, setShowClearConfirm] = useState(false)
 
   if (items.length === 0) return null
 
   const total = items.reduce((sum, item) => sum + (item.price ?? 0) * item.quantity, 0)
-
-  const lines = [
-    'Hello, I would like to enquire about the following crackers:',
-    '',
-    ...items.map((item, i) => {
-      const priceStr = item.price != null ? ` @ ${formatPrice(item.price)}` : ''
-      return `${i + 1}. ${item.productName} × ${item.quantity}${priceStr}`
-    }),
-    '',
-    'Please share availability and delivery details.',
-  ]
-
-  const whatsappUrl = buildWhatsAppContactUrl(
-    settings.whatsapp_number || '916369773883',
-    lines.join('\n'),
-  )
 
   const handleClearCart = () => {
     clearCart()
@@ -93,15 +74,13 @@ export function PrimeCartBar() {
                 <ShoppingCart className="h-4 w-4" />
                 <span className="hidden sm:inline">View Cart</span>
               </Link>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/cart#send-enquiry"
                 className="inline-flex items-center gap-1.5 rounded-full bg-[#FFC107] px-3 py-2.5 text-sm font-bold text-[#004D55] hover:bg-[#FFD54F] sm:px-4"
               >
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
-              </a>
+              </Link>
             </div>
           </>
         )}
