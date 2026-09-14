@@ -57,6 +57,10 @@ const DEFAULT_ACCOUNT_PREFS: AccountPrefs = {
 }
 
 function storageKey(userId: string, suffix: string) {
+  return `prime_profile_${userId}_${suffix}`
+}
+
+function legacyStorageKey(userId: string, suffix: string) {
   return `aura_profile_${userId}_${suffix}`
 }
 
@@ -70,12 +74,18 @@ function readJson<T>(key: string, fallback: T): T {
   }
 }
 
+function readProfileJson<T>(userId: string, suffix: string, fallback: T): T {
+  const current = readJson<T | null>(storageKey(userId, suffix), null)
+  if (current != null) return current
+  return readJson(legacyStorageKey(userId, suffix), fallback)
+}
+
 function writeJson<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
 export function getSavedAddresses(userId: string): SavedAddress[] {
-  return readJson(storageKey(userId, 'addresses'), [])
+  return readProfileJson(userId, 'addresses', [])
 }
 
 export function saveAddresses(userId: string, addresses: SavedAddress[]) {
@@ -83,7 +93,7 @@ export function saveAddresses(userId: string, addresses: SavedAddress[]) {
 }
 
 export function getExtendedProfile(userId: string): ExtendedProfile | null {
-  return readJson<ExtendedProfile | null>(storageKey(userId, 'extended'), null)
+  return readProfileJson<ExtendedProfile | null>(userId, 'extended', null)
 }
 
 export function saveExtendedProfile(userId: string, profile: ExtendedProfile) {
@@ -91,7 +101,7 @@ export function saveExtendedProfile(userId: string, profile: ExtendedProfile) {
 }
 
 export function getNotificationPrefs(userId: string): NotificationPrefs {
-  return readJson(storageKey(userId, 'notifications'), DEFAULT_NOTIFICATION_PREFS)
+  return readProfileJson(userId, 'notifications', DEFAULT_NOTIFICATION_PREFS)
 }
 
 export function saveNotificationPrefs(userId: string, prefs: NotificationPrefs) {
@@ -99,7 +109,7 @@ export function saveNotificationPrefs(userId: string, prefs: NotificationPrefs) 
 }
 
 export function getAccountPrefs(userId: string): AccountPrefs {
-  return readJson(storageKey(userId, 'preferences'), DEFAULT_ACCOUNT_PREFS)
+  return readProfileJson(userId, 'preferences', DEFAULT_ACCOUNT_PREFS)
 }
 
 export function saveAccountPrefs(userId: string, prefs: AccountPrefs) {

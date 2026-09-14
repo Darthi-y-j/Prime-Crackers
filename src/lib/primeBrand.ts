@@ -17,8 +17,6 @@ export const PRIME_BRAND = {
   heroImage: '/hero-fireworks-bg.webp',
   /** Fireworks celebration scene — contact page CTA */
   contactCtaBg: '/contact-cta-bg.png',
-  /** Teal storefront image used behind inner-page heroes (About, Cart, FAQ, etc.) */
-  pageHeaderBg: '/page-header-bg.png',
   /** Panoramic fireworks skyline */
   aboutHeaderBg: '/about-header-bg.png',
   /** Festive Diwali illustration — page heroes & Visit us */

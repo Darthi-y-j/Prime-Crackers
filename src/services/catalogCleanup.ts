@@ -1,4 +1,4 @@
-import { clearAllCatalog, importAuraCatalog } from '@/services/catalogImport'
+import { clearAllCatalog, importCatalog } from '@/services/catalogImport'
 
 export interface CatalogCleanupResult {
   synced: number
@@ -9,7 +9,7 @@ export interface CatalogCleanupResult {
 
 /** Deletes all existing products/categories, then imports the Excel master catalogue. */
 export async function applyCatalogCleanup(): Promise<CatalogCleanupResult> {
-  const result = await importAuraCatalog({ force: true, replace: true })
+  const result = await importCatalog({ force: true, replace: true })
 
   return {
     synced: result.productCount,

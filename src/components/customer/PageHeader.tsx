@@ -3,9 +3,6 @@ import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { PRIME_BRAND } from '@/lib/primeBrand'
 import { cn } from '@/lib/utils'
 
-/** Storefront photo — used in content sections (e.g. About "Visit us"). */
-export const PAGE_HEADER_BG = PRIME_BRAND.pageHeaderBg
-
 /** Panoramic fireworks skyline (legacy). */
 export const HERO_HEADER_BG = PRIME_BRAND.aboutHeaderBg
 

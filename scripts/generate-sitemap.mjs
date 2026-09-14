@@ -34,11 +34,11 @@ function escapeXml(value) {
 }
 
 function readCatalogProductSlugs() {
-  const catalogPath = path.join(ROOT, 'src/data/auraCatalog.ts')
+  const catalogPath = path.join(ROOT, 'src/data/catalog.ts')
   if (!fs.existsSync(catalogPath)) return []
 
   const source = fs.readFileSync(catalogPath, 'utf8')
-  const productsSection = source.split('export const AURA_CATALOG_PRODUCTS')[1] ?? ''
+  const productsSection = source.split('export const CATALOG_PRODUCTS')[1] ?? ''
   const slugs = [...productsSection.matchAll(/"slug": "([^"]+)"/g)].map((match) => match[1])
   return [...new Set(slugs)]
 }

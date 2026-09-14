@@ -1,9 +1,18 @@
 import type { BusinessPolicies, WebsiteSettings } from '@/types/database'
 import { cleanPhone } from './utils'
 
-export const BUSINESS_ADDRESS = `Prime Crackers,
-Chillayanayakanpatti Road, Alamarathupatti,
+export const BUSINESS_ADDRESS = `Prime Crackers
+Chillayanayakanpatti Road, Alamarathupatti
 Sivakasi, Tamil Nadu, India`
+
+/** One-line address for cards and meta — avoids double commas when lines were comma-separated. */
+export function formatAddressInline(address: string): string {
+  return address
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/,+\s*$/, ''))
+    .filter(Boolean)
+    .join(', ')
+}
 
 export const WHATSAPP_NUMBERS = ['916369773883', '918903908929'] as const
 

@@ -18,7 +18,12 @@ import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { EnquiryForm } from '@/components/customer/EnquiryForm'
 import { useAuth } from '@/contexts/AuthContext'
 import { useSettings } from '@/contexts/SettingsContext'
-import { formatDisplayPhone, getBusinessPolicies, getWhatsAppNumbers } from '@/lib/businessInfo'
+import {
+  formatAddressInline,
+  formatDisplayPhone,
+  getBusinessPolicies,
+  getWhatsAppNumbers,
+} from '@/lib/businessInfo'
 import { buildWhatsAppContactUrl, buildTelUrl, buildMailtoUrl } from '@/lib/whatsapp'
 import { PRIME_CRACKERS_GOOGLE_MAPS_URL, PRIME_CRACKERS_MAP_EMBED_URL } from '@/lib/maps'
 import { PRIME_BRAND } from '@/lib/primeBrand'
@@ -41,7 +46,7 @@ function ContactCard({
   accent: string
 }) {
   const className = cn(
-    'group flex h-full flex-col gap-3 rounded-2xl border p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5',
+    'group flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5',
   )
   const style = {
     backgroundColor: `${accent}10`,
@@ -58,7 +63,7 @@ function ContactCard({
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#004D55]/55">{label}</p>
-        <p className="mt-1 text-sm font-bold leading-snug text-[#004D55] sm:text-base">{value}</p>
+        <p className="mt-1 break-all text-sm font-bold leading-snug text-[#004D55] sm:text-base">{value}</p>
       </div>
       {href && (
         <ArrowRight
@@ -150,7 +155,7 @@ export function ContactPage() {
     settings.address
       ? {
           label: 'Store address',
-          value: settings.address.replace(/\n/g, ', '),
+          value: formatAddressInline(settings.address),
           href: PRIME_CRACKERS_GOOGLE_MAPS_URL,
           icon: MapPin,
           accent: '#E65100',

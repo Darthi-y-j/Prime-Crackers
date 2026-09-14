@@ -6,7 +6,7 @@ import XLSX from 'xlsx'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
 const xlsxPath = path.join(root, 'data', 'Aura_Crackers_Product_Entry_Table.xlsx')
-const outPath = path.join(root, 'src', 'data', 'auraCatalog.ts')
+const outPath = path.join(root, 'src', 'data', 'catalog.ts')
 
 function slugify(text) {
   return text
@@ -29,7 +29,9 @@ function num(value) {
 
 function cleanBrand(value) {
   const brand = String(value || '').trim()
-  if (!brand || brand.toLowerCase() === 'aura') return 'Aura Crackers'
+  if (!brand || brand.toLowerCase() === 'aura' || brand.toLowerCase() === 'aura crackers') {
+    return 'Prime Crackers'
+  }
   return brand
 }
 
@@ -107,14 +109,14 @@ const products = rows.map((row, index) => {
   }
 })
 
-const ts = `export interface AuraCatalogCategory {
+const ts = `export interface CatalogCategory {
   name: string
   slug: string
   description: string
   sort_order: number
 }
 
-export interface AuraCatalogProduct {
+export interface CatalogProduct {
   name: string
   slug: string
   category_slug: string
@@ -135,11 +137,11 @@ export interface AuraCatalogProduct {
   sort_order: number
 }
 
-export const AURA_CATALOG_CATEGORIES: AuraCatalogCategory[] = ${JSON.stringify(categories, null, 2)}
+export const CATALOG_CATEGORIES: CatalogCategory[] = ${JSON.stringify(categories, null, 2)}
 
-export const AURA_CATALOG_PRODUCTS: AuraCatalogProduct[] = ${JSON.stringify(products, null, 2)}
+export const CATALOG_PRODUCTS: CatalogProduct[] = ${JSON.stringify(products, null, 2)}
 `
 
 fs.writeFileSync(outPath, ts)
-fs.writeFileSync(path.join(root, 'data', 'auraCatalog.json'), JSON.stringify({ categories, products }, null, 2))
+fs.writeFileSync(path.join(root, 'data', 'catalog.json'), JSON.stringify({ categories, products }, null, 2))
 console.log(`Wrote ${categories.length} categories and ${products.length} products to ${outPath}`)

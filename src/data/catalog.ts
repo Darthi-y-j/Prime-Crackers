@@ -1,11 +1,11 @@
-export interface AuraCatalogCategory {
+export interface CatalogCategory {
   name: string
   slug: string
   description: string
   sort_order: number
 }
 
-export interface AuraCatalogProduct {
+export interface CatalogProduct {
   name: string
   slug: string
   category_slug: string
@@ -26,7 +26,7 @@ export interface AuraCatalogProduct {
   sort_order: number
 }
 
-export const AURA_CATALOG_CATEGORIES: AuraCatalogCategory[] = [
+export const CATALOG_CATEGORIES: CatalogCategory[] = [
   {
     "name": "Sound Party",
     "slug": "sound-party",
@@ -233,7 +233,7 @@ export const AURA_CATALOG_CATEGORIES: AuraCatalogCategory[] = [
   }
 ]
 
-export const AURA_CATALOG_PRODUCTS: AuraCatalogProduct[] = [
+export const CATALOG_PRODUCTS: CatalogProduct[] = [
   {
     "name": "2 3/4\" Kuruvai",
     "slug": "2-3-4-kuruvai",

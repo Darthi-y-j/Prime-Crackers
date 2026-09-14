@@ -1,5 +1,7 @@
-/** Canonical production site URL — used for SEO meta tags and sitemap generation. */
-export const SITE_URL = 'https://www.primecracker.com'
+/** Canonical production site URL — used for SEO meta tags, sitemap, and auth email redirects. */
+export const SITE_URL =
+  (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '') ||
+  'https://www.primecracker.com'
 
 export const SITE_NAME = 'Prime Crackers'
 
@@ -16,9 +18,9 @@ export const DEFAULT_DESCRIPTION =
 /** Homepage document title — ~50 chars, aligned with on-page H1 keywords. */
 export const HOME_PAGE_TITLE = 'Sivakasi Diwali Fireworks Wholesale | Prime Crackers'
 
-/** OG image dimensions (public/og-image.png). */
-export const OG_IMAGE_WIDTH = 4167
-export const OG_IMAGE_HEIGHT = 4167
+/** OG / WhatsApp share image (public/og-share.png) — 1200×630. */
+export const OG_IMAGE_WIDTH = 1200
+export const OG_IMAGE_HEIGHT = 630
 
 /** Homepage meta description — natural brand + product intent without keyword stuffing. */
 export const HOME_PAGE_DESCRIPTION =
@@ -40,7 +42,8 @@ export const FAVICON_PATH = `/favicon.png?v=${FAVICON_VERSION}`
 export const FAVICON_32_PATH = `/favicon-32x32.png?v=${FAVICON_VERSION}`
 export const FAVICON_192_PATH = `/favicon-192x192.png?v=${FAVICON_VERSION}`
 export const APPLE_TOUCH_ICON_PATH = `/apple-touch-icon.png?v=${FAVICON_VERSION}`
-export const OG_IMAGE_PATH = '/og-image.png'
+/** Cache-bust so WhatsApp/Facebook refetch after the share image changes. */
+export const OG_IMAGE_PATH = '/og-share.png?v=4'
 export const FAVICON_ICO_PATH = `/favicon.ico?v=${FAVICON_VERSION}`
 export const FAVICON_URL = `${SITE_URL}${FAVICON_PATH.split('?')[0]}`
 export const DEFAULT_OG_IMAGE = `${SITE_URL}${OG_IMAGE_PATH}`

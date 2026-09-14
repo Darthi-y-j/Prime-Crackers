@@ -1,5 +1,5 @@
 import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
-import { AURA_CATALOG_CATEGORIES, AURA_CATALOG_PRODUCTS } from '@/data/auraCatalog'
+import { CATALOG_CATEGORIES, CATALOG_PRODUCTS } from '@/data/catalog'
 import { createCategory, deleteCategory, getCategories, updateCategory } from '@/services/categories'
 import { deleteProduct, getAllProducts } from '@/services/products'
 
@@ -32,7 +32,7 @@ async function ensureCategories(): Promise<Map<string, string>> {
   const byName = new Map(existing.map((category) => [category.name.trim().toLowerCase(), category]))
 
   await Promise.all(
-    AURA_CATALOG_CATEGORIES.map(async (category) => {
+    CATALOG_CATEGORIES.map(async (category) => {
       const match =
         bySlug.get(category.slug) ?? byName.get(category.name.trim().toLowerCase())
       const payload = {
@@ -61,7 +61,7 @@ async function ensureCategories(): Promise<Map<string, string>> {
 
   const saved = await getCategories(false, 'all')
   const idBySlug = new Map<string, string>()
-  for (const category of AURA_CATALOG_CATEGORIES) {
+  for (const category of CATALOG_CATEGORIES) {
     const match =
       saved.find((item) => item.slug === category.slug) ??
       saved.find((item) => item.name.trim().toLowerCase() === category.name.trim().toLowerCase())
@@ -72,7 +72,7 @@ async function ensureCategories(): Promise<Map<string, string>> {
 }
 
 async function upsertProducts(categoryIds: Map<string, string>) {
-  const rows = AURA_CATALOG_PRODUCTS.map((product) => {
+  const rows = CATALOG_PRODUCTS.map((product) => {
     const category_id = categoryIds.get(product.category_slug)
     if (!category_id) {
       throw new Error(`Missing category for ${product.name} (${product.category_slug})`)
@@ -170,15 +170,15 @@ export async function clearAllCatalog(): Promise<{
   }
 }
 
-export async function importAuraCatalog(
+export async function importCatalog(
   options: { force?: boolean; replace?: boolean } = {},
 ): Promise<CatalogImportResult> {
   try {
     if (!options.force && !options.replace && (await catalogAlreadyImported())) {
       return {
         skipped: true,
-        categoryCount: AURA_CATALOG_CATEGORIES.length,
-        productCount: AURA_CATALOG_PRODUCTS.length,
+        categoryCount: CATALOG_CATEGORIES.length,
+        productCount: CATALOG_PRODUCTS.length,
         removedProducts: 0,
         removedCategories: 0,
         error: null,
@@ -198,8 +198,8 @@ export async function importAuraCatalog(
 
     return {
       skipped: false,
-      categoryCount: AURA_CATALOG_CATEGORIES.length,
-      productCount: AURA_CATALOG_PRODUCTS.length,
+      categoryCount: CATALOG_CATEGORIES.length,
+      productCount: CATALOG_PRODUCTS.length,
       removedProducts,
       removedCategories,
       error: null,

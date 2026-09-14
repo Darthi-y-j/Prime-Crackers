@@ -1,4 +1,4 @@
-# Aura Crackers — Product Catalogue & Enquiry Platform
+# Prime Crackers — Product Catalogue & Enquiry Platform
 
 A modern, responsive fireworks/crackers product catalogue with WhatsApp enquiry flow and a separate admin management panel.
 

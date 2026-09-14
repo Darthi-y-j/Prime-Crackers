@@ -7,14 +7,9 @@ const AUTH_IMAGE_PATHS = [PRIME_BRAND.loginBg, PRIME_BRAND.loginCardBg, PRIME_BR
 const HOME_PRIORITY_PATHS = [PRIME_BRAND.heroImage, PRIME_BRAND.festiveHeaderBg]
 
 const DEFERRED_SITE_PATHS = [
-  PRIME_BRAND.pageHeaderBg,
   PRIME_BRAND.contactCtaBg,
   PRIME_BRAND.safetyDosDontsBg,
   '/why-choose-bg.png',
-  '/how-it-works-bg.png',
-  '/premium-quality-card.png',
-  '/wide-variety-card.png',
-  '/browse-products-step-bg.png',
 ]
 
 let bootPreloadStarted = false

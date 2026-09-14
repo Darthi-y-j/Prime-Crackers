@@ -109,7 +109,7 @@ function App() {
                       <Route path="/reset-password" element={<ResetPasswordPage />} />
                       <Route path="/register" element={<RegisterPage />} />
                       <Route path="/account/*" element={<AccountPage />} />
-                      {/* Redirect old Aura-style routes to home */}
+                      {/* Redirect unused catalogue routes to home */}
                       <Route path="/products" element={<Navigate to="/#shop" replace />} />
                       <Route path="/categories" element={<Navigate to="/" replace />} />
                       <Route path="/categories/:slug" element={<Navigate to="/" replace />} />

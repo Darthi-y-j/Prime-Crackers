@@ -1,6 +1,5 @@
 /**
- * Replace the live Supabase catalogue with data from data/auraCatalog.json
- * (generated from data/Aura_Crackers_Product_Entry_Table.xlsx).
+ * Replace the live Supabase catalogue with data from data/catalog.json
  *
  * Auth (pick one):
  *   SUPABASE_SERVICE_ROLE_KEY — from Supabase Dashboard → Settings → API
@@ -50,7 +49,7 @@ if (!supabaseUrl || !anonKey) {
   process.exit(1)
 }
 
-const catalogPath = path.join(root, 'data', 'auraCatalog.json')
+const catalogPath = path.join(root, 'data', 'catalog.json')
 if (!fs.existsSync(catalogPath)) {
   console.error(`Missing ${catalogPath}. Run: npm run catalog`)
   process.exit(1)

@@ -34,4 +34,43 @@ const faviconIco = path.join(publicDir, 'favicon.ico')
 fs.copyFileSync(favicon32, faviconIco)
 console.log('Wrote favicon.ico (copied from favicon-32x32.png)')
 
+/** WhatsApp / Facebook share card — 1200×630 with the Prime logo (not a leftover brand). */
+const OG_WIDTH = 1200
+const OG_HEIGHT = 630
+const OG_LOGO = 420
+const logoBuffer = await sharp(source)
+  .resize(OG_LOGO, OG_LOGO, {
+    fit: 'contain',
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toBuffer()
+
+const ogCard = await sharp({
+  create: {
+    width: OG_WIDTH,
+    height: OG_HEIGHT,
+    channels: 3,
+    background: { r: 0, g: 77, b: 85 },
+  },
+})
+  .composite([
+    {
+      input: Buffer.from(
+        `<svg width="${OG_WIDTH}" height="${OG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="${OG_WIDTH}" height="12" fill="#FFC107"/>
+          <rect x="0" y="${OG_HEIGHT - 12}" width="${OG_WIDTH}" height="12" fill="#FFC107"/>
+        </svg>`,
+      ),
+      top: 0,
+      left: 0,
+    },
+    { input: logoBuffer, gravity: 'centre' },
+  ])
+  .png()
+  .toBuffer()
+
+await sharp(ogCard).toFile(path.join(publicDir, 'og-share.png'))
+console.log('Wrote og-share.png (1200x630 Prime share card)')
+
 console.log('Favicon generation complete.')
