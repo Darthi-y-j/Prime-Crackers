@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Menu, Bell } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useStockAlerts } from '@/contexts/StockAlertContext'
+import { useAdminPush } from '@/contexts/AdminPushContext'
 
 interface AdminHeaderProps {
   title: string
@@ -16,9 +17,11 @@ function getInitials(email: string): string {
 export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
   const { user } = useAuth()
   const { lowStockProducts } = useStockAlerts()
+  const { subscribed, permission, enablePush, busy: pushBusy } = useAdminPush()
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const alertCount = lowStockProducts.length
+  const pushActive = subscribed && permission === 'granted'
 
   useEffect(() => {
     if (!open) return
@@ -47,6 +50,27 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
+        {!pushActive && permission !== 'denied' && (
+          <button
+            type="button"
+            disabled={pushBusy}
+            onClick={() => void enablePush()}
+            className="hidden rounded-xl border border-[#004D55]/15 bg-[#FFF8E1] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-[#004D55] transition hover:bg-[#FFC107]/30 sm:inline-flex sm:items-center sm:gap-1"
+            title="Enable mobile enquiry notifications"
+          >
+            <Bell className="h-3.5 w-3.5" />
+            Alerts
+          </button>
+        )}
+        {pushActive && (
+          <span
+            className="hidden items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 sm:inline-flex"
+            title="Enquiry push alerts enabled"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Push on
+          </span>
+        )}
         <div className="relative" ref={menuRef}>
           <button
             type="button"

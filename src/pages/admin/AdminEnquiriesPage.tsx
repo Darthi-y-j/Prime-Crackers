@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useOutletContext, useLocation } from 'react-router-dom'
+import { useOutletContext, useLocation, useSearchParams } from 'react-router-dom'
 import {
   MessageCircle,
   Trash2,
@@ -79,7 +79,9 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
   const config = inboxConfig[mode]
   const { onMenuClick } = useOutletContext<{ onMenuClick: () => void }>()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const enquiryIdFromNav = (location.state as { enquiryId?: string } | null)?.enquiryId
+  const enquiryIdFromQuery = searchParams.get('enquiry')
   const { isAdmin } = useAuth()
   const { settings } = useSettings()
   const { showToast } = useToast()
@@ -249,9 +251,10 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
     setSelectedEnquiry((current) => {
       if (filteredEnquiries.length === 0) return null
 
-      if (enquiryIdFromNav) {
-        const fromNav = filteredEnquiries.find((e) => e.id === enquiryIdFromNav)
-        if (fromNav) return fromNav
+      const deepLinkId = enquiryIdFromNav || enquiryIdFromQuery
+      if (deepLinkId) {
+        const fromLink = filteredEnquiries.find((e) => e.id === deepLinkId)
+        if (fromLink) return fromLink
       }
 
       if (current) {
@@ -261,7 +264,7 @@ function AdminEnquiryInbox({ mode }: { mode: EnquiryInboxMode }) {
 
       return filteredEnquiries[0]
     })
-  }, [loading, filteredEnquiries, repliedFilter, enquiryIdFromNav])
+  }, [loading, filteredEnquiries, repliedFilter, enquiryIdFromNav, enquiryIdFromQuery])
 
   const pendingCount = modeEnquiries.filter((e) => !isEnquiryReplied(e)).length
 

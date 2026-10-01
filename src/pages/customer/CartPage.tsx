@@ -35,7 +35,6 @@ import { createCartEnquiry } from '@/services/enquiries'
 import { buildCartWhatsAppMessage, buildWhatsAppUrl } from '@/lib/whatsapp'
 import type { SpinReward } from '@/lib/spinToWin'
 import type { CartEnquiryFormData } from '@/types/database'
-import { getCurrentDeliveryAddress, geolocationErrorMessage } from '@/lib/geolocation'
 import {
   buildFullDeliveryAddress,
   emptyAddressFields,
@@ -43,6 +42,14 @@ import {
   type DeliveryAddressFields,
 } from '@/lib/deliveryAddress'
 import { isReferralCodeValid, normalizeReferralCode } from '@/lib/referralCode'
+import {
+  MIN_ORDER_AMOUNT_LABEL,
+  MIN_ORDER_TRANSPORT_REASON,
+  MIN_ORDER_TRANSPORT_REASON_SHORT,
+  MIN_ORDER_TOAST_MESSAGE,
+  amountNeededForMinimum,
+  meetsMinimumOrderAmount,
+} from '@/lib/cartRules'
 import { formatPrice, validatePhone, cn } from '@/lib/utils'
 import { formatDisplayPhone } from '@/lib/businessInfo'
 import type { CartItem } from '@/types/database'
@@ -50,7 +57,7 @@ import type { CartItem } from '@/types/database'
 import { PageHeaderBackground } from '@/components/customer/PageHeader'
 
 const inputClass =
-  'w-full rounded-xl border border-[#004D55]/12 bg-white px-3.5 py-2.5 text-sm text-[#004D55] placeholder:text-slate-400 transition focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/25'
+  'w-full rounded-xl border border-[#004D55]/12 bg-white px-3 py-2 text-sm text-[#004D55] placeholder:text-slate-400 transition focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/25 sm:px-3.5 sm:py-2.5'
 
 const journeySteps = [
   { icon: ClipboardList, label: 'Review cart' },
@@ -142,7 +149,7 @@ function CartItemCard({
   return (
     <AnimateIn animation="fade-up" delay={40 + index * 40}>
       <article
-        className="group relative overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white p-3 shadow-sm transition hover:border-[#FFC107]/45 hover:shadow-md sm:p-4"
+        className="group relative overflow-hidden rounded-xl border border-[#004D55]/10 bg-white p-2.5 shadow-sm transition hover:border-[#FFC107]/45 hover:shadow-md sm:rounded-2xl sm:p-4"
       >
         <div
           className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#006670] via-[#004D55] to-[#003840]"
@@ -230,18 +237,19 @@ function EnquiryForm({
   setCustomerMessage,
   referralCode,
   setReferralCode,
-  locating,
   loading,
   isLoggedIn,
   customerEmail,
   settings,
   itemCount,
   estimatedTotal,
+  orderSubtotal,
+  meetsMinimumOrder,
   hasPricedItems,
   spinReward,
-  onUseLocation,
   onSendEnquiry,
   className,
+  compact = false,
 }: {
   customerName: string
   setCustomerName: (v: string) => void
@@ -253,22 +261,25 @@ function EnquiryForm({
   setCustomerMessage: (v: string) => void
   referralCode: string
   setReferralCode: (v: string) => void
-  locating: boolean
   loading: boolean
   isLoggedIn: boolean
   customerEmail?: string
   settings: ReturnType<typeof useSettings>['settings']
   itemCount: number
   estimatedTotal: number
+  orderSubtotal: number
+  meetsMinimumOrder: boolean
   hasPricedItems: boolean
   spinReward: SpinReward | null
-  onUseLocation: () => void
   onSendEnquiry: () => void
   className?: string
+  compact?: boolean
 }) {
+  const minOrderReason = compact ? MIN_ORDER_TRANSPORT_REASON_SHORT : MIN_ORDER_TRANSPORT_REASON
+
   return (
-    <div className={cn('space-y-4', className)}>
-      {hasPricedItems && (
+    <div className={cn(compact ? 'space-y-3' : 'space-y-4', className)}>
+      {hasPricedItems && !compact && (
         <div className="overflow-hidden rounded-2xl border border-[#FFC107]/35 bg-gradient-to-br from-[#004D55] via-[#005a64] to-[#006670] p-4 text-white shadow-lg">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -278,7 +289,12 @@ function EnquiryForm({
               <p className="mt-1 font-display text-2xl font-extrabold tabular-nums">
                 {formatPrice(estimatedTotal)}
               </p>
-              <p className="text-xs text-white/70">{itemCount} item{itemCount !== 1 ? 's' : ''} · price confirmed on WhatsApp</p>
+              <p className="text-xs text-white/70">{itemCount} item{itemCount !== 1 ? 's' : ''} · minimum {MIN_ORDER_AMOUNT_LABEL}</p>
+              {!meetsMinimumOrder && (
+                <p className="mt-2 text-xs font-semibold text-[#FFC107]">
+                  Add {formatPrice(amountNeededForMinimum(orderSubtotal))} more to send enquiry
+                </p>
+              )}
             </div>
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFC107]/15 ring-1 ring-[#FFC107]/30">
               <Zap className="h-7 w-7 text-[#FFC107]" />
@@ -294,46 +310,75 @@ function EnquiryForm({
 
       <div
         id="send-enquiry"
-        className="scroll-mt-24 overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_12px_40px_rgba(0,77,85,0.1)]"
+        className={cn(
+          'scroll-mt-20 overflow-hidden rounded-2xl border border-[#004D55]/10 bg-white shadow-[0_12px_40px_rgba(0,77,85,0.1)] sm:scroll-mt-24',
+          compact && 'rounded-xl shadow-md',
+        )}
       >
-        <div className="relative border-b border-[#004D55]/8 bg-[#FFF8E1]/40 px-5 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#25D366]/15 ring-1 ring-[#25D366]/30">
-              <MessageCircle className="h-5 w-5 text-[#25D366]" />
+        <div
+          className={cn(
+            'relative border-b border-[#004D55]/8 bg-[#FFF8E1]/40',
+            compact ? 'px-3 py-2.5' : 'px-5 py-4 sm:px-6',
+          )}
+        >
+          <div className="flex items-center gap-2.5">
+            <span
+              className={cn(
+                'flex shrink-0 items-center justify-center rounded-xl bg-[#25D366]/15 ring-1 ring-[#25D366]/30',
+                compact ? 'h-9 w-9' : 'h-11 w-11',
+              )}
+            >
+              <MessageCircle className={cn('text-[#25D366]', compact ? 'h-4 w-4' : 'h-5 w-5')} />
             </span>
-            <div>
-              <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-[#004D55]">
+            <div className="min-w-0">
+              <h2
+                className={cn(
+                  'font-display font-extrabold uppercase tracking-wide text-[#004D55]',
+                  compact ? 'text-base leading-tight' : 'text-lg',
+                )}
+              >
                 Send Enquiry
               </h2>
-              <p className="text-xs text-[#004D55]/65">One message — our team replies on WhatsApp</p>
+              {!compact && (
+                <p className="text-xs text-[#004D55]/65">One message — our team replies on WhatsApp</p>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="p-5 sm:p-6">
-          {settings.whatsapp_number && (
-            <a
-              href={buildWhatsAppUrl(settings.whatsapp_number, 'Hi! I have a cart enquiry.')}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-3 py-1.5 text-xs font-bold text-[#128C7E] transition hover:bg-[#25D366]/20"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              {formatDisplayPhone(settings.whatsapp_number)}
-            </a>
-          )}
+        <div className={cn(compact ? 'p-3' : 'p-5 sm:p-6')}>
+          <div className={cn('flex flex-wrap items-center gap-2', compact ? 'mb-3' : 'mb-0')}>
+            {settings.whatsapp_number && (
+              <a
+                href={buildWhatsAppUrl(settings.whatsapp_number, 'Hi! I have a cart enquiry.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-2.5 py-1 text-[11px] font-bold text-[#128C7E] transition hover:bg-[#25D366]/20 sm:px-3 sm:py-1.5 sm:text-xs"
+              >
+                <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                {formatDisplayPhone(settings.whatsapp_number)}
+              </a>
+            )}
 
-          {isLoggedIn && (
-            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/40 bg-[#FFF8E1] px-3 py-1 text-xs font-semibold text-[#004D55]">
-              <BadgeCheck className="h-3.5 w-3.5 text-[#E65100]" />
-              Logged in{customerEmail ? ` · ${customerEmail}` : ''}
-            </p>
-          )}
+            {isLoggedIn && (
+              <p className="inline-flex max-w-full items-center gap-1 truncate rounded-full border border-[#FFC107]/40 bg-[#FFF8E1] px-2.5 py-1 text-[11px] font-semibold text-[#004D55] sm:text-xs">
+                <BadgeCheck className="h-3 w-3 shrink-0 text-[#E65100] sm:h-3.5 sm:w-3.5" />
+                <span className="truncate">
+                  Logged in{customerEmail ? ` · ${customerEmail}` : ''}
+                </span>
+              </p>
+            )}
+          </div>
 
-          <div className="mt-5 space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
+          <div className={cn('space-y-3', !compact && 'mt-5 sm:space-y-4')}>
+            <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+                <label
+                  className={cn(
+                    'mb-1 flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-[#004D55]/70 sm:mb-1.5 sm:gap-1.5 sm:text-xs',
+                    compact && 'sr-only',
+                  )}
+                >
                   <User className="h-3.5 w-3.5 text-[#FFC107]" />
                   Name *
                 </label>
@@ -346,7 +391,12 @@ function EnquiryForm({
                 />
               </div>
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+                <label
+                  className={cn(
+                    'mb-1 flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-[#004D55]/70 sm:mb-1.5 sm:gap-1.5 sm:text-xs',
+                    compact && 'sr-only',
+                  )}
+                >
                   <Phone className="h-3.5 w-3.5 text-[#FFC107]" />
                   Phone *
                 </label>
@@ -360,52 +410,28 @@ function EnquiryForm({
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#004D55]/10 bg-gradient-to-br from-[#FFF8E1]/60 to-white p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]">
-                  <MapPin className="h-3.5 w-3.5 text-[#FFC107]" />
-                  Delivery address *
-                </label>
-                <button
-                  type="button"
-                  onClick={onUseLocation}
-                  disabled={locating}
-                  className="inline-flex items-center gap-1 rounded-full bg-[#004D55] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white transition hover:bg-[#006670] disabled:opacity-60"
-                >
-                  {locating ? <Loader2 className="h-3 w-3 animate-spin" /> : <MapPin className="h-3 w-3" />}
-                  Detect location
-                </button>
-              </div>
-
-              {addressFields.locationSnapshot ? (
-                <div className="mb-3 rounded-xl border border-[#FFC107]/30 bg-white px-3 py-2.5 text-xs leading-relaxed text-[#004D55]/80">
-                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#E65100]">Detected area</p>
-                  <p className="whitespace-pre-wrap">{addressFields.locationSnapshot}</p>
-                </div>
-              ) : (
-                <p className="mb-3 text-xs text-slate-500">Use detect location, then add door no. and street.</p>
+            <div
+              className={cn(
+                'rounded-xl border border-[#004D55]/10 bg-gradient-to-br from-[#FFF8E1]/60 to-white sm:rounded-2xl',
+                compact ? 'p-2.5' : 'p-4',
               )}
+            >
+              <label
+                className={cn(
+                  'mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-[#004D55] sm:mb-3 sm:text-xs',
+                  compact && 'sr-only',
+                )}
+              >
+                <MapPin className="h-3.5 w-3.5 text-[#FFC107]" />
+                Delivery address *
+              </label>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2 sm:grid-cols-2 sm:gap-3">
                 <input
                   type="text"
-                  value={addressFields.doorNo}
-                  onChange={(e) => updateAddress({ doorNo: e.target.value })}
-                  placeholder="Door / Flat no. *"
-                  className={inputClass}
-                />
-                <input
-                  type="text"
-                  value={addressFields.street}
-                  onChange={(e) => updateAddress({ street: e.target.value })}
-                  placeholder="Street / Building *"
-                  className={inputClass}
-                />
-                <input
-                  type="text"
-                  value={addressFields.landmark}
-                  onChange={(e) => updateAddress({ landmark: e.target.value })}
-                  placeholder="Landmark (optional)"
+                  value={addressFields.city}
+                  onChange={(e) => updateAddress({ city: e.target.value })}
+                  placeholder="City *"
                   className={inputClass}
                 />
                 <input
@@ -413,13 +439,20 @@ function EnquiryForm({
                   inputMode="numeric"
                   value={addressFields.pincode}
                   onChange={(e) => updateAddress({ pincode: e.target.value })}
-                  placeholder="Pincode (optional)"
+                  placeholder="Pincode *"
                   className={inputClass}
+                />
+                <input
+                  type="text"
+                  value={addressFields.village}
+                  onChange={(e) => updateAddress({ village: e.target.value })}
+                  placeholder="Village (optional)"
+                  className={cn(inputClass, 'sm:col-span-2')}
                 />
               </div>
             </div>
 
-            <div>
+            <div className={cn(compact && 'hidden sm:block')}>
               <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
                 <Ticket className="h-3.5 w-3.5 text-[#FFC107]" />
                 Referral code (optional)
@@ -433,7 +466,7 @@ function EnquiryForm({
                 autoComplete="off"
                 spellCheck={false}
               />
-              {(settings.social_links.referral_codes?.length ?? 0) > 0 && (
+              {!compact && (settings.social_links.referral_codes?.length ?? 0) > 0 && (
                 <p className="mt-1.5 text-[11px] text-slate-500">
                   Have a referral code from a friend or partner? Enter it here for special offers.
                 </p>
@@ -441,24 +474,157 @@ function EnquiryForm({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-[#004D55]/70">
+              <label
+                className={cn(
+                  'mb-1 block text-[11px] font-bold uppercase tracking-wide text-[#004D55]/70 sm:mb-1.5 sm:text-xs',
+                  compact && 'sr-only',
+                )}
+              >
                 Message (optional)
               </label>
               <textarea
                 value={customerMessage}
                 onChange={(e) => setCustomerMessage(e.target.value)}
                 placeholder="Event date, bulk order, special notes…"
-                rows={3}
+                rows={compact ? 2 : 3}
                 className={cn(inputClass, 'resize-none')}
               />
             </div>
           </div>
 
+          {!spinReward && (
+            <div
+              className={cn(
+                'rounded-xl border-2 border-dashed border-[#FFC107]/60 bg-[#FFF8E1]/50 ring-1 ring-[#FFC107]/20',
+                compact ? 'mt-3 flex items-center justify-between gap-2 px-3 py-2' : 'mt-5 rounded-2xl bg-gradient-to-br from-[#FFF8E1] via-white to-[#FFF8E1]/80 px-4 py-3.5 shadow-sm',
+              )}
+              role="status"
+            >
+              {compact ? (
+                <>
+                  <p className="min-w-0 text-[11px] font-semibold leading-snug text-[#004D55]">
+                    {isLoggedIn ? 'Spin below for a free gift' : 'Log in & spin for a free gift'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      document.getElementById('spin-to-win')?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                      })
+                    }}
+                    className="shrink-0 rounded-full bg-[#004D55] px-2.5 py-1 text-[10px] font-bold uppercase text-white"
+                  >
+                    Spin
+                  </button>
+                </>
+              ) : (
+                <div className="flex gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFC107]/25">
+                    <Gift className="h-5 w-5 text-[#E65100]" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-[#004D55]">
+                      {isLoggedIn ? 'Spin reminder — free gift waiting!' : 'Spin to win before you send'}
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-[#004D55]/75">
+                      {isLoggedIn
+                        ? 'Most customers forget this step. Spin the wheel once below for a free gift — it is added to your WhatsApp enquiry automatically.'
+                        : 'Log in and spin the wheel once for a free gift with your order. It only takes a few seconds.'}
+                    </p>
+                    <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          document.getElementById('spin-to-win')?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center',
+                          })
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#004D55] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white transition hover:bg-[#006670]"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-[#FFC107]" />
+                        {isLoggedIn ? 'Go to spin wheel' : 'View spin wheel'}
+                      </button>
+                      {!isLoggedIn && (
+                        <Link
+                          to="/login"
+                          state={{ from: '/cart' }}
+                          className="inline-flex items-center gap-1 rounded-full border border-[#E65100]/35 bg-white px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#E65100] transition hover:bg-[#FFF8E1]"
+                        >
+                          Log in to spin
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {spinReward && (
+            <p
+              className={cn(
+                'flex items-center justify-center gap-2 rounded-xl border border-[#25D366]/25 bg-[#25D366]/10 px-3 py-2 text-center text-[11px] font-semibold text-[#004D55] sm:text-xs sm:py-2.5',
+                compact ? 'mt-3' : 'mt-5',
+              )}
+            >
+              <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-[#25D366] sm:h-4 sm:w-4" />
+              Gift included when you send on WhatsApp.
+            </p>
+          )}
+
+          {!meetsMinimumOrder && (
+            <div
+              id="min-order-alert"
+              className={cn(
+                'rounded-xl border border-[#E65100]/35 bg-gradient-to-br from-[#FFF3E0] to-white sm:rounded-2xl',
+                compact ? 'mt-3 px-3 py-2.5' : 'mt-5 px-4 py-3.5',
+              )}
+              role="alert"
+            >
+              <div className={cn('flex gap-2.5', !compact && 'gap-3')}>
+                <span
+                  className={cn(
+                    'flex shrink-0 items-center justify-center rounded-lg bg-[#E65100]/15 sm:rounded-xl',
+                    compact ? 'h-8 w-8' : 'h-10 w-10',
+                  )}
+                >
+                  <Truck className={cn('text-[#E65100]', compact ? 'h-4 w-4' : 'h-5 w-5')} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <p className={cn('font-bold text-[#004D55]', compact ? 'text-xs' : 'text-sm')}>
+                    Minimum {MIN_ORDER_AMOUNT_LABEL}
+                    {compact && (
+                      <span className="font-semibold text-[#E65100]">
+                        {' '}
+                        · add {formatPrice(amountNeededForMinimum(orderSubtotal))} more
+                      </span>
+                    )}
+                  </p>
+                  <p className={cn('text-[#004D55]/80', compact ? 'mt-1 text-[11px] leading-snug' : 'mt-1.5 text-xs leading-relaxed')}>
+                    {minOrderReason}
+                  </p>
+                  <Link
+                    to="/#shop"
+                    className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-[#E65100] underline decoration-[#FFC107]/60 underline-offset-2 hover:text-[#004D55] sm:mt-2.5 sm:text-xs"
+                  >
+                    Add more items
+                    <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={onSendEnquiry}
-            disabled={loading}
-            className="group mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-4 text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#25D366]/35 transition hover:brightness-105 hover:shadow-xl disabled:opacity-60"
+            disabled={loading || !meetsMinimumOrder}
+            className={cn(
+              'group flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#25D366]/35 transition hover:brightness-105 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50',
+              compact ? 'hidden' : 'mt-6 py-4',
+            )}
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -471,7 +637,12 @@ function EnquiryForm({
             )}
           </button>
 
-          <p className="mt-3 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-[11px] text-slate-500">
+          <p
+            className={cn(
+              'flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-[10px] text-slate-500 sm:text-[11px]',
+              compact ? 'mt-2' : 'mt-3',
+            )}
+          >
             <ShieldCheck className="h-3.5 w-3.5 text-[#004D55]" />
             <span>No online payment — enquiry only</span>
             <Link
@@ -497,28 +668,28 @@ function CartHero({
   return (
     <header className="relative overflow-hidden border-b-2 border-[#004D55]">
       <PageHeaderBackground />
-      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-        <nav className="flex items-center gap-2 text-xs text-white/70">
+      <div className="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-10 lg:px-8">
+        <nav className="flex items-center gap-2 text-[11px] text-white/70 sm:text-xs">
           <Link to="/" className="transition hover:text-[#FFC107]">Home</Link>
           <span aria-hidden="true">/</span>
           <span className="font-semibold text-white">Cart</span>
         </nav>
 
-        <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mt-3 flex flex-col gap-4 sm:mt-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFC107]">
-              <ShoppingBag className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.15em] text-[#FFC107] sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.2em]">
+              <ShoppingBag className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               {itemCount} item{itemCount !== 1 ? 's' : ''} · {totalUnits} units
             </div>
-            <h1 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide text-white sm:text-4xl lg:text-5xl">
+            <h1 className="mt-2 font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:mt-3 sm:text-4xl lg:text-5xl">
               Cart & <span className="text-[#FFC107]">Enquiry</span>
             </h1>
-            <p className="mt-3 text-sm leading-relaxed text-white/85 sm:text-base">
+            <p className="mt-2 hidden text-sm leading-relaxed text-white/85 sm:mt-3 sm:block sm:text-base">
               Build your list, add delivery details, and send one WhatsApp message — we confirm price &amp; stock for you.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 lg:justify-end">
+          <div className="hidden flex-wrap gap-2 sm:flex lg:justify-end">
             {journeySteps.map((step, i) => (
               <span
                 key={step.label}
@@ -550,7 +721,6 @@ export function CartPage() {
   const [customerMessage, setCustomerMessage] = useState('')
   const [referralCode, setReferralCode] = useState('')
   const [loading, setLoading] = useState(false)
-  const [locating, setLocating] = useState(false)
   const [spinReward, setSpinReward] = useState<SpinReward | null>(null)
   const [spinDiscount, setSpinDiscount] = useState(0)
   const [prefilledFromAccount, setPrefilledFromAccount] = useState(false)
@@ -607,6 +777,7 @@ export function CartPage() {
 
   const hasPricedItems = items.some((item) => item.price != null)
   const estimatedAfterSpin = Math.max(0, estimatedTotal - spinDiscount)
+  const meetsMinimumOrder = meetsMinimumOrderAmount(estimatedTotal)
 
   const updateAddress = (patch: Partial<DeliveryAddressFields>) => {
     setAddressFields((prev) => ({ ...prev, ...patch }))
@@ -615,6 +786,11 @@ export function CartPage() {
   const buildEnquiryFormData = (): CartEnquiryFormData | null => {
     if (items.length === 0) {
       showToast('Your cart is empty', 'error')
+      return null
+    }
+
+    if (!meetsMinimumOrderAmount(estimatedTotal)) {
+      showToast(MIN_ORDER_TOAST_MESSAGE, 'error')
       return null
     }
 
@@ -659,19 +835,6 @@ export function CartPage() {
             discountAmount: spinDiscount > 0 ? spinDiscount : undefined,
           }
         : undefined,
-    }
-  }
-
-  const handleUseCurrentLocation = async () => {
-    setLocating(true)
-    try {
-      const locationSnapshot = await getCurrentDeliveryAddress()
-      updateAddress({ locationSnapshot })
-      showToast('Area detected — add door no. and street below', 'success')
-    } catch (error) {
-      showToast(geolocationErrorMessage(error), 'error')
-    } finally {
-      setLocating(false)
     }
   }
 
@@ -725,16 +888,16 @@ export function CartPage() {
     setCustomerMessage,
     referralCode,
     setReferralCode,
-    locating,
     loading,
     isLoggedIn: Boolean(isCustomer && user),
     customerEmail,
     settings,
     itemCount: items.length,
     estimatedTotal: estimatedAfterSpin,
+    orderSubtotal: estimatedTotal,
+    meetsMinimumOrder,
     hasPricedItems,
     spinReward,
-    onUseLocation: handleUseCurrentLocation,
     onSendEnquiry: handleSendEnquiry,
   }
 
@@ -800,11 +963,11 @@ export function CartPage() {
     <>
       <SEO title="Cart" description="Review your selected products and send enquiry on WhatsApp" noIndex />
 
-      <div className="bg-gradient-to-b from-[#FFF8E1]/25 to-white pb-28 sm:pb-10">
+      <div className="bg-gradient-to-b from-[#FFF8E1]/25 to-white pb-[4.75rem] sm:pb-10">
         <CartHero itemCount={items.length} totalUnits={totalUnits} />
 
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-6 grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
+          <div className="mb-4 grid grid-cols-3 gap-1.5 sm:mb-6 sm:gap-3">
             {[
               { label: 'Products', value: String(items.length), icon: Package },
               { label: 'Total qty', value: String(totalUnits), icon: ClipboardList },
@@ -816,10 +979,10 @@ export function CartPage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-2xl border border-[#004D55]/10 bg-white px-3 py-3 text-center shadow-sm sm:px-4 sm:py-4"
+                className="rounded-xl border border-[#004D55]/10 bg-white px-2 py-2 text-center shadow-sm sm:rounded-2xl sm:px-4 sm:py-4"
               >
-                <stat.icon className="mx-auto h-4 w-4 text-[#FFC107]" />
-                <p className="mt-1 font-display text-lg font-extrabold tabular-nums text-[#004D55] sm:text-xl">
+                <stat.icon className="mx-auto h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" />
+                <p className="mt-0.5 font-display text-base font-extrabold tabular-nums text-[#004D55] sm:mt-1 sm:text-xl">
                   {stat.value}
                 </p>
                 <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{stat.label}</p>
@@ -827,10 +990,10 @@ export function CartPage() {
             ))}
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-5">
-            <div className="space-y-5 lg:col-span-3">
+          <div className="grid gap-5 sm:gap-8 lg:grid-cols-5">
+            <div className="space-y-4 sm:space-y-5 lg:col-span-3">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[#004D55]">
+                <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-[#004D55] sm:text-xl">
                   Your selection
                 </h2>
                 <Link
@@ -842,7 +1005,7 @@ export function CartPage() {
                 </Link>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5 sm:space-y-3">
                 {items.map((item, index) => (
                   <CartItemCard
                     key={item.productId}
@@ -854,16 +1017,22 @@ export function CartPage() {
                 ))}
               </div>
 
+              <div className="lg:hidden">
+                <EnquiryForm {...formProps} compact />
+              </div>
+
               <AnimateIn animation="fade-up" delay={120}>
-                <SpinToWinWheel
-                  estimatedTotal={estimatedTotal}
-                  reward={spinReward}
-                  onRewardChange={handleSpinRewardChange}
-                />
+                <div id="spin-to-win" className="scroll-mt-24">
+                  <SpinToWinWheel
+                    estimatedTotal={estimatedTotal}
+                    reward={spinReward}
+                    onRewardChange={handleSpinRewardChange}
+                  />
+                </div>
               </AnimateIn>
 
               <AnimateIn animation="fade-up" delay={160}>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="hidden gap-3 sm:grid sm:grid-cols-3">
                   {[
                     { icon: ShieldCheck, text: 'No online payment', readWhy: true },
                     { icon: MessageCircle, text: '24/7 WhatsApp support' },
@@ -900,33 +1069,45 @@ export function CartPage() {
               </div>
             </div>
           </div>
-
-          <div className="mt-8 lg:hidden">
-            <EnquiryForm {...formProps} />
-          </div>
         </div>
 
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#004D55]/10 bg-white/95 px-4 py-3 shadow-[0_-8px_32px_rgba(0,77,85,0.15)] backdrop-blur-md lg:hidden">
-          <div className="flex items-center gap-3">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#004D55]/10 bg-white/95 px-3 py-2.5 shadow-[0_-8px_32px_rgba(0,77,85,0.15)] backdrop-blur-md pb-[max(0.625rem,env(safe-area-inset-bottom))] lg:hidden">
+          <div className="flex items-center gap-2.5">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                {items.length} items ready
+              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                {items.length} items
+                {!meetsMinimumOrder && hasPricedItems && (
+                  <span className="text-[#E65100]"> · min {MIN_ORDER_AMOUNT_LABEL}</span>
+                )}
               </p>
               {hasPricedItems ? (
-                <p className="text-lg font-extrabold tabular-nums text-[#004D55]">{formatPrice(estimatedAfterSpin)}</p>
+                <p className="text-base font-extrabold tabular-nums leading-tight text-[#004D55]">
+                  {formatPrice(estimatedAfterSpin)}
+                </p>
               ) : (
-                <p className="text-sm font-semibold text-[#004D55]">Tap to send enquiry</p>
+                <p className="text-sm font-semibold text-[#004D55]">Send enquiry</p>
               )}
             </div>
             <button
               type="button"
               onClick={() => {
-                document.getElementById('send-enquiry')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                if (!meetsMinimumOrder) {
+                  document.getElementById('min-order-alert')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  return
+                }
+                handleSendEnquiry()
               }}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-extrabold text-white shadow-lg"
+              disabled={loading}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2.5 text-xs font-extrabold uppercase text-white shadow-lg disabled:opacity-50 sm:px-5 sm:py-3 sm:text-sm sm:normal-case"
             >
-              <MessageCircle className="h-4 w-4" />
-              Send Enquiry
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <MessageCircle className="h-4 w-4" />
+                  {meetsMinimumOrder ? 'WhatsApp' : 'Add items'}
+                </>
+              )}
             </button>
           </div>
         </div>
