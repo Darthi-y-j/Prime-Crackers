@@ -74,7 +74,9 @@ Deno.serve(async (req) => {
   const vapidPrivate = Deno.env.get('VAPID_PRIVATE_KEY')
   const vapidSubject = Deno.env.get('VAPID_SUBJECT') || 'mailto:primecrackerssivakasi@gmail.com'
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  // Injected by Supabase at runtime — do not add a custom secret named SUPABASE_*.
+  const serviceRoleKey =
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SERVICE_ROLE_KEY')
   const siteUrl = (Deno.env.get('SITE_URL') || 'https://www.primecracker.com').replace(/\/$/, '')
 
   if (!vapidPublic || !vapidPrivate || !supabaseUrl || !serviceRoleKey) {
