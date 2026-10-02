@@ -59,9 +59,9 @@ Deno.serve(async (req) => {
     })
   }
 
-  const hookSecret = Deno.env.get('ENQUIRY_PUSH_HOOK_SECRET')
+  const hookSecret = Deno.env.get('ENQUIRY_PUSH_HOOK_SECRET')?.trim()
   if (hookSecret) {
-    const headerSecret = req.headers.get('x-enquiry-push-secret')
+    const headerSecret = req.headers.get('x-enquiry-push-secret')?.trim() ?? ''
     if (headerSecret !== hookSecret) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,

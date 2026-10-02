@@ -73,6 +73,19 @@ Submit a test enquiry from the cart — admins who enabled alerts should get a n
 
 Each admin device registers separately; all subscribed devices receive new enquiry pushes.
 
+## Quick checklist when no notification arrives
+
+1. **Admin banner** shows green “Enquiry alerts on this device” (not amber Retry).
+2. **Supabase → Table Editor → `admin_push_subscriptions`** has at least one row after enabling.
+3. **Cart test** total is **₹3,000+** (below minimum the enquiry is **not saved**, so no push).
+4. **`enquiry_push_settings`**: `hook_secret` length &gt; 0 and matches Edge secret `ENQUIRY_PUSH_HOOK_SECRET`.
+5. Migrations **026**, **027**, and **028** ran; `enquiry-push-set-secret.sql` updated (hook + **anon** key).
+6. Edge Function **`enquiry-push`** deployed (`supabase functions deploy enquiry-push`).
+7. **Vercel** `VITE_VAPID_PUBLIC_KEY` matches Supabase `VAPID_PUBLIC_KEY` / private pair.
+8. **Supabase → Edge Functions → enquiry-push → Logs** after a test enquiry (`sent: 0` = no devices; `401` = hook/anon key).
+
+Run `supabase/enquiry-push-diagnose.sql` in SQL Editor for trigger + `net._http_response` status codes.
+
 ## Troubleshooting
 
 | Issue | Fix |

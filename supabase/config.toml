@@ -1,0 +1,5 @@
+# Deploy with: supabase functions deploy enquiry-push
+# Allows database trigger (pg_net) to call the function without a user JWT.
+
+[functions.enquiry-push]
+verify_jwt = false

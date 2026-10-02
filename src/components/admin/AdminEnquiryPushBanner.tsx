@@ -3,7 +3,16 @@ import { useAdminPush } from '@/contexts/AdminPushContext'
 import { cn } from '@/lib/utils'
 
 export function AdminEnquiryPushBanner() {
-  const { supported, configured, permission, subscribed, busy, enablePush, disablePush } = useAdminPush()
+  const {
+    supported,
+    configured,
+    permission,
+    subscribed,
+    registrationError,
+    busy,
+    enablePush,
+    disablePush,
+  } = useAdminPush()
 
   if (!supported) {
     return (
@@ -31,6 +40,26 @@ export function AdminEnquiryPushBanner() {
         >
           {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <BellOff className="h-3 w-3" />}
           Turn off
+        </button>
+      </div>
+    )
+  }
+
+  if (permission === 'granted' && !subscribed) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-300/80 bg-amber-50 px-4 py-2.5 sm:px-6">
+        <p className="max-w-lg text-xs leading-snug text-amber-950">
+          <span className="font-bold">Alerts not registered on this device.</span>
+          {registrationError ? ` ${registrationError}` : ' Tap Enable again after Vercel has VITE_VAPID_PUBLIC_KEY.'}
+        </p>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void enablePush()}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 text-[11px] font-bold uppercase text-white"
+        >
+          {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bell className="h-3.5 w-3.5" />}
+          Retry
         </button>
       </div>
     )

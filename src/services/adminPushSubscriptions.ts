@@ -43,3 +43,12 @@ export async function deleteAllAdminPushSubscriptionsForUser(userId: string): Pr
   if (error) return { error: getSupabaseErrorMessage(error) }
   return { error: null }
 }
+
+export async function countMyAdminPushSubscriptions(): Promise<{ count: number; error: string | null }> {
+  const { count, error } = await supabase
+    .from('admin_push_subscriptions')
+    .select('id', { count: 'exact', head: true })
+
+  if (error) return { count: 0, error: getSupabaseErrorMessage(error) }
+  return { count: count ?? 0, error: null }
+}
