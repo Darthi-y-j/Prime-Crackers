@@ -59,7 +59,7 @@ export function AdminEnquiryPushBanner() {
           <span className="font-bold">Alerts not registered on this device.</span>
           {registrationError
             ? ` ${registrationError}`
-            : ' Tap Retry. If it keeps failing, run Supabase migration 026 and allow notifications again.'}
+            : ' Tap Retry — a red toast will show the exact error (often: run migration 026 in Supabase SQL Editor).'}
         </p>
         <button
           type="button"

@@ -6,7 +6,8 @@ Admins get **phone notifications** when a customer submits an enquiry. Works on 
 
 In Supabase **SQL Editor**, run:
 
-`supabase/migrations/026_admin_push_subscriptions.sql`
+`supabase/migrations/026_admin_push_subscriptions.sql`  
+`supabase/migrations/029_upsert_admin_push_subscription_rpc.sql` (fixes “alerts not registered” after 026)
 
 Optional (in-app toast when admin tab is open): **Database → Publications → `supabase_realtime`** → enable **`enquiries`**.
 

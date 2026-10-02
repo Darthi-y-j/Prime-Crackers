@@ -10,15 +10,9 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
 import { supabase } from '@/lib/supabase'
+import { subscribeForAdminPush } from '@/lib/subscribeAdminPush'
+import { getAdminPushRegistration, getVapidPublicKey, isWebPushSupported, subscriptionToRow } from '@/lib/pushUtils'
 import {
-  getAdminPushRegistration,
-  getVapidPublicKey,
-  isWebPushSupported,
-  subscriptionToRow,
-  urlBase64ToUint8Array,
-} from '@/lib/pushUtils'
-import {
-  countMyAdminPushSubscriptions,
   deleteAdminPushSubscription,
   upsertAdminPushSubscription,
 } from '@/services/adminPushSubscriptions'
@@ -52,27 +46,19 @@ export function AdminPushProvider({ children }: { children: ReactNode }) {
   const configured = Boolean(getVapidPublicKey())
 
   const syncSubscription = useCallback(async (): Promise<{ ok: boolean; error?: string }> => {
-    if (!user || !isAdmin || !supported || !configured) {
-      return { ok: false, error: !configured ? 'VAPID public key missing in this build.' : undefined }
+    if (!user || !isAdmin) {
+      return { ok: false, error: 'Wait for admin login to finish, then tap Retry.' }
+    }
+    if (!supported || !configured) {
+      return { ok: false, error: !configured ? 'VAPID public key missing in this build.' : 'Push not supported in this browser.' }
     }
     if (Notification.permission !== 'granted') return { ok: false }
 
-    const vapidKey = getVapidPublicKey()
-    if (!vapidKey) return { ok: false, error: 'VAPID public key missing in this build.' }
-
-    const registration = await getAdminPushRegistration()
-    if (!registration) {
-      return { ok: false, error: 'Could not register service worker. Use HTTPS and try Chrome.' }
-    }
-
-    await navigator.serviceWorker.ready
-
-    let subscription = await registration.pushManager.getSubscription()
+    const { subscription, error: subError } = await subscribeForAdminPush()
     if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
-      })
+      const hint = subError || 'Could not subscribe for push on this device.'
+      setRegistrationError(hint)
+      return { ok: false, error: hint }
     }
 
     const row = subscriptionToRow(user.id, subscription)
@@ -83,17 +69,6 @@ export function AdminPushProvider({ children }: { children: ReactNode }) {
       setRegistrationError(error)
       console.warn('Push subscription save failed', error)
       return { ok: false, error }
-    }
-
-    const { count, error: countError } = await countMyAdminPushSubscriptions()
-    if (countError) {
-      setRegistrationError(countError)
-      return { ok: false, error: countError }
-    }
-    if (count < 1) {
-      const msg = 'Subscription was not saved. Run migration 026 in Supabase SQL Editor.'
-      setRegistrationError(msg)
-      return { ok: false, error: msg }
     }
 
     setRegistrationError(null)
@@ -174,7 +149,7 @@ export function AdminPushProvider({ children }: { children: ReactNode }) {
   const disablePush = useCallback(async () => {
     setBusy(true)
     try {
-      const registration = await getAdminPushRegistration()
+      const { registration } = await getAdminPushRegistration()
       const subscription = await registration?.pushManager.getSubscription()
       if (subscription) {
         const endpoint = subscription.endpoint

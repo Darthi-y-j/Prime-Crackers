@@ -24,14 +24,23 @@ export function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return output
 }
 
-export async function getAdminPushRegistration(): Promise<ServiceWorkerRegistration | null> {
-  if (!isWebPushSupported()) return null
+export async function getAdminPushRegistration(): Promise<{
+  registration: ServiceWorkerRegistration | null
+  error?: string
+}> {
+  if (!isWebPushSupported()) {
+    return { registration: null, error: 'Push not supported in this browser.' }
+  }
   try {
     const existing = await navigator.serviceWorker.getRegistration('/')
-    if (existing?.active?.scriptURL.includes('admin-push-sw')) return existing
-    return await navigator.serviceWorker.register(SW_PATH, { scope: '/' })
-  } catch {
-    return null
+    if (existing?.active?.scriptURL.includes('admin-push-sw')) {
+      return { registration: existing }
+    }
+    const registration = await navigator.serviceWorker.register(SW_PATH, { scope: '/', type: 'classic' })
+    return { registration }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return { registration: null, error: `Service worker failed: ${message}` }
   }
 }
 
