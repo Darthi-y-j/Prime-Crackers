@@ -23,7 +23,14 @@ export function AdminEnquiryPushBanner() {
     )
   }
 
-  if (!configured) return null
+  if (!configured) {
+    return (
+      <div className="border-b border-red-200 bg-red-50 px-4 py-2.5 text-center text-xs text-red-900 sm:px-6">
+        Push is not configured on the live site. In <strong>Vercel</strong>, add{' '}
+        <code className="rounded bg-red-100 px-1">VITE_VAPID_PUBLIC_KEY</code>, then redeploy.
+      </div>
+    )
+  }
 
   if (permission === 'granted' && subscribed) {
     return (
@@ -50,7 +57,9 @@ export function AdminEnquiryPushBanner() {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-300/80 bg-amber-50 px-4 py-2.5 sm:px-6">
         <p className="max-w-lg text-xs leading-snug text-amber-950">
           <span className="font-bold">Alerts not registered on this device.</span>
-          {registrationError ? ` ${registrationError}` : ' Tap Enable again after Vercel has VITE_VAPID_PUBLIC_KEY.'}
+          {registrationError
+            ? ` ${registrationError}`
+            : ' Tap Retry. If it keeps failing, run Supabase migration 026 and allow notifications again.'}
         </p>
         <button
           type="button"

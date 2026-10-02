@@ -107,7 +107,12 @@ export function AdminPushProvider({ children }: { children: ReactNode }) {
       return
     }
     if (Notification.permission === 'granted' && configured) {
-      void syncSubscription()
+      void syncSubscription().then((result) => {
+        if (!result.ok) {
+          setSubscribed(false)
+          if (result.error) setRegistrationError(result.error)
+        }
+      })
     }
   }, [isAdmin, user, configured, syncSubscription])
 
