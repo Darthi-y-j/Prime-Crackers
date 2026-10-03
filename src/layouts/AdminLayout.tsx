@@ -2,10 +2,8 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { StockAlertProvider, useStockAlerts } from '@/contexts/StockAlertContext'
-import { AdminPushProvider } from '@/contexts/AdminPushContext'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { StockAlertModal } from '@/components/admin/StockAlertModal'
-import { AdminEnquiryPushBanner } from '@/components/admin/AdminEnquiryPushBanner'
 import { ToastContainer } from '@/components/customer/Toast'
 
 function AdminStockAlerts() {
@@ -31,17 +29,14 @@ export function AdminLayout() {
 
   return (
     <StockAlertProvider>
-      <AdminPushProvider>
-        <div className="admin-shell flex h-screen overflow-hidden">
-          <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-            <AdminEnquiryPushBanner />
-            <Outlet context={{ onMenuClick: () => setSidebarOpen(true) }} />
-          </div>
-          <ToastContainer />
-          <AdminStockAlerts />
+      <div className="admin-shell flex h-screen overflow-hidden">
+        <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <Outlet context={{ onMenuClick: () => setSidebarOpen(true) }} />
         </div>
-      </AdminPushProvider>
+        <ToastContainer />
+        <AdminStockAlerts />
+      </div>
     </StockAlertProvider>
   )
 }

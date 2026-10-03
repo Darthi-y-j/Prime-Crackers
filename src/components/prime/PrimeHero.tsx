@@ -83,7 +83,7 @@ export function PrimeHero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[min(100svh,920px)] overflow-hidden sm:min-h-[76svh] sm:min-h-[480px] lg:min-h-[min(78svh,680px)]"
+      className="relative flex flex-col overflow-hidden max-md:min-h-[min(100svh,920px)] sm:min-h-[62svh] sm:min-h-[440px] lg:min-h-[min(70svh,600px)]"
     >
       <OptimizedBackground src={PRIME_BRAND.heroPoster} priority className="z-0" />
       {playVideo ? (
@@ -117,8 +117,8 @@ export function PrimeHero() {
         </>
       ) : null}
 
-      <div className="relative z-[3] mx-auto flex max-w-7xl flex-col justify-start px-4 pb-32 pt-24 sm:px-6 sm:pb-16 sm:pt-[6.25rem] lg:pb-20 lg:pt-[6.75rem]">
-        <div className="hero-copy-panel max-w-xl pl-6 sm:pl-10 md:pl-16 lg:max-w-2xl lg:pl-20">
+      <div className="relative z-[3] mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-3 pb-28 pt-[5.5rem] max-md:min-h-0 sm:flex-none sm:justify-start sm:px-6 sm:pb-12 sm:pt-[6rem] lg:pb-16 lg:pt-[6.5rem]">
+        <div className="hero-copy-panel hero-copy-panel--mobile w-full max-w-none sm:max-w-xl sm:pl-10 md:pl-16 lg:max-w-2xl lg:pl-20">
           <AnimateIn animation="fade-down" delay={80}>
             <p
               className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white sm:text-xs"
@@ -127,14 +127,14 @@ export function PrimeHero() {
             </p>
           </AnimateIn>
 
-          <h1 className="mt-4 sm:mt-5">
+          <h1 className="mt-5 max-md:mt-6 sm:mt-5">
             <span
-              className="hero-gradient-text hero-gradient-brand block font-sans text-xs font-bold uppercase tracking-[0.22em] sm:text-sm"
+              className="hero-gradient-text hero-gradient-brand block font-sans text-xs font-bold uppercase tracking-[0.2em] sm:text-sm sm:tracking-[0.22em]"
             >
               {PRIME_BRAND.displayName}
             </span>
             <span
-              className="mt-2 block font-display text-[1.75rem] font-bold leading-[1.12] tracking-tight sm:text-[2.35rem] md:text-[2.65rem] lg:text-[3.15rem]"
+              className="mt-2.5 block font-display text-[1.6rem] font-bold leading-[1.18] tracking-tight max-md:mt-3 sm:mt-2 sm:text-[2.35rem] sm:leading-[1.12] md:text-[2.65rem] lg:text-[3.15rem]"
             >
               <span className="hero-gradient-text hero-gradient-headline">Diwali crackers from </span>
               <span className="hero-gradient-text hero-gradient-sivakasi">Sivakasi</span>
@@ -143,14 +143,14 @@ export function PrimeHero() {
 
           <AnimateIn animation="fade-up" delay={200}>
             <p
-              className="hero-gradient-text hero-gradient-tagline mt-3 max-w-lg font-display text-xl font-medium italic leading-snug sm:mt-4 sm:text-2xl md:text-[1.75rem] md:leading-tight"
+              className="hero-gradient-text hero-gradient-tagline mt-4 max-w-lg font-display text-lg font-medium italic leading-snug max-md:mt-5 sm:mt-4 sm:text-2xl md:text-[1.75rem] md:leading-tight"
             >
               {PRIME_BRAND.tagline}
             </p>
           </AnimateIn>
 
           <AnimateIn animation="fade-up" delay={260}>
-            <p className="hero-text-plain mt-4 max-w-md font-sans text-[13px] leading-relaxed text-white/95 sm:mt-5 sm:text-[15px] md:text-base">
+            <p className="hero-text-plain mt-5 max-w-md font-sans text-[12.5px] leading-[1.65] text-white/95 max-md:mt-6 sm:mt-5 sm:text-[15px] sm:leading-relaxed md:text-base">
               Wholesale &amp; retail crackers from Sivakasi. Up to{' '}
               <span className="hero-gradient-text hero-gradient-accent font-bold">50% OFF</span> —{' '}
               <Link
@@ -171,7 +171,7 @@ export function PrimeHero() {
           </AnimateIn>
 
           <AnimateIn animation="fade-up" delay={320}>
-            <div className="mt-4 flex flex-col gap-2 sm:mt-7 sm:gap-3">
+            <div className="mt-6 flex flex-col gap-3 max-md:mt-8 sm:mt-7 sm:gap-3">
               <div className="flex max-w-md flex-row flex-wrap items-stretch gap-2 sm:max-w-none sm:items-center sm:gap-3">
                 <Link
                   to="/#shop"

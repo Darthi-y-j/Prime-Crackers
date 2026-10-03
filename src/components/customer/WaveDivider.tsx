@@ -59,7 +59,7 @@ export function WaveDivider() {
 }
 
 /** Cream transition for catalogue pages */
-const HERO_WAVE_WHITE_PATH = 'M0,40 C400,70 1000,16 1440,36 V100 H0 Z'
+const HERO_WAVE_WHITE_PATH = 'M0,28 C400,58 1000,8 1440,26 V100 H0 Z'
 /** Softer curve — white starts lower on small screens so hero breathes above the fold */
 const HERO_WAVE_WHITE_PATH_MOBILE = 'M0,76 C400,92 1000,52 1440,72 V100 H0 Z'
 

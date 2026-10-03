@@ -98,6 +98,4 @@ Run that SQL.
 
 ---
 
-## You can ignore
-
-- Web Push / VAPID / admin “Enable alerts” — not needed for email.
+Run migration **031** (`031_drop_enquiry_push_trigger.sql`) if you previously enabled Web Push so only the email trigger runs.
