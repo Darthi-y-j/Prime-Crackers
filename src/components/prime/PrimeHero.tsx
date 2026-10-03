@@ -85,7 +85,13 @@ export function PrimeHero() {
       ref={sectionRef}
       className="relative flex flex-col overflow-hidden max-md:min-h-[min(100svh,920px)] sm:min-h-[62svh] sm:min-h-[440px] lg:min-h-[min(70svh,600px)]"
     >
-      <OptimizedBackground src={PRIME_BRAND.heroPoster} priority className="z-0" />
+      <OptimizedBackground
+        src={PRIME_BRAND.heroPosterMobile}
+        priority
+        className="z-0 md:hidden"
+        style={{ backgroundPosition: 'center top' }}
+      />
+      <OptimizedBackground src={PRIME_BRAND.heroPoster} priority className="z-0 hidden md:block" />
       {playVideo ? (
         <>
           <video
@@ -95,7 +101,7 @@ export function PrimeHero() {
             loop
             playsInline
             preload="none"
-            poster={PRIME_BRAND.heroPoster}
+            poster={PRIME_BRAND.heroPosterMobile}
             className="absolute inset-0 z-[1] h-full w-full object-cover object-right md:hidden"
             aria-hidden="true"
           >

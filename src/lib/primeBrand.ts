@@ -15,8 +15,10 @@ export const PRIME_BRAND = {
   heroVideo: '/hero-fireworks.mp4',
   /** Cropped for phones — bursts on the right, text on the left */
   heroVideoMobile: '/hero-fireworks-mobile.mp4',
-  /** WebP poster from `Festive Diwali Night with Fireworks and Diyas.png` */
+  /** Desktop hero still + video poster (panoramic) */
   heroPoster: '/hero-fireworks-bg.webp',
+  /** Portrait waterfront scene — mobile home hero (from Lantern-Lit Waterfront PNG) */
+  heroPosterMobile: '/hero-fireworks-mobile-poster.webp',
   heroImage: '/hero-fireworks-bg.webp',
   /** Fireworks celebration scene — contact page CTA */
   contactCtaBg: '/contact-cta-bg.webp',

@@ -5,7 +5,8 @@ import fs from 'node:fs'
 const publicDir = path.resolve('public')
 
 const SKIP_DIRS = new Set(['brands'])
-const SKIP_NAME = /^favicon|^apple-touch|^og-share|^prime-logo/i
+const SKIP_NAME =
+  /^favicon|^apple-touch|^og-share|^prime-logo|Diwali Fireworks|Lantern-Lit Waterfront/i
 const MIN_BYTES = 48 * 1024
 
 function collectRasterFiles(dir, out = []) {
