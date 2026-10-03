@@ -32,3 +32,6 @@ aura-chatbot/vector_db/
 aura-chatbot/**/__pycache__/
 aura-chatbot/**/*.pyc
 aura-chatbot/.env
+
+# Supabase CLI local state (do not commit)
+supabase/.temp/
