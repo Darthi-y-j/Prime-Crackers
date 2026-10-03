@@ -83,7 +83,7 @@ export function PrimeHero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[74svh] min-h-[480px] overflow-hidden sm:min-h-[76svh] lg:min-h-[min(78svh,680px)]"
+      className="relative min-h-[min(100svh,920px)] overflow-hidden sm:min-h-[76svh] sm:min-h-[480px] lg:min-h-[min(78svh,680px)]"
     >
       <OptimizedBackground src={PRIME_BRAND.heroPoster} priority className="z-0" />
       {playVideo ? (
@@ -117,7 +117,7 @@ export function PrimeHero() {
         </>
       ) : null}
 
-      <div className="relative z-[3] mx-auto flex max-w-7xl flex-col justify-start px-4 pb-14 pt-[5.25rem] sm:px-6 sm:pb-16 sm:pt-[6.25rem] lg:pb-20 lg:pt-[6.75rem]">
+      <div className="relative z-[3] mx-auto flex max-w-7xl flex-col justify-start px-4 pb-32 pt-24 sm:px-6 sm:pb-16 sm:pt-[6.25rem] lg:pb-20 lg:pt-[6.75rem]">
         <div className="hero-copy-panel max-w-xl pl-6 sm:pl-10 md:pl-16 lg:max-w-2xl lg:pl-20">
           <AnimateIn animation="fade-down" delay={80}>
             <p

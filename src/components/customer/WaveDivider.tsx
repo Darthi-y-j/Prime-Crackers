@@ -60,6 +60,8 @@ export function WaveDivider() {
 
 /** Cream transition for catalogue pages */
 const HERO_WAVE_WHITE_PATH = 'M0,40 C400,70 1000,16 1440,36 V100 H0 Z'
+/** Softer curve — white starts lower on small screens so hero breathes above the fold */
+const HERO_WAVE_WHITE_PATH_MOBILE = 'M0,76 C400,92 1000,52 1440,72 V100 H0 Z'
 
 export function WaveDividerWhite() {
   return (
@@ -68,7 +70,17 @@ export function WaveDividerWhite() {
         viewBox={HERO_WAVE_VIEWBOX}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="block h-10 w-full max-w-none sm:h-14 md:h-16"
+        className="block h-14 w-full max-w-none sm:hidden"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path d={HERO_WAVE_WHITE_PATH_MOBILE} fill="#ffffff" />
+      </svg>
+      <svg
+        viewBox={HERO_WAVE_VIEWBOX}
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="hidden h-14 w-full max-w-none sm:block md:h-16"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
