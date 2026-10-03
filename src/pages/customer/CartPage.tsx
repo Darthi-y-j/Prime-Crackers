@@ -54,7 +54,7 @@ import { formatPrice, validatePhone, cn } from '@/lib/utils'
 import { formatDisplayPhone } from '@/lib/businessInfo'
 import type { CartItem } from '@/types/database'
 
-import { PageHeaderBackground } from '@/components/customer/PageHeader'
+import { PageHeaderBackground, PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
 
 const inputClass =
   'w-full rounded-xl border border-[#004D55]/12 bg-white px-3 py-2 text-sm text-[#004D55] placeholder:text-slate-400 transition focus:border-[#FFC107] focus:outline-none focus:ring-2 focus:ring-[#FFC107]/25 sm:px-3.5 sm:py-2.5'
@@ -666,7 +666,7 @@ function CartHero({
   totalUnits: number
 }) {
   return (
-    <header className="relative overflow-hidden border-b-2 border-[#004D55]">
+    <header className={cn('relative overflow-hidden border-b-2 border-[#004D55]', PAGE_HEADER_UNDER_NAV)}>
       <PageHeaderBackground />
       <div className="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-10 lg:px-8">
         <nav className="flex items-center gap-2 text-[11px] text-white/70 sm:text-xs">
@@ -907,7 +907,7 @@ export function CartPage() {
         <SEO title="Cart" description="Review your selected products and send enquiry on WhatsApp" noIndex />
 
         <div className="bg-gradient-to-b from-[#FFF8E1]/30 to-white">
-          <header className="relative overflow-hidden border-b-2 border-[#004D55]">
+          <header className={cn('relative overflow-hidden border-b-2 border-[#004D55]', PAGE_HEADER_UNDER_NAV)}>
             <PageHeaderBackground />
             <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
               <nav className="flex items-center gap-2 text-xs text-white/70">

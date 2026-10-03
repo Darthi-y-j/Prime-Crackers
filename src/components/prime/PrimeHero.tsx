@@ -13,35 +13,56 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function isVideoVisible(video: HTMLVideoElement): boolean {
+  return video.getClientRects().length > 0
+}
+
 export function PrimeHero() {
   const { scrollToShop } = usePrimeShop()
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const mobileVideoRef = useRef<HTMLVideoElement>(null)
+  const desktopVideoRef = useRef<HTMLVideoElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const [playVideo] = useState(() => !prefersReducedMotion())
 
   useEffect(() => {
-    const video = videoRef.current
     const section = sectionRef.current
-    if (!video || !playVideo) return
+    if (!playVideo) return
 
-    const tryPlay = () => {
-      if (video.paused) {
-        void video.play().catch(() => undefined)
+    const videos = () =>
+      [mobileVideoRef.current, desktopVideoRef.current].filter(
+        (v): v is HTMLVideoElement => v != null,
+      )
+
+    const syncPlayback = () => {
+      for (const video of videos()) {
+        if (!isVideoVisible(video)) {
+          video.pause()
+          continue
+        }
+        if (video.paused) {
+          void video.play().catch(() => undefined)
+        }
       }
     }
 
-    tryPlay()
-    video.addEventListener('loadeddata', tryPlay)
-    video.addEventListener('canplay', tryPlay)
+    const onMediaChange = () => syncPlayback()
+    const mq = window.matchMedia('(max-width: 767px)')
+    mq.addEventListener('change', onMediaChange)
+
+    for (const video of videos()) {
+      video.addEventListener('loadeddata', syncPlayback)
+      video.addEventListener('canplay', syncPlayback)
+    }
+    syncPlayback()
 
     let observer: IntersectionObserver | undefined
     if (section) {
       observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            tryPlay()
+            syncPlayback()
           } else {
-            video.pause()
+            for (const video of videos()) video.pause()
           }
         },
         { threshold: 0.1 },
@@ -50,8 +71,11 @@ export function PrimeHero() {
     }
 
     return () => {
-      video.removeEventListener('loadeddata', tryPlay)
-      video.removeEventListener('canplay', tryPlay)
+      mq.removeEventListener('change', onMediaChange)
+      for (const video of videos()) {
+        video.removeEventListener('loadeddata', syncPlayback)
+        video.removeEventListener('canplay', syncPlayback)
+      }
       observer?.disconnect()
     }
   }, [playVideo])
@@ -59,67 +83,87 @@ export function PrimeHero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[440px] overflow-hidden sm:min-h-[500px] lg:min-h-[580px]"
+      className="relative min-h-[74svh] min-h-[480px] overflow-hidden sm:min-h-[76svh] lg:min-h-[min(78svh,680px)]"
     >
       <OptimizedBackground src={PRIME_BRAND.heroPoster} priority className="z-0" />
       {playVideo ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={PRIME_BRAND.heroPoster}
-          className="absolute inset-0 z-[1] h-full w-full object-cover"
-          aria-hidden="true"
-        >
-          <source src={PRIME_BRAND.heroVideo} type="video/mp4" />
-        </video>
+        <>
+          <video
+            ref={mobileVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            poster={PRIME_BRAND.heroPoster}
+            className="absolute inset-0 z-[1] h-full w-full object-cover object-right md:hidden"
+            aria-hidden="true"
+          >
+            <source src={PRIME_BRAND.heroVideoMobile} type="video/mp4" />
+          </video>
+          <video
+            ref={desktopVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            poster={PRIME_BRAND.heroPoster}
+            className="absolute inset-0 z-[1] hidden h-full w-full object-cover object-[72%_center] object-right md:block"
+            aria-hidden="true"
+          >
+            <source src={PRIME_BRAND.heroVideo} type="video/mp4" />
+          </video>
+        </>
       ) : null}
 
-      <div
-        className="absolute inset-0 z-[2] bg-gradient-to-r from-[#003840]/72 via-[#004D55]/25 to-transparent"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 z-[2] bg-gradient-to-t from-[#001a1c]/50 via-transparent to-transparent"
-        aria-hidden="true"
-      />
-
-      <div className="relative z-[3] mx-auto flex max-w-7xl flex-col justify-start px-4 pb-12 pt-7 sm:px-6 sm:pb-14 sm:pt-8 lg:pb-16 lg:pt-10">
-        <div className="max-w-xl lg:max-w-2xl">
+      <div className="relative z-[3] mx-auto flex max-w-7xl flex-col justify-start px-4 pb-14 pt-[5.25rem] sm:px-6 sm:pb-16 sm:pt-[6.25rem] lg:pb-20 lg:pt-[6.75rem]">
+        <div className="hero-copy-panel max-w-xl pl-6 sm:pl-10 md:pl-16 lg:max-w-2xl lg:pl-20">
           <AnimateIn animation="fade-down" delay={80}>
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#FFC107] sm:text-xs">
+            <p
+              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white sm:text-xs"
+            >
               Celebrate every moment
             </p>
           </AnimateIn>
 
-          <h1 className="mt-3 font-display font-extrabold uppercase text-[#FFC107] drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:mt-4">
-            <span className="mb-1 block text-sm font-bold tracking-[0.16em] text-white/90 sm:mb-1.5 sm:text-xl md:text-2xl lg:text-[1.85rem]">
+          <h1 className="mt-4 sm:mt-5">
+            <span
+              className="hero-gradient-text hero-gradient-brand block font-sans text-xs font-bold uppercase tracking-[0.22em] sm:text-sm"
+            >
               {PRIME_BRAND.displayName}
             </span>
-            <span className="block text-[1.65rem] leading-[1.1] sm:whitespace-nowrap sm:text-[2.25rem] sm:leading-[1.08] md:text-4xl lg:text-5xl">
-              Diwali Crackers from{' '}
-              <span className="block sm:inline">Sivakasi</span>
+            <span
+              className="mt-2 block font-display text-[1.75rem] font-bold leading-[1.12] tracking-tight sm:text-[2.35rem] md:text-[2.65rem] lg:text-[3.15rem]"
+            >
+              <span className="hero-gradient-text hero-gradient-headline">Diwali crackers from </span>
+              <span className="hero-gradient-text hero-gradient-sivakasi">Sivakasi</span>
             </span>
           </h1>
 
           <AnimateIn animation="fade-up" delay={200}>
-            <p className="font-script mt-1.5 text-lg text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] sm:mt-2.5 sm:text-2xl md:text-3xl lg:text-4xl">
+            <p
+              className="hero-gradient-text hero-gradient-tagline mt-3 max-w-lg font-display text-xl font-medium italic leading-snug sm:mt-4 sm:text-2xl md:text-[1.75rem] md:leading-tight"
+            >
               {PRIME_BRAND.tagline}
             </p>
           </AnimateIn>
 
           <AnimateIn animation="fade-up" delay={260}>
-            <p className="mt-3 max-w-md text-[13px] leading-relaxed text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.55)] sm:mt-4 sm:text-sm md:text-base">
+            <p className="hero-text-plain mt-4 max-w-md font-sans text-[13px] leading-relaxed text-white/95 sm:mt-5 sm:text-[15px] md:text-base">
               Wholesale &amp; retail crackers from Sivakasi. Up to{' '}
-              <span className="font-bold text-[#FFC107]">50% OFF</span> —{' '}
-              <Link to="/#shop" className="font-semibold text-white underline decoration-[#FFC107]/50 underline-offset-2 hover:text-[#FFC107]">
+              <span className="hero-gradient-text hero-gradient-accent font-bold">50% OFF</span> —{' '}
+              <Link
+                to="/#shop"
+                className="hero-gradient-text hero-gradient-accent font-semibold underline decoration-white/30 underline-offset-[3px] transition hover:opacity-90"
+              >
                 browse our catalogue
               </Link>
               , read our{' '}
-              <Link to="/about" className="font-semibold text-white underline decoration-[#FFC107]/50 underline-offset-2 hover:text-[#FFC107]">
+              <Link
+                to="/about"
+                className="hero-gradient-text hero-gradient-accent font-semibold underline decoration-white/30 underline-offset-[3px] transition hover:opacity-90"
+              >
                 About
               </Link>{' '}
               page, and order on WhatsApp.
@@ -127,19 +171,19 @@ export function PrimeHero() {
           </AnimateIn>
 
           <AnimateIn animation="fade-up" delay={320}>
-            <div className="mt-6 flex flex-col gap-3 sm:mt-7">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-4 flex flex-col gap-2 sm:mt-7 sm:gap-3">
+              <div className="flex max-w-md flex-row flex-wrap items-stretch gap-2 sm:max-w-none sm:items-center sm:gap-3">
                 <Link
                   to="/#shop"
                   onClick={scrollToShop}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FFC107] px-7 py-3.5 text-sm font-extrabold uppercase tracking-wide text-[#004D55] shadow-[0_8px_24px_rgba(255,193,7,0.35)] transition hover:bg-[#FFD54F] sm:px-8"
+                  className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#FFEB3B] via-[#FFC107] to-[#FF9800] px-3 py-2 text-[11px] font-extrabold uppercase tracking-wide text-[#1a2e2a] shadow-[0_6px_16px_rgba(255,152,0,0.4)] transition hover:from-[#FFF59D] hover:via-[#FFD54F] hover:to-[#FB8C00] sm:min-h-0 sm:flex-none sm:gap-2 sm:px-8 sm:py-3.5 sm:text-sm sm:shadow-[0_10px_28px_rgba(255,152,0,0.45)]"
                 >
                   Shop Now
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0 sm:h-5 sm:w-5" aria-hidden />
                 </Link>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/5 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition hover:border-white/60 hover:bg-white/10"
+                  className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-[#FFC107]/80 bg-transparent px-3 py-2 text-[11px] font-bold text-[#FFF8E1] transition hover:border-[#FFD54F] hover:bg-[#FFC107]/15 sm:min-h-0 sm:flex-none sm:border-2 sm:px-7 sm:py-3.5 sm:text-sm"
                 >
                   Contact Us
                 </Link>

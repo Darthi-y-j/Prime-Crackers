@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { PageHeaderBackground } from '@/components/customer/PageHeader'
+import { PageHeaderBackground, PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
 import { WaveDividerWhite } from './WaveDivider'
 
 interface CatalogueHeroProps {
@@ -21,15 +21,12 @@ export function CatalogueHero({ children, className, compactTop, tall, withWave 
         'relative bg-navy-950',
         withWave ? 'overflow-visible pb-0' : 'overflow-hidden',
         !withWave && (tall ? 'pb-28 sm:pb-32' : 'pb-20 sm:pb-24'),
-        compactTop ? 'pt-6 sm:pt-8' : 'pt-20 sm:pt-24',
+        PAGE_HEADER_UNDER_NAV,
+        compactTop ? 'pt-6 sm:pt-8' : 'pt-8 sm:pt-10',
         className,
       )}
     >
       <PageHeaderBackground />
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_80%_at_50%_-10%,rgba(245,158,11,0.15),transparent_55%)]"
-        aria-hidden="true"
-      />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
 

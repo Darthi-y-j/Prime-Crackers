@@ -24,7 +24,7 @@ export function OptimizedBackground({
   imgClassName,
   style,
 }: OptimizedBackgroundProps) {
-  const { webp, fallback } = assetWithWebp(src)
+  const { webp } = assetWithWebp(src)
 
   useLayoutEffect(() => {
     if (priority) preloadImage(webp)
@@ -32,7 +32,7 @@ export function OptimizedBackground({
 
   const backgroundStyle: CSSProperties = {
     ...style,
-    backgroundImage: `image-set(url("${webp}") type("image/webp"), url("${fallback}") type("image/png"))`,
+    backgroundImage: `url("${webp}")`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

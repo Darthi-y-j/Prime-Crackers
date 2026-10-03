@@ -19,7 +19,7 @@ import { SITE_LOGO_PATH } from '@/lib/siteConfig'
 import { AboutIntroSection } from '@/components/prime/AboutIntroSection'
 import { cn } from '@/lib/utils'
 
-const OUR_STORY_BG = '/about-our-story-bg.jpg'
+const OUR_STORY_BG = '/about-our-story-bg.webp'
 
 const STATS = [
   { value: '50%', label: 'Wholesale savings', accent: '#FFC107' },

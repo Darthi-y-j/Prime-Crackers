@@ -10,7 +10,6 @@ import { ToastContainer } from '@/components/customer/Toast'
 import { ImportantNoticeModal } from '@/components/customer/ImportantNoticeModal'
 import { ScrollRevealInit } from '@/components/shared/ScrollRevealInit'
 import { FloatingActionButtons } from '@/components/customer/FloatingActionButtons'
-import { preloadSiteImagesDeferred } from '@/lib/preloadSiteImages'
 import { cn } from '@/lib/utils'
 
 export function PrimeLayout() {
@@ -20,10 +19,6 @@ export function PrimeLayout() {
   const showCartBar =
     !isCartPage &&
     (isHome || location.pathname === '/wishlist' || location.pathname.startsWith('/products/'))
-
-  useEffect(() => {
-    preloadSiteImagesDeferred(location.pathname)
-  }, [location.pathname])
 
   useEffect(() => {
     if (location.hash === '#shop') {

@@ -13,22 +13,24 @@ export const PRIME_BRAND = {
   tagline: 'We Bring Festivals',
   displayName: 'Prime Crackers',
   heroVideo: '/hero-fireworks.mp4',
+  /** Cropped for phones — bursts on the right, text on the left */
+  heroVideoMobile: '/hero-fireworks-mobile.mp4',
   heroPoster: '/hero-fireworks-bg.webp',
   heroImage: '/hero-fireworks-bg.webp',
   /** Fireworks celebration scene — contact page CTA */
-  contactCtaBg: '/contact-cta-bg.png',
+  contactCtaBg: '/contact-cta-bg.webp',
   /** Panoramic fireworks skyline */
-  aboutHeaderBg: '/about-header-bg.png',
+  aboutHeaderBg: '/about-header-bg.webp',
   /** Festive Diwali illustration — page heroes & Visit us */
-  festiveHeaderBg: '/festive-header-bg.png?v=2',
+  festiveHeaderBg: '/festive-header-bg.webp?v=2',
   /** Warm Diwali scene — login pages */
-  loginBg: '/login-bg.png',
+  loginBg: '/login-bg.webp',
   /** Festive scene inside login card */
-  loginCardBg: '/login-card-bg.png',
+  loginCardBg: '/login-card-bg.webp',
   /** Account dashboard background */
-  accountBg: '/account-bg.png',
+  accountBg: '/account-bg.webp',
   /** Festive scene — safety Do's & Don'ts cards */
-  safetyDosDontsBg: '/safety-dos-donts-bg.png',
+  safetyDosDontsBg: '/safety-dos-donts-bg.webp',
 } as const
 
 export const TRUST_BADGES = [

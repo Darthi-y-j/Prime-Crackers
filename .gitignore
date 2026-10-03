@@ -25,6 +25,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Design/source archive — not used by the site (WebP lives in public/)
+img/
+
 # Large source assets (compressed versions used in public/)
 img/hero-original.mp4
 aura-chatbot/venv/

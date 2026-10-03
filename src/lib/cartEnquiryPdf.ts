@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { CartEnquiryFormData, Enquiry } from '@/types/database'
-import { SITE_LOGO_PATH, SITE_NAME } from '@/lib/siteConfig'
+import { SITE_NAME } from '@/lib/siteConfig'
 import { BUSINESS_ADDRESS } from '@/lib/businessInfo'
 import { generateEnquiryNumber } from '@/lib/utils'
 
@@ -115,7 +115,7 @@ export async function downloadCartEnquiryPdf(
 
   const [fontBase64, logo] = await Promise.all([
     loadOrbitronFont(),
-    loadImageDataUrl(SITE_LOGO_PATH),
+    loadImageDataUrl('/prime-logo.png'),
   ])
   registerOrbitronFont(doc, fontBase64)
 

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-import { PageHeaderBackground, HERO_HEADER_BG } from '@/components/customer/PageHeader'
+import { PageHeaderBackground, HERO_HEADER_BG, PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
 
 function getInitials(name: string): string {
   return name
@@ -33,10 +33,14 @@ export function AccountPageHeader({
   children,
 }: AccountPageHeaderProps) {
   return (
-    <section className="relative overflow-hidden border-b-2 border-[#004D55]">
-      <PageHeaderBackground imageSrc={HERO_HEADER_BG} />
+    <section className={cn('relative overflow-hidden border-b-2 border-[#004D55]', PAGE_HEADER_UNDER_NAV)}>
+      <PageHeaderBackground
+        imageSrc={HERO_HEADER_BG}
+        overlayClassName="bg-gradient-to-br from-[#001a1c]/92 via-[#003840]/78 to-[#004D55]/55"
+        withVignette
+      />
 
-      <div className={`relative w-full py-8 sm:py-10 ${accountPagePadding}`}>
+      <div className={`relative z-10 w-full py-8 sm:py-10 ${accountPagePadding}`}>
         <div className="flex items-center justify-between gap-4">
           {backTo ? (
             <Link
@@ -47,7 +51,9 @@ export function AccountPageHeader({
               My Profile
             </Link>
           ) : (
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFC107]">{title}</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFE082] drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
+              {title}
+            </p>
           )}
 
           {showEdit && (

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ShoppingCart, Search, User, Menu, X, Heart } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -21,8 +21,23 @@ export function PrimeHeader() {
   const { itemCount: likedCount } = useWishlist()
   const { search, setSearch, scrollToShop } = usePrimeShop()
   const location = useLocation()
+  const isHome = location.pathname === '/' || location.pathname === '/home'
   const [headerSearch, setHeaderSearch] = useState(search)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    if (!isHome) {
+      setScrolled(false)
+      return
+    }
+    const onScroll = () => setScrolled(window.scrollY > 56)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isHome])
+
+  const heroOverlay = isHome && !scrolled && !mobileMenuOpen
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault()
@@ -37,16 +52,35 @@ export function PrimeHeader() {
   const navLinkClass = (path: string) =>
     cn(
       'rounded-md px-3 py-2 text-sm font-semibold transition',
-      isActive(path)
-        ? 'bg-[#004D55]/10 text-[#004D55]'
-        : 'text-slate-600 hover:bg-slate-50 hover:text-[#004D55]',
+      heroOverlay
+        ? isActive(path)
+          ? 'bg-white/15 text-white'
+          : 'text-white/90 hover:bg-white/10 hover:text-white'
+        : isActive(path)
+          ? 'bg-[#004D55]/10 text-[#004D55]'
+          : 'text-slate-600 hover:bg-slate-50 hover:text-[#004D55]',
     )
+
+  const iconBtnClass = cn(
+    'relative rounded-md p-1.5 sm:p-2 transition',
+    heroOverlay
+      ? 'text-white hover:bg-white/10'
+      : 'text-[#004D55] hover:bg-slate-50',
+  )
 
   const accountPath = isAdmin ? '/admin' : user && isCustomer ? '/account' : '/login'
   const accountLabel = isAdmin ? 'Admin' : user && isCustomer ? 'Account' : 'Login'
 
   return (
-    <header className="prime-header sticky top-0 z-50 border-b-2 border-[#004D55] bg-white shadow-sm">
+    <header
+      className={cn(
+        'prime-header top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300',
+        isHome ? 'fixed inset-x-0' : 'sticky',
+        heroOverlay
+          ? 'border-b border-white/10 bg-transparent shadow-none'
+          : 'border-b-2 border-[#004D55] bg-white shadow-sm',
+      )}
+    >
       <div className="mx-auto max-w-7xl px-3 py-2 sm:px-6 sm:py-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link to="/" className="flex min-w-0 flex-1 items-center gap-2 sm:flex-none sm:gap-3">
@@ -56,23 +90,41 @@ export function PrimeHeader() {
               className="h-10 w-10 shrink-0 rounded-full border-2 border-[#FFC107] object-cover sm:h-16 sm:w-16"
             />
             <div className="min-w-0">
-              <p className="truncate font-display text-sm font-extrabold uppercase leading-tight text-[#004D55] sm:text-base lg:text-lg">
+              <p
+                className={cn(
+                  'truncate font-display text-sm font-extrabold uppercase leading-tight sm:text-base lg:text-lg',
+                  heroOverlay ? 'text-white' : 'text-[#004D55]',
+                )}
+              >
                 {PRIME_BRAND.displayName}
               </p>
-              <p className="hidden font-script text-base text-[#004D55]/80 sm:block lg:text-lg">
+              <p
+                className={cn(
+                  'hidden font-script text-base sm:block lg:text-lg',
+                  heroOverlay ? 'text-[#FFF8E1]/90' : 'text-[#004D55]/80',
+                )}
+              >
                 {PRIME_BRAND.tagline}
               </p>
             </div>
           </Link>
 
           <form onSubmit={handleSearch} className="hidden min-w-0 flex-1 md:flex">
-            <div className="flex w-full max-w-md overflow-hidden rounded-full border border-slate-200 lg:max-w-lg xl:max-w-xl">
+            <div
+              className={cn(
+                'flex w-full max-w-md overflow-hidden rounded-full border lg:max-w-lg xl:max-w-xl',
+                heroOverlay ? 'border-white/25 bg-black/20 backdrop-blur-sm' : 'border-slate-200',
+              )}
+            >
               <input
                 type="search"
                 value={headerSearch}
                 onChange={(e) => setHeaderSearch(e.target.value)}
                 placeholder="Search crackers..."
-                className="min-w-0 flex-1 px-4 py-2 text-sm outline-none"
+                className={cn(
+                  'min-w-0 flex-1 px-4 py-2 text-sm outline-none',
+                  heroOverlay ? 'bg-transparent text-white placeholder:text-white/55' : '',
+                )}
               />
               <button
                 type="submit"
@@ -94,7 +146,7 @@ export function PrimeHeader() {
             </nav>
             <Link
               to="/wishlist"
-              className="relative rounded-md p-1.5 text-[#004D55] hover:bg-slate-50 sm:p-2"
+              className={iconBtnClass}
               aria-label={`Liked products${likedCount > 0 ? `, ${likedCount} items` : ''}`}
             >
               <Heart className={cn('h-5 w-5 sm:h-6 sm:w-6', likedCount > 0 && 'fill-[#E65100] text-[#E65100]')} />
@@ -106,7 +158,7 @@ export function PrimeHeader() {
             </Link>
             <Link
               to="/cart"
-              className="relative rounded-md p-1.5 text-[#004D55] hover:bg-slate-50 sm:p-2"
+              className={iconBtnClass}
               aria-label={`My Cart${itemCount > 0 ? `, ${itemCount} items` : ''}`}
             >
               <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -119,7 +171,12 @@ export function PrimeHeader() {
             <Link
               to={accountPath}
               title={accountLabel}
-              className="relative z-10 flex items-center gap-1.5 rounded-md border border-transparent px-1.5 py-1.5 text-[#004D55] hover:border-[#004D55]/15 hover:bg-slate-50 sm:px-2.5 sm:py-2"
+              className={cn(
+                'relative z-10 flex items-center gap-1.5 rounded-md border px-1.5 py-1.5 sm:px-2.5 sm:py-2',
+                heroOverlay
+                  ? 'border-transparent text-white hover:border-white/20 hover:bg-white/10'
+                  : 'border-transparent text-[#004D55] hover:border-[#004D55]/15 hover:bg-slate-50',
+              )}
               aria-label={accountLabel}
             >
               <User className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
@@ -127,7 +184,7 @@ export function PrimeHeader() {
             </Link>
             <button
               type="button"
-              className="rounded-md p-1.5 text-[#004D55] hover:bg-slate-50 sm:p-2 lg:hidden"
+              className={cn(iconBtnClass, 'lg:hidden')}
               onClick={() => setMobileMenuOpen((o) => !o)}
               aria-label="Toggle menu"
             >
@@ -137,7 +194,12 @@ export function PrimeHeader() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="mt-3 border-t border-slate-100 pt-3 lg:hidden">
+          <div
+            className={cn(
+              'mt-3 border-t pt-3 lg:hidden',
+              heroOverlay ? 'border-white/15' : 'border-slate-100',
+            )}
+          >
             <form onSubmit={handleSearch} className="mb-3 md:hidden">
               <div className="flex overflow-hidden rounded-full border border-slate-200">
                 <input

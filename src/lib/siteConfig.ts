@@ -29,12 +29,12 @@ export const HOME_PAGE_DESCRIPTION =
 /** Bump when favicon assets change — busts aggressive browser favicon cache. */
 export const FAVICON_VERSION = '3'
 
-/** Brand logo for navbar (circular PNG in /public). */
+/** Circular brand mark for header/footer (PNG — SVG wordmark does not crop in round avatars). */
 export const SITE_LOGO_FILE = '/prime-logo.png'
 export const SITE_LOGO_PATH = `${SITE_LOGO_FILE}?v=${FAVICON_VERSION}`
 
-/** Brand wordmark — same circular logo */
-export const SITE_WORDMARK_FILE = '/prime-logo.png'
+/** Wide wordmark where space allows */
+export const SITE_WORDMARK_FILE = '/prime-logo.svg'
 export const SITE_WORDMARK_PATH = `${SITE_WORDMARK_FILE}?v=${FAVICON_VERSION}`
 
 /** Trimmed favicons generated from SITE_LOGO_FILE — use for browser tab / PWA. */

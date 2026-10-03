@@ -9,8 +9,9 @@ export const HERO_HEADER_BG = PRIME_BRAND.aboutHeaderBg
 /** Festive Diwali illustration — default for all page heroes. */
 export const FESTIVE_HEADER_BG = PRIME_BRAND.festiveHeaderBg
 
-export const HERO_HEADER_OVERLAY =
-  'bg-gradient-to-b from-[#004D55]/45 via-[#002830]/35 to-[#004D55]/55'
+/** Pull page heroes under the fixed Prime header. */
+export const PAGE_HEADER_UNDER_NAV =
+  '-mt-[4.25rem] pt-[4.25rem] sm:-mt-[5.5rem] sm:pt-[5.5rem]'
 
 interface PageHeaderBackgroundProps {
   imageOpacity?: number
@@ -20,13 +21,13 @@ interface PageHeaderBackgroundProps {
   withVignette?: boolean
 }
 
-/** Fireworks skyline + Prime teal overlay — use behind page heroes. */
+/** Festive header art — no color wash by default (image stays clear). */
 export function PageHeaderBackground({
   imageOpacity = 1,
   imageSrc = FESTIVE_HEADER_BG,
-  overlayClassName = HERO_HEADER_OVERLAY,
+  overlayClassName,
   className,
-  withVignette = true,
+  withVignette = false,
 }: PageHeaderBackgroundProps) {
   return (
     <>
@@ -36,13 +37,15 @@ export function PageHeaderBackground({
         style={{ opacity: imageOpacity }}
         className={className}
       />
-      <div className={cn('absolute inset-0', overlayClassName)} aria-hidden="true" />
-      {withVignette && (
+      {overlayClassName ? (
+        <div className={cn('absolute inset-0', overlayClassName)} aria-hidden="true" />
+      ) : null}
+      {withVignette ? (
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_50%_40%,rgba(0,77,85,0.25),transparent_65%)]"
           aria-hidden="true"
         />
-      )}
+      ) : null}
     </>
   )
 }
@@ -71,7 +74,13 @@ export function PageHeader({
   const Tag = as
 
   return (
-    <Tag className={cn('relative overflow-hidden border-b-2 border-[#004D55]', className)}>
+    <Tag
+      className={cn(
+        'relative overflow-hidden border-b-2 border-[#004D55]',
+        PAGE_HEADER_UNDER_NAV,
+        className,
+      )}
+    >
       <PageHeaderBackground
         imageOpacity={imageOpacity}
         imageSrc={imageSrc}

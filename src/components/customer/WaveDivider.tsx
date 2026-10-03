@@ -59,6 +59,8 @@ export function WaveDivider() {
 }
 
 /** Cream transition for catalogue pages */
+const HERO_WAVE_WHITE_PATH = 'M0,40 C400,70 1000,16 1440,36 V100 H0 Z'
+
 export function WaveDividerWhite() {
   return (
     <div className="relative block w-full leading-[0]" aria-hidden="true">
@@ -66,11 +68,11 @@ export function WaveDividerWhite() {
         viewBox={HERO_WAVE_VIEWBOX}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="block h-12 w-full max-w-none sm:h-16"
+        className="block h-10 w-full max-w-none sm:h-14 md:h-16"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
-        <path d={HERO_WAVE_PATH} fill="#ffffff" />
+        <path d={HERO_WAVE_WHITE_PATH} fill="#ffffff" />
       </svg>
     </div>
   )

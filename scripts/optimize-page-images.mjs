@@ -59,6 +59,11 @@ async function optimizeImage(relativePath) {
   const after = fs.statSync(output).size
   const saved = Math.round((1 - after / before) * 100)
   console.log(`Wrote ${webpName} (${Math.round(before / 1024)} KB → ${Math.round(after / 1024)} KB, −${saved}%)`)
+
+  if (!SKIP_NAME.test(path.basename(relativePath))) {
+    fs.unlinkSync(input)
+    console.log(`Removed source ${relativePath}`)
+  }
 }
 
 const files = collectRasterFiles(publicDir)

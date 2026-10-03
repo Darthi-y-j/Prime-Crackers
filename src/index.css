@@ -645,6 +645,61 @@
     font-family: "Dancing Script", cursive;
   }
 
+  .prime-shop .hero-copy-panel {
+    padding: 1rem 1.25rem 1.25rem;
+    border-radius: 1rem;
+    background: linear-gradient(
+      105deg,
+      rgba(0, 32, 40, 0.62) 0%,
+      rgba(0, 32, 40, 0.38) 55%,
+      transparent 100%
+    );
+  }
+
+  @media (min-width: 640px) {
+    .prime-shop .hero-copy-panel {
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-radius: 1.25rem;
+    }
+  }
+
+  .prime-shop .hero-gradient-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+  }
+
+  .prime-shop .hero-gradient-brand {
+    background-image: linear-gradient(95deg, #fff9c4 0%, #ffc107 48%, #ff9800 100%);
+  }
+
+  .prime-shop .hero-gradient-headline {
+    background-image: linear-gradient(
+      115deg,
+      #ffffff 0%,
+      #fff8e1 32%,
+      #ffd54f 68%,
+      #ffab00 100%
+    );
+  }
+
+  .prime-shop .hero-gradient-tagline {
+    background-image: linear-gradient(100deg, #ffffff 0%, #ffe082 55%, #ffc107 100%);
+  }
+
+  .prime-shop .hero-gradient-accent {
+    background-image: linear-gradient(90deg, #fff59d, #ffc107, #ff6f00);
+  }
+
+  .prime-shop .hero-gradient-sivakasi {
+    background-image: linear-gradient(105deg, #fff176 0%, #ffc107 42%, #ff9800 78%, #ff6f00 100%);
+  }
+
+  .prime-shop .hero-copy-panel .hero-text-plain {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
   .prime-main {
     background-color: #ffffff;
   }

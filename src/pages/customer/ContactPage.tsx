@@ -27,7 +27,7 @@ import {
 import { buildWhatsAppContactUrl, buildTelUrl, buildMailtoUrl } from '@/lib/whatsapp'
 import { PRIME_CRACKERS_GOOGLE_MAPS_URL, PRIME_CRACKERS_MAP_EMBED_URL } from '@/lib/maps'
 import { PRIME_BRAND } from '@/lib/primeBrand'
-import { PageHeaderBackground } from '@/components/customer/PageHeader'
+import { PageHeaderBackground, PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
 import { cleanPhone, cn } from '@/lib/utils'
 
 const WHATSAPP_GREETING = 'Hi Prime Crackers, I would like to enquire about your products.'
@@ -185,7 +185,7 @@ export function ContactPage() {
 
       <div className="overflow-hidden">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b-2 border-[#004D55]">
+        <section className={cn('relative overflow-hidden border-b-2 border-[#004D55]', PAGE_HEADER_UNDER_NAV)}>
           <PageHeaderBackground />
           <div
             className="pointer-events-none absolute -right-20 top-10 h-64 w-64 rounded-full bg-[#FFC107]/20 blur-3xl"

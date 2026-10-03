@@ -15,7 +15,7 @@ import { buildWhatsAppContactUrl } from '@/lib/whatsapp'
 import { getWhatsAppNumbers } from '@/lib/businessInfo'
 import { cn } from '@/lib/utils'
 
-import { PageHeaderBackground } from '@/components/customer/PageHeader'
+import { HERO_HEADER_BG, PageHeaderBackground, PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
 import { FestivePageBackground } from '@/components/customer/FestivePageBackground'
 
 export interface LegalSection {
@@ -144,39 +144,59 @@ export function LegalDocumentLayout({
       <SEO title={title} description={seoDescription} url={url} />
 
       <FestivePageBackground>
-        <header className="relative overflow-hidden border-b-2 border-[#004D55]">
-          <PageHeaderBackground />
-          <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-            <nav className="flex items-center gap-2 text-xs text-white/70">
+        <header className={cn('relative overflow-hidden border-b-2 border-[#004D55]', PAGE_HEADER_UNDER_NAV)}>
+          <PageHeaderBackground
+            imageSrc={HERO_HEADER_BG}
+            overlayClassName="bg-gradient-to-br from-[#001a1c]/92 via-[#003840]/78 to-[#004D55]/55"
+            withVignette
+          />
+          <div className="relative z-10 mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+            <nav
+              className="flex items-center gap-2 text-xs font-medium text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)]"
+            >
               <Link to="/" className="transition hover:text-[#FFC107]">Home</Link>
               <span aria-hidden="true">/</span>
               <span className="font-semibold text-white">{title}</span>
             </nav>
 
             <AnimateIn animation="fade-up">
-              <div className="mt-6 max-w-3xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFC107]">
-                  <FileText className="h-3.5 w-3.5" />
+              <div
+                className="mt-6 max-w-3xl rounded-2xl border border-white/15 bg-[#003840]/55 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-6"
+              >
+                <div
+                  className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/50 bg-[#001f24]/65 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFE082]"
+                >
+                  <FileText className="h-3.5 w-3.5 text-[#FFC107]" />
                   Legal
                 </div>
 
-                <h1 className="mt-4 font-display text-3xl font-extrabold uppercase tracking-wide text-white sm:text-4xl lg:text-5xl">
+                <h1
+                  className="mt-4 font-display text-3xl font-extrabold uppercase tracking-wide text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)] sm:text-4xl lg:text-5xl"
+                >
                   {title}
                 </h1>
 
-                <p className="mt-4 text-sm leading-relaxed text-white/85 sm:text-base">{intro}</p>
+                <p
+                  className="mt-4 text-sm leading-relaxed text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.4)] sm:text-base"
+                >
+                  {intro}
+                </p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white">
+                  <span
+                    className="rounded-full border border-white/30 bg-[#001f24]/55 px-3 py-1.5 text-xs font-semibold text-white"
+                  >
                     Effective {effectiveDate}
                   </span>
-                  <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white">
+                  <span
+                    className="rounded-full border border-white/30 bg-[#001f24]/55 px-3 py-1.5 text-xs font-semibold text-white"
+                  >
                     Updated {lastUpdated}
                   </span>
                   {relatedPage && (
                     <Link
                       to={relatedPage.href}
-                      className="inline-flex items-center gap-1 rounded-full border border-[#FFC107]/40 bg-[#FFC107]/15 px-3 py-1.5 text-xs font-bold text-[#FFC107] transition hover:bg-[#FFC107]/25"
+                      className="inline-flex items-center gap-1 rounded-full border border-[#FFC107]/50 bg-[#FFC107]/20 px-3 py-1.5 text-xs font-bold text-[#FFE082] transition hover:bg-[#FFC107]/30"
                     >
                       {relatedPage.label}
                       <ChevronRight className="h-3 w-3" />
@@ -189,7 +209,7 @@ export function LegalDocumentLayout({
                     {heroChips.map((chip) => (
                       <span
                         key={chip}
-                        className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white/90"
+                        className="rounded-full border border-white/25 bg-[#001f24]/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
                       >
                         {chip}
                       </span>

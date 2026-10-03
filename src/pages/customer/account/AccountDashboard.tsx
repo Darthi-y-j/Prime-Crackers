@@ -62,30 +62,40 @@ export function AccountDashboard() {
       <SEO title="My Profile" description="Manage your Prime Crackers account and enquiries." noIndex />
 
       <AccountPageHeader showEdit>
-        <div className="mt-6 flex flex-col items-center gap-5 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+        <div
+          className="mt-6 flex flex-col items-center gap-5 rounded-2xl border border-white/15 bg-[#003840]/55 p-5 text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-6 lg:flex-row lg:items-center lg:justify-between lg:text-left"
+        >
           <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center">
-            <ProfileAvatar name={displayName} />
+            <ProfileAvatar name={displayName} className="ring-white/45" />
             <div className="min-w-0">
-              <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:text-3xl lg:text-4xl">
+              <h1
+                className="font-display text-2xl font-extrabold uppercase tracking-wide text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)] sm:text-3xl lg:text-4xl"
+              >
                 {displayName}
               </h1>
-              <div className="mt-3 flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4 lg:justify-start">
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4 lg:justify-start">
                 {email && (
-                  <p className="flex items-center justify-center gap-2 text-sm text-white/85 lg:justify-start">
+                  <p
+                    className="flex items-center justify-center gap-2 text-sm font-medium text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)] lg:justify-start"
+                  >
                     <Mail className="h-4 w-4 shrink-0 text-[#FFC107]" />
                     <span className="truncate">{email}</span>
                   </p>
                 )}
                 {phone && (
-                  <p className="flex items-center justify-center gap-2 text-sm text-white/85 lg:justify-start">
+                  <p
+                    className="flex items-center justify-center gap-2 text-sm font-medium text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)] lg:justify-start"
+                  >
                     <Phone className="h-4 w-4 shrink-0 text-[#FFC107]" />
                     {formatDisplayPhone(phone)}
                   </p>
                 )}
               </div>
               {memberSince && (
-                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/35 bg-[#FFC107]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
-                  <Sparkles className="h-3 w-3" />
+                <p
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#FFC107]/50 bg-[#001f24]/65 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#FFE082] shadow-sm"
+                >
+                  <Sparkles className="h-3 w-3 text-[#FFC107]" />
                   Member since {memberSince}
                 </p>
               )}

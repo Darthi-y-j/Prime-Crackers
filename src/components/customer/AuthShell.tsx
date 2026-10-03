@@ -1,15 +1,18 @@
 import type { ReactNode } from 'react'
 import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
+import { PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
 import { PRIME_BRAND } from '@/lib/primeBrand'
+import { cn } from '@/lib/utils'
 
 export function AuthPageShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
-    <div className="relative flex min-h-[calc(100vh-10rem)] items-center justify-center overflow-hidden px-4 py-8 sm:px-6 sm:py-10">
+    <div
+      className={cn(
+        'relative flex min-h-[calc(100vh-10rem)] items-center justify-center overflow-hidden px-4 py-8 sm:px-6 sm:py-10',
+        PAGE_HEADER_UNDER_NAV,
+      )}
+    >
       <OptimizedBackground src={PRIME_BRAND.loginBg} priority />
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/25 to-[#004D55]/15"
-        aria-hidden="true"
-      />
       <div className={wide ? 'relative z-10 w-full max-w-2xl' : 'relative z-10 w-full max-w-md'}>{children}</div>
     </div>
   )

@@ -2,8 +2,8 @@ import { SEO } from '@/components/shared/SEO'
 import { JsonLd } from '@/components/shared/JsonLd'
 import { LazySection } from '@/components/customer/LazySection'
 import { PrimeHero } from '@/components/prime/PrimeHero'
-import { HomeSeoSection } from '@/components/prime/HomeSeoSection'
 import { PrimeServiceBar } from '@/components/prime/PrimeServiceBar'
+import { HomeSeoSection } from '@/components/prime/HomeSeoSection'
 import { PrimeCategoryGrid } from '@/components/prime/PrimeCategoryGrid'
 import { PrimeShopCatalog } from '@/components/prime/PrimeShopCatalog'
 import { PrimeWhyChooseBar } from '@/components/prime/PrimeWhyChooseBar'
@@ -21,13 +21,13 @@ export function HomePage() {
       <PrimeHero />
       <PrimeServiceBar />
       <PrimeCategoryGrid />
-      <PrimeWhyChooseBar />
-      <LazySection minHeight="320px" rootMargin="200px 0px">
-        <HomeSeoSection />
-      </LazySection>
       <LazySection minHeight="520px">
         <PrimeShopCatalog />
       </LazySection>
+      <LazySection minHeight="320px" rootMargin="200px 0px">
+        <HomeSeoSection />
+      </LazySection>
+      <PrimeWhyChooseBar />
     </>
   )
 }

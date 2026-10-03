@@ -2,7 +2,6 @@ import { useCallback, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Check, Copy, MapPin, Percent, Share2, Shield, Sparkles, Truck } from 'lucide-react'
 import { AnimateIn } from '@/components/customer/AnimateIn'
-import { OptimizedBackground } from '@/components/customer/OptimizedBackground'
 import { useToast } from '@/contexts/ToastContext'
 import { PRIME_CRACKERS_GOOGLE_MAPS_URL } from '@/lib/maps'
 import { PRIME_BRAND } from '@/lib/primeBrand'
@@ -13,7 +12,7 @@ const PESO_SAFETY_URL = 'https://peso.gov.in/web/en/fireworks'
 const SIVAKASI_WIKI_URL = 'https://en.wikipedia.org/wiki/Sivakasi'
 const CELEBRATION_IMG = '/about-celebration-sparkler.webp'
 const SECTION_BG_WEBP = '/home-seo-festive-bg.webp'
-const SECTION_BG_FALLBACK = '/home-seo-festive-bg.png'
+const SECTION_BG_FALLBACK = '/home-seo-festive-bg.webp'
 
 const PAGE_LINKS = [
   { to: '/#shop', label: 'Shop' },
@@ -98,48 +97,57 @@ export function HomeSeoSection() {
         />
       </picture>
 
-      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
+      <div className="absolute inset-0 z-[1] bg-[#FFF8E1]/55" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
         <AnimateIn animation="fade-up">
-          <div className="overflow-hidden rounded-2xl bg-white shadow-[0_10px_40px_rgba(0,77,85,0.18)] ring-1 ring-[#004D55]/10">
+          <div className="mx-auto overflow-hidden rounded-2xl bg-white shadow-[0_10px_40px_rgba(0,77,85,0.18)] ring-1 ring-[#004D55]/10">
             <div
               className="h-1 bg-gradient-to-r from-[#004D55] via-[#FFC107] to-[#004D55]"
               aria-hidden="true"
             />
 
-            <div className="grid md:grid-cols-[38%_1fr]">
-              {/* Image + overlay info cards */}
-              <div className="relative min-h-[240px] md:min-h-[300px]">
-                <OptimizedBackground src={CELEBRATION_IMG} priority={false} />
+            <div className="grid items-stretch md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+              <div className="relative flex min-h-[320px] flex-col gap-2 overflow-hidden p-3 sm:min-h-[340px] sm:p-4 md:min-h-full">
+                <picture className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+                  <source srcSet={CELEBRATION_IMG} type="image/webp" />
+                  <img
+                    src={CELEBRATION_IMG}
+                    alt=""
+                    decoding="async"
+                    loading="lazy"
+                    className="h-full w-full scale-105 object-cover object-center blur-[2px] brightness-[0.88] sm:blur-sm"
+                  />
+                </picture>
                 <div
-                  className="absolute inset-0 bg-gradient-to-t from-[#003840]/90 via-[#004D55]/25 to-transparent"
+                  className="absolute inset-0 z-[1] bg-gradient-to-br from-[#003840]/55 via-[#003840]/40 to-[#001f24]/50"
                   aria-hidden="true"
                 />
 
-                <div className="absolute left-3 top-3 rounded-lg bg-[#FFC107] px-2.5 py-1.5 shadow-md">
+                <div className="relative z-10 w-fit rounded-lg bg-[#FFC107] px-2.5 py-1.5 shadow-md">
                   <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-[#004D55]">
                     <Percent className="h-3 w-3" aria-hidden="true" />
                     Up to 50% off
                   </p>
                 </div>
 
-                <div className="absolute left-3 top-16 right-3 rounded-xl border border-white/15 bg-black/50 p-2.5 sm:top-[4.75rem] sm:p-3">
-                  <div className="flex items-start gap-2">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
-                      <MapPin className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
-                        Based in Sivakasi
-                      </p>
-                      <p className="mt-0.5 text-[10px] leading-snug text-white/85 sm:text-[11px]">
-                        Alamarathupatti — heart of India&apos;s fireworks industry
-                      </p>
+                <div className="relative z-10 mt-auto grid gap-2">
+                  <div className="rounded-xl border border-white/25 bg-[#003840]/65 p-2.5 backdrop-blur-[2px] sm:p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
+                        <MapPin className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
+                          Based in Sivakasi
+                        </p>
+                        <p className="mt-0.5 text-[10px] leading-snug text-white sm:text-[11px]">
+                          Alamarathupatti — heart of India&apos;s fireworks industry
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="absolute inset-x-2 bottom-1 grid gap-1.5 sm:inset-x-3 sm:bottom-1.5">
-                  <div className="rounded-xl border border-white/15 bg-black/50 p-2.5 sm:p-3">
+                  <div className="rounded-xl border border-white/25 bg-[#003840]/65 p-2.5 backdrop-blur-[2px] sm:p-3">
                     <div className="flex items-start gap-2">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
                         <Shield className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
@@ -148,7 +156,7 @@ export function HomeSeoSection() {
                         <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
                           Why Prime Crackers
                         </h3>
-                        <p className="mt-0.5 text-[10px] leading-snug text-white/85 sm:text-[11px]">
+                        <p className="mt-0.5 text-[10px] leading-snug text-white sm:text-[11px]">
                           Licensed originals &amp; safe packaging.{' '}
                           <TextLink
                             to="/about"
@@ -160,7 +168,7 @@ export function HomeSeoSection() {
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-xl border border-white/15 bg-black/50 p-2.5 sm:p-3">
+                  <div className="rounded-xl border border-white/25 bg-[#003840]/65 p-2.5 backdrop-blur-[2px] sm:p-3">
                     <div className="flex items-start gap-2">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FFC107]/20 sm:h-9 sm:w-9">
                         <Truck className="h-3.5 w-3.5 text-[#FFC107] sm:h-4 sm:w-4" aria-hidden="true" />
@@ -169,7 +177,7 @@ export function HomeSeoSection() {
                         <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#FFC107]">
                           Safety &amp; Delivery
                         </h3>
-                        <p className="mt-0.5 text-[10px] leading-snug text-white/85 sm:text-[11px]">
+                        <p className="mt-0.5 text-[10px] leading-snug text-white sm:text-[11px]">
                           <TextLink
                             to="/safety"
                             className="text-[10px] text-[#FFC107] decoration-[#FFC107]/70 hover:text-white sm:text-[11px]"
@@ -197,8 +205,7 @@ export function HomeSeoSection() {
                 </div>
               </div>
 
-              {/* Main copy — compact */}
-              <div className="flex flex-col gap-3 px-4 py-4 sm:px-5 sm:py-5">
+              <div className="flex min-h-[320px] flex-col gap-3 px-4 py-4 sm:min-h-[340px] sm:px-5 sm:py-5 md:min-h-full">
                 <h2
                   id="home-seo-heading"
                   className="font-display text-lg font-extrabold leading-snug text-[#004D55] sm:text-xl"
