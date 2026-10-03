@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/customer/PageHeader'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { useCart } from '@/contexts/CartContext'
 import { useToast } from '@/contexts/ToastContext'
-import { formatPrice, getImageUrl, IMAGE_WIDTH } from '@/lib/utils'
+import { cn, formatPrice, getImageUrl, IMAGE_WIDTH } from '@/lib/utils'
 import type { WishlistItem } from '@/types/database'
 
 export function PrimeLikesPage() {
@@ -43,15 +43,31 @@ export function PrimeLikesPage() {
   return (
     <>
       <SEO title="Liked Products" description="Your saved favourite crackers." noIndex />
-      <PageHeader contentClassName="mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-10">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            <Heart className="h-6 w-6 fill-[#FFC107] text-[#FFC107]" />
-            <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:text-3xl">
-              Liked Products
+      <PageHeader
+        contentClassName={cn(
+          'mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-10',
+          items.length === 0 && 'py-10 text-center sm:py-12',
+        )}
+      >
+        {items.length === 0 ? (
+          <>
+            <nav className="flex items-center justify-center gap-2 text-xs text-white/70">
+              <Link to="/" className="transition hover:text-[#FFC107]">Home</Link>
+              <span aria-hidden="true">/</span>
+              <span className="font-semibold text-white">Liked</span>
+            </nav>
+            <h1 className="mt-4 font-display text-3xl font-extrabold uppercase text-white sm:text-4xl">
+              No liked products <span className="text-[#FFC107]">yet</span>
             </h1>
-          </div>
-          {items.length > 0 && (
+          </>
+        ) : (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="h-6 w-6 fill-[#FFC107] text-[#FFC107]" />
+              <h1 className="font-display text-2xl font-extrabold uppercase tracking-wide text-white sm:text-3xl">
+                Liked Products
+              </h1>
+            </div>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -69,13 +85,13 @@ export function PrimeLikesPage() {
                 Clear all
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </PageHeader>
       <section className="mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-10">
         {items.length === 0 ? (
           <EmptyState
-            title="No liked products yet"
+            title=""
             description="Tap the heart on any product in the shop to save it here."
             action={
               <Link

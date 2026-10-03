@@ -14,7 +14,7 @@ export function EmptyState({ title, description, action, className }: EmptyState
       <div className="mb-4 rounded-full bg-navy-800/5 p-4">
         <PackageOpen className="h-10 w-10 text-navy-700/40" />
       </div>
-      <h3 className="text-lg font-semibold text-navy-900">{title}</h3>
+      {title ? <h3 className="text-lg font-semibold text-navy-900">{title}</h3> : null}
       {description && <p className="mt-2 max-w-md text-sm text-navy-700/70">{description}</p>}
       {action && <div className="mt-6">{action}</div>}
     </div>

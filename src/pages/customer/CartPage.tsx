@@ -909,8 +909,8 @@ export function CartPage() {
         <div className="bg-gradient-to-b from-[#FFF8E1]/30 to-white">
           <header className={cn('relative overflow-hidden border-b-2 border-[#004D55]', PAGE_HEADER_UNDER_NAV)}>
             <PageHeaderBackground />
-            <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-              <nav className="flex items-center gap-2 text-xs text-white/70">
+            <div className="relative mx-auto max-w-7xl px-4 py-10 text-center sm:px-6 lg:px-8">
+              <nav className="flex items-center justify-center gap-2 text-xs text-white/70">
                 <Link to="/" className="hover:text-[#FFC107]">Home</Link>
                 <span>/</span>
                 <span className="text-white">Cart</span>
