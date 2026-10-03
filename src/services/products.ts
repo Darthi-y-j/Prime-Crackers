@@ -1,6 +1,12 @@
-import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
+import {
+  supabase,
+  getSupabaseErrorMessage,
+  isMissingColumnError,
+  isSupabaseConfigured,
+} from '@/lib/supabase'
 import { supabaseRestGet } from '@/lib/supabaseRest'
 import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
+import { getStaticCatalogProducts } from '@/lib/staticCatalog'
 import { CACHE_KEYS, readSessionCache, writeSessionCache } from '@/lib/sessionCache'
 import { isLowStock } from '@/lib/stock'
 import type { Product, ProductFilters } from '@/types/database'
@@ -13,6 +19,10 @@ const inflight = new Map<string, Promise<Product[]>>()
 /** Catalogue pages — omit specifications & media URLs to cut payload size */
 const CATALOGUE_PRODUCT_SELECT =
   'id, category_id, name, slug, description, price, original_price, discount_percentage, pieces, brand, tag, image_url, stock_quantity, stock_alert_limit, is_available, is_featured, is_recommended, is_best_seller, is_archived, sort_order, created_at, category:categories(id, name, slug, sort_order, is_active, is_archived)'
+
+/** When badge/archive columns are missing on older DB schemas */
+const CATALOGUE_PRODUCT_SELECT_MINIMAL =
+  'id, category_id, name, slug, description, price, original_price, discount_percentage, pieces, brand, tag, image_url, stock_quantity, stock_alert_limit, is_available, is_featured, sort_order, created_at, category:categories(id, name, slug, sort_order, is_active)'
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -122,9 +132,14 @@ async function queryProductsWithArchiveFallback(
   throw new Error(getSupabaseErrorMessage(error))
 }
 
-function buildProductsRestQuery(filters: ProductFilters, withArchiveFilter: boolean): string {
+function buildProductsRestQuery(
+  filters: ProductFilters,
+  withArchiveFilter: boolean,
+  selectOverride?: string,
+): string {
   const parts: string[] = []
-  const select = filters.lite ? CATALOGUE_PRODUCT_SELECT : '*,category:categories(*)'
+  const select =
+    selectOverride ?? (filters.lite ? CATALOGUE_PRODUCT_SELECT : '*,category:categories(*)')
   parts.push(`select=${encodeURIComponent(select)}`)
   parts.push('is_available=eq.true')
 
@@ -181,8 +196,9 @@ function buildProductsRestQuery(filters: ProductFilters, withArchiveFilter: bool
 async function fetchProductsFromRest(
   filters: ProductFilters,
   withArchiveFilter: boolean,
+  selectOverride?: string,
 ): Promise<Product[]> {
-  const query = buildProductsRestQuery(filters, withArchiveFilter)
+  const query = buildProductsRestQuery(filters, withArchiveFilter, selectOverride)
   return supabaseRestGet<Product[]>('products', query)
 }
 
@@ -192,10 +208,22 @@ async function queryProductsWithArchiveFallbackRest(filters: ProductFilters): Pr
   try {
     return await fetchProductsFromRest(filters, true)
   } catch (error) {
-    if (isMissingColumnError(error, 'is_recommended') || isMissingColumnError(error, 'is_best_seller')) {
-      throw new Error(
-        'Product badges are not set up yet. Run migration 021_product_highlight_badges.sql in Supabase SQL Editor.',
-      )
+    if (
+      isMissingColumnError(error, 'is_recommended') ||
+      isMissingColumnError(error, 'is_best_seller') ||
+      isMissingColumnError(error, 'is_archived')
+    ) {
+      try {
+        const minimal = await fetchProductsFromRest(filters, false, CATALOGUE_PRODUCT_SELECT_MINIMAL)
+        return minimal.map((row) => ({
+          ...row,
+          is_recommended: row.is_recommended ?? false,
+          is_best_seller: row.is_best_seller ?? false,
+          is_archived: row.is_archived ?? false,
+        }))
+      } catch {
+        // continue to outer handling
+      }
     }
     if (isMissingColumnError(error, 'is_archived')) {
       if (archived === 'archived') return []
@@ -227,11 +255,26 @@ export function getCachedCatalogueProducts(): Product[] | null {
 
 export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {
   return withProductCache(filters, async () => {
-    const data = await queryProductsWithArchiveFallbackRest(filters)
-    if (isCatalogueFilters(filters) && data.length > 0) {
-      writeSessionCache(CACHE_KEYS.catalogueProducts, data)
+    if (!isSupabaseConfigured && isCatalogueFilters(filters)) {
+      return getStaticCatalogProducts()
     }
-    return data
+    try {
+      const data = await queryProductsWithArchiveFallbackRest(filters)
+      if (isCatalogueFilters(filters) && data.length > 0) {
+        writeSessionCache(CACHE_KEYS.catalogueProducts, data)
+      }
+      return data
+    } catch (error) {
+      if (!isCatalogueFilters(filters)) throw error
+      logLandingPageApiError('getProducts:static_fallback', {
+        error: error instanceof Error ? error.message : String(error),
+      })
+      const fallback = getStaticCatalogProducts()
+      if (fallback.length > 0) {
+        writeSessionCache(CACHE_KEYS.catalogueProducts, fallback)
+      }
+      return fallback
+    }
   })
 }
 

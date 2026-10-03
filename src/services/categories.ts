@@ -1,6 +1,12 @@
-import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
+import {
+  supabase,
+  getSupabaseErrorMessage,
+  isMissingColumnError,
+  isSupabaseConfigured,
+} from '@/lib/supabase'
 import { supabaseRestGet } from '@/lib/supabaseRest'
 import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
+import { getStaticCatalogCategories } from '@/lib/staticCatalog'
 import { CACHE_KEYS, readSessionCache, writeSessionCache } from '@/lib/sessionCache'
 import type { Category } from '@/types/database'
 
@@ -22,6 +28,10 @@ export async function getCategories(
 
   logLandingPageApi('getCategories:start', { activeOnly, archived })
   const startedAt = performance.now()
+
+  if (!isSupabaseConfigured && activeOnly && archived === 'active') {
+    return getStaticCatalogCategories()
+  }
 
   const fetchRest = (withArchiveFilter: boolean) => {
     const parts = ['select=*', 'order=sort_order.asc']
@@ -63,6 +73,13 @@ export async function getCategories(
       ms: Math.round(performance.now() - startedAt),
       error: error instanceof Error ? error.message : String(error),
     })
+    if (activeOnly && archived === 'active') {
+      const fallback = getStaticCatalogCategories()
+      if (fallback.length > 0) {
+        writeSessionCache(CACHE_KEYS.catalogueCategories, fallback)
+      }
+      return fallback
+    }
     throw error
   }
 }
