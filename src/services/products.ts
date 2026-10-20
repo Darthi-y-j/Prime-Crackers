@@ -6,7 +6,6 @@ import {
 } from '@/lib/supabase'
 import { supabaseRestGet } from '@/lib/supabaseRest'
 import { logLandingPageApi, logLandingPageApiError } from '@/lib/landingPageApiLog'
-import { getStaticCatalogProducts } from '@/lib/staticCatalog'
 import { CACHE_KEYS, readSessionCache, writeSessionCache } from '@/lib/sessionCache'
 import { isLowStock } from '@/lib/stock'
 import type { Product, ProductFilters } from '@/types/database'
@@ -255,26 +254,14 @@ export function getCachedCatalogueProducts(): Product[] | null {
 
 export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {
   return withProductCache(filters, async () => {
-    if (!isSupabaseConfigured && isCatalogueFilters(filters)) {
-      return getStaticCatalogProducts()
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured')
     }
-    try {
-      const data = await queryProductsWithArchiveFallbackRest(filters)
-      if (isCatalogueFilters(filters) && data.length > 0) {
-        writeSessionCache(CACHE_KEYS.catalogueProducts, data)
-      }
-      return data
-    } catch (error) {
-      if (!isCatalogueFilters(filters)) throw error
-      logLandingPageApiError('getProducts:static_fallback', {
-        error: error instanceof Error ? error.message : String(error),
-      })
-      const fallback = getStaticCatalogProducts()
-      if (fallback.length > 0) {
-        writeSessionCache(CACHE_KEYS.catalogueProducts, fallback)
-      }
-      return fallback
+    const data = await queryProductsWithArchiveFallbackRest(filters)
+    if (isCatalogueFilters(filters) && data.length > 0) {
+      writeSessionCache(CACHE_KEYS.catalogueProducts, data)
     }
+    return data
   })
 }
 

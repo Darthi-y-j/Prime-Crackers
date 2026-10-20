@@ -1,11 +1,25 @@
 import type { CartItem } from '@/types/database'
+import { isEmbeddedCatalogProductId } from '@/lib/catalogIds'
 
-const STORAGE_KEY = 'prime-enquiry-cart'
+const STORAGE_KEY = 'prime-enquiry-cart-v2'
 
 function loadCart(): CartItem[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? (JSON.parse(stored) as CartItem[]) : []
+    if (!stored) {
+      try {
+        localStorage.removeItem('prime-enquiry-cart')
+      } catch {
+        // ignore
+      }
+      return []
+    }
+    const items = JSON.parse(stored) as CartItem[]
+    const valid = items.filter((item) => !isEmbeddedCatalogProductId(item.productId))
+    if (valid.length !== items.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(valid))
+    }
+    return valid
   } catch {
     return []
   }

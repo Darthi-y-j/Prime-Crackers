@@ -1,5 +1,5 @@
 /**
- * Generates public/sitemap.xml from Supabase (when configured) or the local catalog fallback.
+ * Generates public/sitemap.xml from Prime Supabase only (no embedded catalogue fallback).
  * Run automatically before production builds via npm run build.
  */
 import fs from 'fs'
@@ -31,16 +31,6 @@ function escapeXml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
-}
-
-function readCatalogProductSlugs() {
-  const catalogPath = path.join(ROOT, 'src/data/catalog.ts')
-  if (!fs.existsSync(catalogPath)) return []
-
-  const source = fs.readFileSync(catalogPath, 'utf8')
-  const productsSection = source.split('export const CATALOG_PRODUCTS')[1] ?? ''
-  const slugs = [...productsSection.matchAll(/"slug": "([^"]+)"/g)].map((match) => match[1])
-  return [...new Set(slugs)]
 }
 
 function normalizeSupabaseUrl(url) {
@@ -77,7 +67,7 @@ async function fetchSupabaseProductSlugs(env) {
       const slugs = rows.map((row) => row.slug).filter(Boolean)
       if (slugs.length > 0) return [...new Set(slugs)]
     } catch {
-      // Try next endpoint or fall back to catalog.
+      // Try next endpoint.
     }
   }
 
@@ -121,8 +111,13 @@ ${body}
 async function main() {
   const env = { ...loadEnvFile(), ...process.env }
   const supabaseSlugs = await fetchSupabaseProductSlugs(env)
-  const productSlugs = supabaseSlugs ?? readCatalogProductSlugs()
-  const source = supabaseSlugs ? 'Supabase' : 'catalog fallback'
+  const productSlugs = supabaseSlugs ?? []
+  const source = supabaseSlugs ? 'Supabase' : 'static routes only (Supabase unavailable at build time)'
+  if (!supabaseSlugs) {
+    console.warn(
+      'Warning: could not load product slugs from Supabase for sitemap. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env before build.',
+    )
+  }
 
   const xml = buildSitemap(SITEMAP_STATIC_ROUTES, productSlugs)
   const outputPath = path.join(ROOT, 'public/sitemap.xml')

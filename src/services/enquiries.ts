@@ -1,6 +1,7 @@
 import { supabase, getSupabaseErrorMessage, isMissingColumnError } from '@/lib/supabase'
 import { normalizeReferralCode } from '@/lib/referralCode'
 import { generateEnquiryNumber, cleanPhone, sanitizeEnquiryProductId } from '@/lib/utils'
+import { isEmbeddedCatalogProductId } from '@/lib/catalogIds'
 import { expandCartItemsForEnquiry, enquiryHeaderProductId } from '@/lib/giftBox'
 import type {
   Enquiry,
@@ -281,6 +282,14 @@ export async function createCartEnquiry(
 ): Promise<{ data: Enquiry | null; error: string | null }> {
   if (formData.items.length === 0) {
     return { data: null, error: 'Cart is empty' }
+  }
+
+  if (formData.items.some((item) => isEmbeddedCatalogProductId(item.productId))) {
+    return {
+      data: null,
+      error:
+        'Some cart items are outdated. Please remove them and add products again from the catalogue.',
+    }
   }
 
   const enquiryNumber = generateEnquiryNumber()

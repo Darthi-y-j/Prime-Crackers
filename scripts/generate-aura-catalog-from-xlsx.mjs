@@ -1,3 +1,7 @@
+/**
+ * Optional one-off: builds src/data/catalog.ts for admin catalog IMPORT only.
+ * The customer site must NOT use this file at runtime — products come from Prime Supabase only.
+ */
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'

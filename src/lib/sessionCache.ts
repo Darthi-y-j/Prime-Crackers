@@ -33,6 +33,7 @@ export function writeSessionCache<T>(key: string, data: T): void {
 }
 
 export const CACHE_KEYS = {
-  catalogueProducts: 'prime-catalogue-products-v3',
-  catalogueCategories: 'prime-catalogue-categories-v1',
+  /** Bumped when embedded Aura catalogue fallback was removed — clears stale session lists. */
+  catalogueProducts: 'prime-catalogue-products-v4',
+  catalogueCategories: 'prime-catalogue-categories-v2',
 } as const
