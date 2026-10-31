@@ -126,6 +126,11 @@ function mergeSettings(data: Record<string, unknown> | null): WebsiteSettings {
         ...DEFAULT_SETTINGS.social_links.policies,
         ...socialLinks.policies,
       },
+      order_placement_paused: socialLinks.order_placement_paused === true,
+      order_placement_pause_message:
+        typeof socialLinks.order_placement_pause_message === 'string'
+          ? socialLinks.order_placement_pause_message.trim() || undefined
+          : undefined,
     },
     business_hours,
   }

@@ -5,6 +5,10 @@ import { useToast } from '@/contexts/ToastContext'
 import { createEnquiry } from '@/services/enquiries'
 import { buildWhatsAppEnquiryMessage, buildWhatsAppUrl } from '@/lib/whatsapp'
 import { validatePhone } from '@/lib/utils'
+import {
+  getOrderPlacementPauseMessage,
+  isOrderPlacementPaused,
+} from '@/lib/orderPlacement'
 import type { EnquiryFormData } from '@/types/database'
 import { cn } from '@/lib/utils'
 
@@ -41,6 +45,11 @@ export function WhatsAppEnquiryButton({
 
   const handleClick = async () => {
     if (onBeforeOpen && !onBeforeOpen()) return
+
+    if (isOrderPlacementPaused(settings)) {
+      showToast(getOrderPlacementPauseMessage(settings), 'error')
+      return
+    }
 
     if (!customerName.trim()) {
       showToast('Please enter your name', 'error')
@@ -101,7 +110,7 @@ export function WhatsAppEnquiryButton({
     <button
       type="button"
       onClick={handleClick}
-      disabled={loading}
+      disabled={loading || isOrderPlacementPaused(settings)}
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] font-semibold text-white transition hover:bg-[#20bd5a] disabled:opacity-60',
         sizeClasses[size],

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { formatReferralCodesForStorage, parseReferralCodeList } from '@/lib/referralCode'
+import { DEFAULT_ORDER_PLACEMENT_PAUSE_MESSAGE } from '@/lib/orderPlacement'
 import { updateWebsiteSettings } from '@/services/settings'
 import { useToast } from '@/contexts/ToastContext'
 import { useSettings } from '@/contexts/SettingsContext'
@@ -24,7 +25,21 @@ export function SettingsForm() {
     saturday: settings.business_hours.saturday || '',
     sunday: settings.business_hours.sunday || '',
     referral_codes: (settings.social_links.referral_codes ?? []).join('\n'),
+    order_placement_paused: settings.social_links.order_placement_paused === true,
+    order_placement_pause_message:
+      settings.social_links.order_placement_pause_message ??
+      DEFAULT_ORDER_PLACEMENT_PAUSE_MESSAGE,
   })
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      order_placement_paused: settings.social_links.order_placement_paused === true,
+      order_placement_pause_message:
+        settings.social_links.order_placement_pause_message ??
+        DEFAULT_ORDER_PLACEMENT_PAUSE_MESSAGE,
+    }))
+  }, [settings.social_links.order_placement_paused, settings.social_links.order_placement_pause_message])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,10 +54,15 @@ export function SettingsForm() {
       address: form.address || null,
       about_text: form.about_text || null,
       social_links: {
+        ...settings.social_links,
         facebook: form.facebook || undefined,
         instagram: form.instagram || undefined,
         youtube: form.youtube || undefined,
         referral_codes: formatReferralCodesForStorage(parseReferralCodeList(form.referral_codes)),
+        order_placement_paused: form.order_placement_paused,
+        order_placement_pause_message: form.order_placement_paused
+          ? form.order_placement_pause_message.trim() || DEFAULT_ORDER_PLACEMENT_PAUSE_MESSAGE
+          : undefined,
       },
       business_hours: {
         weekdays: form.weekdays || undefined,
@@ -66,6 +86,49 @@ export function SettingsForm() {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-8">
+      <section className="space-y-4 rounded-xl border-2 border-amber-200 bg-amber-50/60 p-5">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Order placement</h3>
+          <p className="mt-1 text-sm text-slate-600">
+            Turn off cart and WhatsApp checkout when you are at capacity. Customers can still browse
+            the catalogue.
+          </p>
+        </div>
+
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={form.order_placement_paused}
+            onChange={(e) =>
+              setForm({ ...form, order_placement_paused: e.target.checked })
+            }
+            className="mt-1 h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+          />
+          <span>
+            <span className="block text-sm font-semibold text-slate-900">Order placement off</span>
+            <span className="block text-xs text-slate-600">
+              Blocks new cart enquiries and product WhatsApp orders on the storefront.
+            </span>
+          </span>
+        </label>
+
+        {form.order_placement_paused && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Message shown to customers
+            </label>
+            <textarea
+              value={form.order_placement_pause_message}
+              onChange={(e) =>
+                setForm({ ...form, order_placement_pause_message: e.target.value })
+              }
+              rows={3}
+              className={inputClass}
+            />
+          </div>
+        )}
+      </section>
+
       <section className="space-y-4">
         <h3 className="text-lg font-semibold text-slate-900">Business Information</h3>
 

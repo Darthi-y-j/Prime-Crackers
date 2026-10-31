@@ -52,8 +52,8 @@ async function fetchSupabaseProductSlugs(env) {
   }
 
   const endpoints = [
-    `${supabaseUrl}/rest/v1/products?select=slug&is_active=eq.true&is_archived=eq.false&order=sort_order.asc`,
-    `${supabaseUrl}/rest/v1/products?select=slug&is_active=eq.true&order=sort_order.asc`,
+    `${supabaseUrl}/rest/v1/products?select=slug&is_available=eq.true&is_archived=eq.false&order=sort_order.asc`,
+    `${supabaseUrl}/rest/v1/products?select=slug&is_available=eq.true&order=sort_order.asc`,
   ]
 
   for (const endpoint of endpoints) {

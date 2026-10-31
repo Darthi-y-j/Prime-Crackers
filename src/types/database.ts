@@ -168,6 +168,9 @@ export interface SocialLinks {
   whatsapp_numbers?: string[]
   /** Active referral codes customers can enter at checkout (admin-managed). */
   referral_codes?: string[]
+  /** When true, cart / product WhatsApp orders are blocked for customers. */
+  order_placement_paused?: boolean
+  order_placement_pause_message?: string
   policies?: BusinessPolicies
 }
 

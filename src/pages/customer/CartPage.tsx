@@ -52,6 +52,11 @@ import {
 } from '@/lib/cartRules'
 import { formatPrice, validatePhone, cn } from '@/lib/utils'
 import { formatDisplayPhone } from '@/lib/businessInfo'
+import {
+  getOrderPlacementPauseMessage,
+  isOrderPlacementPaused,
+} from '@/lib/orderPlacement'
+import { OrderPlacementPauseAlert } from '@/components/customer/OrderPlacementNotice'
 import type { CartItem } from '@/types/database'
 
 import { PageHeaderBackground, PAGE_HEADER_UNDER_NAV } from '@/components/customer/PageHeader'
@@ -248,6 +253,7 @@ function EnquiryForm({
   hasPricedItems,
   spinReward,
   onSendEnquiry,
+  ordersPaused = false,
   className,
   compact = false,
 }: {
@@ -272,6 +278,7 @@ function EnquiryForm({
   hasPricedItems: boolean
   spinReward: SpinReward | null
   onSendEnquiry: () => void
+  ordersPaused?: boolean
   className?: string
   compact?: boolean
 }) {
@@ -279,6 +286,7 @@ function EnquiryForm({
 
   return (
     <div className={cn(compact ? 'space-y-3' : 'space-y-4', className)}>
+      {ordersPaused && <OrderPlacementPauseAlert />}
       {hasPricedItems && !compact && (
         <div className="overflow-hidden rounded-2xl border border-[#FFC107]/35 bg-gradient-to-br from-[#004D55] via-[#005a64] to-[#006670] p-4 text-white shadow-lg">
           <div className="flex items-center justify-between gap-3">
@@ -620,7 +628,7 @@ function EnquiryForm({
           <button
             type="button"
             onClick={onSendEnquiry}
-            disabled={loading || !meetsMinimumOrder}
+            disabled={loading || !meetsMinimumOrder || ordersPaused}
             className={cn(
               'group flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-[#25D366]/35 transition hover:brightness-105 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50',
               compact ? 'hidden' : 'mt-6 py-4',
@@ -778,6 +786,7 @@ export function CartPage() {
   const hasPricedItems = items.some((item) => item.price != null)
   const estimatedAfterSpin = Math.max(0, estimatedTotal - spinDiscount)
   const meetsMinimumOrder = meetsMinimumOrderAmount(estimatedTotal)
+  const ordersPaused = isOrderPlacementPaused(settings)
 
   const updateAddress = (patch: Partial<DeliveryAddressFields>) => {
     setAddressFields((prev) => ({ ...prev, ...patch }))
@@ -839,6 +848,11 @@ export function CartPage() {
   }
 
   const handleSendEnquiry = async () => {
+    if (ordersPaused) {
+      showToast(getOrderPlacementPauseMessage(settings), 'error')
+      return
+    }
+
     const formData = buildEnquiryFormData()
     if (!formData) return
 
@@ -899,6 +913,7 @@ export function CartPage() {
     hasPricedItems,
     spinReward,
     onSendEnquiry: handleSendEnquiry,
+    ordersPaused,
   }
 
   if (items.length === 0) {
@@ -1091,13 +1106,17 @@ export function CartPage() {
             <button
               type="button"
               onClick={() => {
+                if (ordersPaused) {
+                  showToast(getOrderPlacementPauseMessage(settings), 'error')
+                  return
+                }
                 if (!meetsMinimumOrder) {
                   document.getElementById('min-order-alert')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                   return
                 }
                 handleSendEnquiry()
               }}
-              disabled={loading}
+              disabled={loading || ordersPaused}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2.5 text-xs font-extrabold uppercase text-white shadow-lg disabled:opacity-50 sm:px-5 sm:py-3 sm:text-sm sm:normal-case"
             >
               {loading ? (
@@ -1105,7 +1124,7 @@ export function CartPage() {
               ) : (
                 <>
                   <MessageCircle className="h-4 w-4" />
-                  {meetsMinimumOrder ? 'WhatsApp' : 'Add items'}
+                  {ordersPaused ? 'Paused' : meetsMinimumOrder ? 'WhatsApp' : 'Add items'}
                 </>
               )}
             </button>

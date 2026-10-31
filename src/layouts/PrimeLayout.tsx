@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { PrimeHeader } from '@/components/prime/PrimeHeader'
 import { PrimeFooter } from '@/components/prime/PrimeFooter'
+import { OrderPlacementNotice } from '@/components/customer/OrderPlacementNotice'
 import { PrimeCartBar } from '@/components/prime/PrimeCartBar'
 import { PrimeCategoryTab } from '@/components/prime/PrimeCategoryTab'
 import { PrimeShopProvider } from '@/contexts/PrimeShopContext'
@@ -35,6 +36,7 @@ export function PrimeLayout() {
         <RouteSEO />
         <ImportantNoticeModal />
         <PrimeHeader />
+        <OrderPlacementNotice />
         <PrimeCategoryTab />
         <main className={cn('flex-1', showCartBar && 'pb-20')}>
           <Outlet />

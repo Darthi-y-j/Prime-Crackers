@@ -3,6 +3,8 @@ import { normalizeReferralCode } from '@/lib/referralCode'
 import { generateEnquiryNumber, cleanPhone, sanitizeEnquiryProductId } from '@/lib/utils'
 import { isEmbeddedCatalogProductId } from '@/lib/catalogIds'
 import { expandCartItemsForEnquiry, enquiryHeaderProductId } from '@/lib/giftBox'
+import { getOrderPlacementPauseMessage, isOrderPlacementPaused } from '@/lib/orderPlacement'
+import { getWebsiteSettings } from '@/services/settings'
 import type {
   Enquiry,
   EnquiryFormData,
@@ -21,6 +23,12 @@ const ENQUIRY_CATEGORY_LABELS: Record<string, string> = {
   product: 'Product Information',
   delivery: 'Delivery & Shipping',
   other: 'Other',
+}
+
+async function getOrderPlacementBlockMessage(): Promise<string | null> {
+  const settings = await getWebsiteSettings()
+  if (!isOrderPlacementPaused(settings)) return null
+  return getOrderPlacementPauseMessage(settings)
 }
 
 type EnquiryInsertBase = {
@@ -246,6 +254,9 @@ function formatCustomerNotes(
 export async function createEnquiry(
   formData: EnquiryFormData,
 ): Promise<{ data: Enquiry | null; error: string | null }> {
+  const blocked = await getOrderPlacementBlockMessage()
+  if (blocked) return { data: null, error: blocked }
+
   const enquiryNumber = generateEnquiryNumber()
   const phone = cleanPhone(formData.customerPhone)
 
@@ -280,6 +291,9 @@ export async function createEnquiry(
 export async function createCartEnquiry(
   formData: CartEnquiryFormData,
 ): Promise<{ data: Enquiry | null; error: string | null }> {
+  const blocked = await getOrderPlacementBlockMessage()
+  if (blocked) return { data: null, error: blocked }
+
   if (formData.items.length === 0) {
     return { data: null, error: 'Cart is empty' }
   }
