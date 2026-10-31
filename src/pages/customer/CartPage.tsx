@@ -356,7 +356,7 @@ function EnquiryForm({
 
         <div className={cn(compact ? 'p-3' : 'p-5 sm:p-6')}>
           <div className={cn('flex flex-wrap items-center gap-2', compact ? 'mb-3' : 'mb-0')}>
-            {settings.whatsapp_number && (
+            {!ordersPaused && settings.whatsapp_number && (
               <a
                 href={buildWhatsAppUrl(settings.whatsapp_number, 'Hi! I have a cart enquiry.')}
                 target="_blank"
@@ -378,7 +378,13 @@ function EnquiryForm({
             )}
           </div>
 
-          <div className={cn('space-y-3', !compact && 'mt-5 sm:space-y-4')}>
+          <div
+            className={cn(
+              'space-y-3',
+              !compact && 'mt-5 sm:space-y-4',
+              ordersPaused && 'pointer-events-none opacity-45',
+            )}
+          >
             <div className="grid gap-2.5 sm:grid-cols-2 sm:gap-3">
               <div>
                 <label
